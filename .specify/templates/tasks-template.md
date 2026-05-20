@@ -159,6 +159,20 @@ Examples of foundational tasks (adjust based on your project):
 
 ---
 
+## Constitution-Driven Mandatory Tasks
+
+**Purpose**: Non-negotiable tasks derived from project constitution
+
+- [ ] TXXX Define and validate least-privilege access rules for changed flows
+- [ ] TXXX Validate tenant and role data isolation for all read/write paths
+- [ ] TXXX Implement and verify Firebase listener lifecycle and payload limits
+- [ ] TXXX Add explicit loading/error/retry states for impacted mobile journeys
+- [ ] TXXX Mirror `src/` changes under `tests/` and add critical non-regression tests
+- [ ] TXXX Measure and record mobile performance/reliability acceptance checks
+- [ ] TXXX Ensure generated governance and delivery artifacts remain in English
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

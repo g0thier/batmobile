@@ -100,6 +100,42 @@
 - **[Entity 1]**: [What it represents, key attributes without implementation]
 - **[Entity 2]**: [What it represents, relationships to other entities]
 
+## Constitution Alignment *(mandatory)*
+
+### Value Contribution
+
+- Target lever(s): [response frequency | signal quality | engagement | continuity]
+- Why this feature improves those lever(s): [clear product rationale]
+
+### Security, Privacy, and Access
+
+- Data classification impacted: [none/public/internal/personal/sensitive]
+- Least-privilege model: [roles, permissions, and access boundaries]
+- Tenant and role isolation impact: [how isolation is preserved]
+- Personal-data basis and consent impact: [required/legal basis or N/A]
+
+### Mobile UX and Reliability
+
+- Ionic UX conventions to follow: [navigation/feedback/loading/touch patterns]
+- Low-connectivity and low-end device behavior: [degraded mode and fallbacks]
+- Error and retry model for user-facing flows: [messages + recovery actions]
+
+### Realtime Firebase Impact
+
+- Listener strategy: [targeted query paths and unsubscribe lifecycle]
+- Payload minimization strategy: [fields/structure limits]
+- Write consistency strategy: [idempotency/conflict handling/retry model]
+
+### Testing and Traceability
+
+- Critical test coverage required: [unit/integration/e2e + scope]
+- `src` to `tests` traceability plan: [mirror paths to be created or updated]
+
+### Artifact Language
+
+- Artifact language requirement: [All governance and delivery artifacts MUST be in English]
+- If user input is non-English: [describe translation/normalization approach]
+
 ## Success Criteria *(mandatory)*
 
 <!--

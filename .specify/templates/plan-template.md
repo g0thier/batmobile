@@ -31,7 +31,20 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- Value Impact Gate: Feature maps to at least one target lever
+  (response frequency, signal quality, engagement, continuity of use).
+- Security & Privacy Gate: Data access model follows least privilege, tenancy/role
+  isolation, and explicit personal-data handling rules.
+- Realtime Gate: Firebase Realtime strategy defines targeted listeners, payload
+  limits, subscription lifecycle, and reconnection behavior.
+- Mobile UX Gate: Ionic UX conventions, loading/error/retry states, and low-end
+  device/network behavior are explicitly addressed.
+- Testability Gate: Critical behaviors have automated tests and planned `tests/`
+  paths mirror the impacted `src/` hierarchy.
+- Performance & Reliability Gate: Plan includes measurable expectations for load
+  times, sync behavior, and resilient failure handling.
+- Language Gate: Governance and delivery artifacts are written in English, even
+  when user prompts are provided in French.
 
 ## Project Structure
 
