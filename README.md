@@ -1,59 +1,121 @@
-# Batmobile
+# Batmobile Companion App
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.26.
+Batmobile is the companion application of the Data-Driven project:
+- [g0thier/datadriven](https://github.com/g0thier/datadriven)
 
-## Development server
+## Description
 
-To start a local development server, run:
+This repository represents the mobile-oriented companion layer of the Data-Driven management ecosystem.  
+It starts with the **Motivation** module inside the Human Resources management domain.
 
-```bash
-ng serve
+In this context, motivation is treated as a strategic lever for:
+- employee retention,
+- retention of organizational know-how and knowledge,
+- and the first step in building robust company objectives across support functions, key success factors, marketing mix, and finance.
+
+The current codebase is in an Angular starter phase while the product foundation is being structured.
+
+## Table of Contents
+
+- [Batmobile Companion App](#batmobile-companion-app)
+  - [Description](#description)
+  - [Table of Contents](#table-of-contents)
+  - [Objective](#objective)
+  - [Target Audience](#target-audience)
+  - [Current Modules](#current-modules)
+  - [Repository Structure](#repository-structure)
+  - [Installation](#installation)
+  - [Available Scripts](#available-scripts)
+  - [Roadmap](#roadmap)
+  - [Security](#security)
+  - [Changelog](#changelog)
+  - [Contributing](#contributing)
+  - [License](#license)
+  - [Author](#author)
+
+## Objective
+
+Provide the companion-app foundation for Data-Driven modules, beginning with HR motivation workflows that strengthen long-term organizational performance.
+
+## Target Audience
+
+- Employees working under C-level leaders using the Data-Driven SaaS
+- HR and people operations teams supporting C-level strategy execution
+- Managers responsible for employee engagement and capability development
+
+## Current Modules
+
+- `Motivation`: first module focused on motivation dynamics as a retention and strategic alignment driver
+
+## Repository Structure
+
+```text
+batmobile/
+├── public/
+│   └── favicon.ico
+├── src/
+│   ├── app/
+│   │   ├── app.config.ts
+│   │   ├── app.css
+│   │   ├── app.html
+│   │   ├── app.routes.ts
+│   │   ├── app.spec.ts
+│   │   └── app.ts
+│   ├── index.html
+│   ├── main.ts
+│   └── styles.css
+├── angular.json
+├── package.json
+└── README.md
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Installation
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Install dependencies:
 
 ```bash
-ng generate component component-name
+npm install
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Start the development server:
 
 ```bash
-ng generate --help
+npm run start
 ```
 
-## Building
-
-To build the project run:
+## Available Scripts
 
 ```bash
-ng build
+npm run start   # Start Angular dev server
+npm run build   # Build production assets
+npm run watch   # Build in watch mode for development
+npm run test    # Run unit tests
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Roadmap
 
-## Running unit tests
+- `Motivation` (current): HR motivation and retention foundation
+- `Support Functions` (next): support-business alignment workflows
+- `Key Success Factors` (next): operationalization of strategic success criteria
+- `Marketing Mix` (next): structured market and offer alignment tools
+- `Finance` (next): financial perspective integration for strategic consistency
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+## Security
 
-```bash
-ng test
-```
+Security reporting process is documented in [SECURITY.md](SECURITY.md).
 
-## Running end-to-end tests
+## Changelog
 
-For end-to-end (e2e) testing, run:
+Project changes are tracked in [CHANGELOG.md](CHANGELOG.md).
 
-```bash
-ng e2e
-```
+## Contributing
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Contributions are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
-## Additional Resources
+## License
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+License details are available in [LICENSE.md](LICENSE.md).
+
+## Author
+
+Gauthier Rammault
