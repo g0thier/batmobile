@@ -1,0 +1,13 @@
+:host {
+  display: inline-flex;
+  line-height: 1;
+}
+
+.material-symbols-outlined {
+  align-items: center;
+  display: inline-flex;
+  font-style: normal;
+  justify-content: center;
+  line-height: 1;
+  user-select: none;
+}
