@@ -1,0 +1,72 @@
+<ion-content [fullscreen]="true" class="auth-content">
+  <div class="auth-page">
+    <ion-card class="auth-card">
+      <ion-card-header>
+        <ion-card-title>Connexion</ion-card-title>
+        <ion-card-subtitle>
+          @if (step === 1) {
+            Entrez votre adresse email pour continuer.
+          } @else {
+            Entrez votre mot de passe pour vous connecter.
+          }
+        </ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <form (ngSubmit)="onSubmit()" class="auth-form">
+          @if (step === 1) {
+            <ion-input
+              label="Adresse email"
+              labelPlacement="stacked"
+              type="email"
+              name="email"
+              autocomplete="email"
+              placeholder="truc.muche@exemple.com"
+              [(ngModel)]="email"
+              [disabled]="isLoading"
+              required
+            ></ion-input>
+          } @else {
+            <ion-input
+              label="Mot de passe"
+              labelPlacement="stacked"
+              type="password"
+              name="password"
+              autocomplete="current-password"
+              placeholder="Votre mot de passe"
+              [(ngModel)]="password"
+              [disabled]="isLoading"
+              required
+            ></ion-input>
+          }
+
+          @if (errorMessage) {
+            <ion-text color="danger" class="auth-error">{{ errorMessage }}</ion-text>
+          }
+
+          <ion-button type="submit" expand="block" [disabled]="isLoading">
+            @if (isLoading) {
+              <ion-spinner name="crescent"></ion-spinner>
+            } @else if (step === 1) {
+              <span>Continuer</span>
+              <app-material-icon name="password" className="auth-icon-end"></app-material-icon>
+            } @else {
+              <span>Se connecter</span>
+              <app-material-icon name="send" className="auth-icon-end auth-icon-send"></app-material-icon>
+            }
+          </ion-button>
+        </form>
+
+        <div class="auth-links">
+          <a routerLink="/reset-password">Mot de passe oublié ? Réinitialisez-le.</a>
+
+          @if (step === 2) {
+            <button type="button" class="link-button" (click)="backToEmail()" [disabled]="isLoading">
+              Revenir à l’email
+            </button>
+          }
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
