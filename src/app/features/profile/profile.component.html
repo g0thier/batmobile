@@ -4,6 +4,113 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <p>Page Profil</p>
+<ion-content [fullscreen]="true">
+  <div class="profile-page">
+    @if (profileState$ | async; as state) {
+      <ion-card class="profile-card">
+        <ion-card-content>
+          <div class="identity-row">
+            <ion-avatar class="profile-avatar">
+              @if (state.profile.profilePicture) {
+                <img [src]="state.profile.profilePicture" alt="Photo de profil" />
+              } @else {
+                <div class="avatar-fallback">
+                  <app-material-icon name="account_circle" [size]="40"></app-material-icon>
+                </div>
+              }
+            </ion-avatar>
+
+            <div class="identity-content">
+              <div class="identity-name">{{ getFullName(state.profile) }}</div>
+              <div class="identity-meta">{{ getDisplayValue(state.profile.jobTitle) }}</div>
+              <div class="identity-meta">{{ getDisplayValue(state.profile.officeLocation) }}</div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="profile-card">
+        <ion-card-header>
+          <ion-card-title>Informations</ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+          @if (state.isLoading) {
+            <div class="state-row">
+              <ion-spinner name="crescent"></ion-spinner>
+              <span>Chargement du profil...</span>
+            </div>
+          }
+
+          @if (state.loadError) {
+            <ion-text color="danger" class="state-error">{{ state.loadError }}</ion-text>
+          }
+
+          <ion-item lines="none" class="profile-item">
+            <ion-label>
+              <p class="item-label">Email</p>
+              <h3>{{ getDisplayValue(state.profile.emailAddress) }}</h3>
+            </ion-label>
+          </ion-item>
+
+          <ion-item lines="none" class="profile-item">
+            <ion-label>
+              <p class="item-label">Téléphone</p>
+              <h3>{{ getDisplayValue(state.profile.phoneNumber) }}</h3>
+            </ion-label>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="profile-card">
+        <ion-card-header>
+          <ion-card-title>Abonnement en cours</ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+          <ion-item lines="none" class="profile-item">
+            <ion-label>
+              <p class="item-label">Plan</p>
+              <h3>{{ getDisplayValue(state.subscription.planLabel) }}</h3>
+            </ion-label>
+          </ion-item>
+
+          <ion-item lines="none" class="profile-item">
+            <ion-label>
+              <p class="item-label">Statut</p>
+              <h3>{{ getSubscriptionStatusLabel(state.subscription) }}</h3>
+            </ion-label>
+          </ion-item>
+
+          <ion-item lines="none" class="profile-item">
+            <ion-label>
+              <p class="item-label">{{ getRenewalLabel(state.subscription) }}</p>
+              <h3>{{ getRenewalDate(state.subscription) }}</h3>
+            </ion-label>
+          </ion-item>
+
+          <ion-item lines="none" class="profile-item">
+            <ion-label>
+              <p class="item-label">Dernier paiement</p>
+              <h3>{{ getPaymentStatusLabel(state.subscription) }}</h3>
+            </ion-label>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+
+      <div class="logout-section">
+        @if (logoutErrorMessage) {
+          <ion-text color="danger" class="state-error">{{ logoutErrorMessage }}</ion-text>
+        }
+
+        <ion-button expand="block" color="danger" [disabled]="isSigningOut" (click)="onSignOut()">
+          @if (isSigningOut) {
+            <ion-spinner name="crescent"></ion-spinner>
+          } @else {
+            <span>Se déconnecter</span>
+          }
+        </ion-button>
+      </div>
+    }
+  </div>
 </ion-content>

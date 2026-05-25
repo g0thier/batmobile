@@ -4,6 +4,7 @@ import {
   authState,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
+  signOut as firebaseSignOut,
 } from '@angular/fire/auth';
 import { FirebaseError } from 'firebase/app';
 import { map, shareReplay } from 'rxjs';
@@ -43,6 +44,14 @@ export class AuthService {
     }
   }
 
+  async signOut(): Promise<void> {
+    try {
+      await firebaseSignOut(this.auth);
+    } catch (error: unknown) {
+      throw new Error(this.mapSignOutError(error));
+    }
+  }
+
   private mapSignInError(error: unknown): string {
     if (!(error instanceof FirebaseError)) {
       return 'Connexion impossible pour le moment.';
@@ -78,6 +87,21 @@ export class AuthService {
         return 'Problème réseau. Vérifie ta connexion internet.';
       default:
         return "Impossible d'envoyer l'email de réinitialisation.";
+    }
+  }
+
+  private mapSignOutError(error: unknown): string {
+    if (!(error instanceof FirebaseError)) {
+      return 'Déconnexion impossible pour le moment.';
+    }
+
+    switch (error.code) {
+      case 'auth/network-request-failed':
+        return 'Problème réseau. Vérifie ta connexion internet.';
+      case 'auth/too-many-requests':
+        return 'Trop de demandes. Réessaie dans quelques minutes.';
+      default:
+        return 'Déconnexion impossible pour le moment.';
     }
   }
 }
