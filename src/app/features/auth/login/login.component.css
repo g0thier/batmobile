@@ -2,10 +2,6 @@
   display: block;
 }
 
-.auth-content {
-  --background: linear-gradient(180deg, #ffd66f 0%, #ffe4a6 100%);
-}
-
 .auth-page {
   align-items: center;
   display: flex;

@@ -14,7 +14,7 @@ import {
   IonText,
 } from '@ionic/angular/standalone';
 import { AuthService } from '../../../core/auth/auth';
-import { MaterialIconComponent } from '../../../shared/material-icon/material-icon.component';
+// import { MaterialIconComponent } from '../../../shared/material-icon/material-icon.component';
 
 @Component({
   selector: 'app-login',
@@ -34,7 +34,7 @@ import { MaterialIconComponent } from '../../../shared/material-icon/material-ic
     IonInput,
     IonSpinner,
     IonText,
-    MaterialIconComponent,
+    // MaterialIconComponent,
   ],
 })
 export class LoginComponent {
