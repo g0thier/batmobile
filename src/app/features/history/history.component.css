@@ -12,7 +12,7 @@
 
 .history-section {
   display: grid;
-  gap: 12px;
+  gap: 16px;
 }
 
 .section-header {
@@ -51,7 +51,6 @@
 }
 
 .quiz-row {
-  align-items: stretch;
   display: grid;
   gap: 12px;
   grid-template-columns: 108px 1fr;
