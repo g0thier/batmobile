@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Database } from '@angular/fire/database';
-import { onValue, ref } from 'firebase/database';
+import { get, onValue, ref } from 'firebase/database';
 import { Observable, of, shareReplay, switchMap } from 'rxjs';
 import { AuthService } from '../auth/auth';
 
@@ -18,6 +18,10 @@ export interface UserQuizSessionsState {
   pastQuiz: UserQuizSessionViewModel[];
   isLoading: boolean;
   loadError: string;
+}
+
+interface NormalizedUserQuizSession extends UserQuizSessionViewModel {
+  selectedGuestIds: string[];
 }
 
 const QUIZ_SESSIONS_LOAD_ERROR = 'Impossible de charger les quiz pour le moment.';
@@ -76,14 +80,40 @@ const sortPast = (a: UserQuizSessionViewModel, b: UserQuizSessionViewModel): num
 const normalizeSession = (
   id: string,
   rawSession: Record<string, unknown>,
-): UserQuizSessionViewModel => ({
-  sessionId: readString(rawSession['sessionId']) || readString(id),
-  quizId: readString(rawSession['quizId']),
-  responseDeadline: readString(rawSession['responseDeadline']),
-  status: readString(rawSession['status']),
-  createdAt: readString(rawSession['createdAt']),
-  updatedAt: readString(rawSession['updatedAt']),
-});
+): NormalizedUserQuizSession => {
+  const selectedGuestIds = extractSelectedGuestIds(rawSession['selectedGuests']);
+
+  return {
+    sessionId: readString(rawSession['sessionId']) || readString(id),
+    quizId: readString(rawSession['quizId']),
+    responseDeadline: readString(rawSession['responseDeadline']),
+    status: readString(rawSession['status']),
+    createdAt: readString(rawSession['createdAt']),
+    updatedAt: readString(rawSession['updatedAt']),
+    selectedGuestIds,
+  };
+};
+
+const extractSelectedGuestIds = (value: unknown): string[] => {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((guest) => {
+      if (guest && typeof guest === 'object') {
+        const guestRecord = guest as Record<string, unknown>;
+        return readString(guestRecord['uid'] ?? guestRecord['id']);
+      }
+      return readString(guest);
+    })
+    .filter(Boolean);
+};
+
+const toPublicSessionModel = ({
+  selectedGuestIds: _selectedGuestIds,
+  ...session
+}: NormalizedUserQuizSession): UserQuizSessionViewModel => session;
 
 const splitSessionsByDeadline = (
   sessions: UserQuizSessionViewModel[],
@@ -115,6 +145,37 @@ export class UserQuizSessionsService {
   private readonly authService = inject(AuthService);
   private readonly database = inject(Database);
 
+  private async resolveVisibleSessions(
+    sessions: NormalizedUserQuizSession[],
+    userId: string,
+  ): Promise<UserQuizSessionViewModel[]> {
+    const normalizedUserId = readString(userId);
+    if (!normalizedUserId) {
+      return [];
+    }
+
+    const visibleSessions = await Promise.all(
+      sessions.map(async (session) => {
+        if (session.selectedGuestIds.length > 0) {
+          return session.selectedGuestIds.includes(normalizedUserId) ? toPublicSessionModel(session) : null;
+        }
+
+        try {
+          const sessionRef = ref(this.database, `quizSessions/${session.sessionId}`);
+          const snapshot = await get(sessionRef);
+          const sessionDetails = snapshot.exists() ? asRecord(snapshot.val()) : {};
+          const selectedGuestIds = extractSelectedGuestIds(sessionDetails['selectedGuests']);
+          return selectedGuestIds.includes(normalizedUserId) ? toPublicSessionModel(session) : null;
+        } catch (error: unknown) {
+          console.error('Impossible de vérifier les invités de la session quiz :', error);
+          return null;
+        }
+      }),
+    );
+
+    return visibleSessions.filter((session): session is UserQuizSessionViewModel => session !== null);
+  }
+
   readonly state$ = this.authService.authUser$.pipe(
     switchMap((currentUser) => {
       if (!currentUser) {
@@ -128,6 +189,7 @@ export class UserQuizSessionsService {
 
       return new Observable<UserQuizSessionsState>((subscriber) => {
         subscriber.next({ ...EMPTY_STATE, upcomingQuiz: [], pastQuiz: [] });
+        let latestSnapshotVersion = 0;
 
         const userSessionsRef = ref(this.database, `users/${currentUser.uid}/quizSessions`);
         const unsubscribe = onValue(
@@ -137,15 +199,37 @@ export class UserQuizSessionsService {
             const normalizedSessions = Object.entries(rawSessions).map(([id, rawSession]) =>
               normalizeSession(id, asRecord(rawSession)),
             );
-            const snapshotNowMs = Date.now();
-            const splitSessions = splitSessionsByDeadline(normalizedSessions, snapshotNowMs);
+            const snapshotVersion = ++latestSnapshotVersion;
 
-            subscriber.next({
-              upcomingQuiz: splitSessions.upcomingQuiz,
-              pastQuiz: splitSessions.pastQuiz,
-              isLoading: false,
-              loadError: '',
-            });
+            void this.resolveVisibleSessions(normalizedSessions, currentUser.uid)
+              .then((visibleSessions) => {
+                if (snapshotVersion !== latestSnapshotVersion) {
+                  return;
+                }
+
+                const snapshotNowMs = Date.now();
+                const splitSessions = splitSessionsByDeadline(visibleSessions, snapshotNowMs);
+
+                subscriber.next({
+                  upcomingQuiz: splitSessions.upcomingQuiz,
+                  pastQuiz: splitSessions.pastQuiz,
+                  isLoading: false,
+                  loadError: '',
+                });
+              })
+              .catch((error: unknown) => {
+                if (snapshotVersion !== latestSnapshotVersion) {
+                  return;
+                }
+
+                console.error('Impossible de filtrer les sessions quiz utilisateur :', error);
+                subscriber.next({
+                  upcomingQuiz: [],
+                  pastQuiz: [],
+                  isLoading: false,
+                  loadError: QUIZ_SESSIONS_LOAD_ERROR,
+                });
+              });
           },
           (loadError: unknown) => {
             console.error('Impossible de charger les sessions quiz utilisateur :', loadError);

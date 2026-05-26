@@ -57,12 +57,10 @@ export class HistoryComponent {
       return 'Date limite à confirmer';
     }
 
-    return new Date(parsedTimestamp).toLocaleString('fr-FR', {
+    return new Date(parsedTimestamp).toLocaleDateString('fr-FR', {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
-      hour: '2-digit',
-      minute: '2-digit',
     });
   }
 
