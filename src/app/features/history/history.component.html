@@ -4,6 +4,111 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <p>Page Historique</p>
+<ion-content [fullscreen]="true">
+  <div class="history-page">
+    @if (state$ | async; as state) {
+      @if (state.isLoading) {
+        <div class="state-row">
+          <ion-spinner name="crescent"></ion-spinner>
+          <span>Chargement des quiz...</span>
+        </div>
+      }
+
+      @if (state.loadError) {
+        <ion-text color="danger" class="state-error">{{ state.loadError }}</ion-text>
+      }
+
+      <section class="history-section">
+        <div class="section-header">
+          <app-material-icon name="event_upcoming" [size]="20"></app-material-icon>
+          <h2>Quiz à venir ({{ state.upcomingQuiz.length }})</h2>
+        </div>
+
+        @if (state.upcomingQuiz.length === 0) {
+          <ion-card class="empty-card">
+            <ion-card-content>Aucun quiz à venir.</ion-card-content>
+          </ion-card>
+        } @else {
+          @for (quiz of state.upcomingQuiz; track trackBySessionId($index, quiz)) {
+            <ion-card
+              class="quiz-card"
+              role="button"
+              tabindex="0"
+              (click)="onQuizCardTap(quiz)"
+              (keydown)="onQuizCardKeyDown($event, quiz)"
+            >
+              <ion-card-content>
+                <div class="quiz-row">
+                  <div class="quiz-cover" [class.quiz-cover--empty]="!getQuizCover(quiz.quizId)">
+                    @if (getQuizCover(quiz.quizId)) {
+                      <img [src]="getQuizCover(quiz.quizId)" [alt]="'Cover ' + getQuizTitle(quiz.quizId)" />
+                    } @else {
+                      <div class="quiz-cover-fallback">
+                        <app-material-icon name="quiz" [size]="28"></app-material-icon>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="quiz-content">
+                    <div class="quiz-head">
+                      <h3>{{ getQuizTitle(quiz.quizId) }}</h3>
+                      <span class="quiz-badge">À venir</span>
+                    </div>
+                    <p class="quiz-meta">Date limite: {{ formatDateTime(quiz.responseDeadline) }}</p>
+                    <p class="quiz-meta">Statut: {{ getStatusLabel(quiz.status) }}</p>
+                  </div>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          }
+        }
+      </section>
+
+      <section class="history-section">
+        <div class="section-header">
+          <app-material-icon name="history" [size]="20"></app-material-icon>
+          <h2>Quiz passés ({{ state.pastQuiz.length }})</h2>
+        </div>
+
+        @if (state.pastQuiz.length === 0) {
+          <ion-card class="empty-card">
+            <ion-card-content>Aucun quiz passé.</ion-card-content>
+          </ion-card>
+        } @else {
+          @for (quiz of state.pastQuiz; track trackBySessionId($index, quiz)) {
+            <ion-card
+              class="quiz-card"
+              role="button"
+              tabindex="0"
+              (click)="onQuizCardTap(quiz)"
+              (keydown)="onQuizCardKeyDown($event, quiz)"
+            >
+              <ion-card-content>
+                <div class="quiz-row">
+                  <div class="quiz-cover" [class.quiz-cover--empty]="!getQuizCover(quiz.quizId)">
+                    @if (getQuizCover(quiz.quizId)) {
+                      <img [src]="getQuizCover(quiz.quizId)" [alt]="'Cover ' + getQuizTitle(quiz.quizId)" />
+                    } @else {
+                      <div class="quiz-cover-fallback">
+                        <app-material-icon name="quiz" [size]="28"></app-material-icon>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="quiz-content">
+                    <div class="quiz-head">
+                      <h3>{{ getQuizTitle(quiz.quizId) }}</h3>
+                      <span class="quiz-badge is-past">Passé</span>
+                    </div>
+                    <p class="quiz-meta">Date limite: {{ formatDateTime(quiz.responseDeadline) }}</p>
+                    <p class="quiz-meta">Statut: {{ getStatusLabel(quiz.status) }}</p>
+                  </div>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          }
+        }
+      </section>
+    }
+  </div>
 </ion-content>
