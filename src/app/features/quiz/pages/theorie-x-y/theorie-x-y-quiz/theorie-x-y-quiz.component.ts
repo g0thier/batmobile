@@ -73,7 +73,7 @@ export class TheorieXYQuizComponent {
       this.answeredCount = submitResult.answeredCount;
 
       if (submitResult.isCompleted) {
-        await this.goToNextSessionOrHistory();
+        await this.goToHistory();
         return;
       }
 
@@ -129,24 +129,11 @@ export class TheorieXYQuizComponent {
     this.answeredCount = prompt.answeredCount;
 
     if (prompt.isCompleted) {
-      await this.goToNextSessionOrHistory();
+      await this.goToHistory();
     }
   }
 
-  private async goToNextSessionOrHistory(): Promise<void> {
-    const nextSession = await this.theorieXYSession.pickRandomNextEligibleSession(
-      this.currentUserId,
-      this.sessionId,
-    );
-
-    if (!nextSession) {
-      await this.router.navigateByUrl('/tabs/history', { replaceUrl: true });
-      return;
-    }
-
-    await this.router.navigateByUrl(
-      `/tabs/quiz-session/${nextSession.quizId}/${nextSession.sessionId}`,
-      { replaceUrl: true },
-    );
+  private async goToHistory(): Promise<void> {
+    await this.router.navigateByUrl('/tabs/history', { replaceUrl: true });
   }
 }
