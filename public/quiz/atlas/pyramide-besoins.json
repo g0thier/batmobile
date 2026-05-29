@@ -1,0 +1,173 @@
+{
+    "nom": "Pyramide des besoins",
+    "auteur": "Abraham Maslow",
+    "definition": "La motivation humaine s'organise autour de cinq niveaux de besoins : physiologiques, sécurité, appartenance et amour, estime, puis accomplissement de soi. Les besoins les plus fondamentaux tendent à être satisfaits en priorité avant que les besoins supérieurs ne deviennent dominants.",
+    "titre": "Besoins de Maslow",
+    "description": "Ce quiz identifie les niveaux de besoins actuellement les plus présents dans votre expérience professionnelle.",
+    "besoins": [
+        {
+            "id": 1,
+            "key": "physiologiques",
+            "label": "Besoins physiologiques"
+        },
+        {
+            "id": 2,
+            "key": "securite",
+            "label": "Besoins de sécurité"
+        },
+        {
+            "id": 3,
+            "key": "appartenance_amour",
+            "label": "Besoins d’appartenance et d’amour"
+        },
+        {
+            "id": 4,
+            "key": "estime",
+            "label": "Besoins d’estime"
+        },
+        {
+            "id": 5,
+            "key": "accomplissement_de_soi",
+            "label": "Besoin d’accomplissement de soi"
+        }
+    ],
+    "reponses": [
+        {
+            "id": 1,
+            "valeur": 0,
+            "label": "non"
+        },
+        {
+            "id": 2,
+            "valeur": 1,
+            "label": "oui"
+        }
+    ],
+    "affirmations": [
+        {
+            "id": 1,
+            "label": "Vous disposez de temps suffisant pour vous reposer entre vos journées de travail.",
+            "besoin": 1
+        },
+        {
+            "id": 2,
+            "label": "Vous pouvez maintenir un rythme de repas régulier malgré vos contraintes professionnelles.",
+            "besoin": 1
+        },
+        {
+            "id": 3,
+            "label": "Votre niveau d'énergie physique reste stable pendant votre semaine de travail.",
+            "besoin": 1
+        },
+        {
+            "id": 4,
+            "label": "Votre environnement de travail vous permet de préserver votre santé.",
+            "besoin": 1
+        },
+        {
+            "id": 5,
+            "label": "Vous avez les ressources matérielles nécessaires pour travailler sereinement.",
+            "besoin": 1
+        },
+        {
+            "id": 6,
+            "label": "Vous vous sentez en sécurité dans votre environnement professionnel.",
+            "besoin": 2
+        },
+        {
+            "id": 7,
+            "label": "Vous percevez votre situation professionnelle comme stable.",
+            "besoin": 2
+        },
+        {
+            "id": 8,
+            "label": "Les règles de votre organisation sont claires et prévisibles pour vous.",
+            "besoin": 2
+        },
+        {
+            "id": 9,
+            "label": "Vous savez vers qui vous tourner en cas de difficulté au travail.",
+            "besoin": 2
+        },
+        {
+            "id": 10,
+            "label": "Vous avez le sentiment que vos droits sont respectés dans votre cadre de travail.",
+            "besoin": 2
+        },
+        {
+            "id": 11,
+            "label": "Vous vous sentez entouré.",
+            "besoin": 3
+        },
+        {
+            "id": 12,
+            "label": "Vous vous sentez intégré à votre équipe.",
+            "besoin": 3
+        },
+        {
+            "id": 13,
+            "label": "Vous pouvez compter sur des relations de confiance au travail.",
+            "besoin": 3
+        },
+        {
+            "id": 14,
+            "label": "Vous ressentez un esprit de solidarité dans votre environnement professionnel.",
+            "besoin": 3
+        },
+        {
+            "id": 15,
+            "label": "Vous avez le sentiment d'appartenir à un collectif qui vous accepte.",
+            "besoin": 3
+        },
+        {
+            "id": 16,
+            "label": "Votre travail est reconnu à sa juste valeur.",
+            "besoin": 4
+        },
+        {
+            "id": 17,
+            "label": "Vous vous sentez respecté dans vos compétences professionnelles.",
+            "besoin": 4
+        },
+        {
+            "id": 18,
+            "label": "Vous êtes fier de la qualité de votre contribution.",
+            "besoin": 4
+        },
+        {
+            "id": 19,
+            "label": "Vous recevez des signes de considération pour vos efforts.",
+            "besoin": 4
+        },
+        {
+            "id": 20,
+            "label": "Vous avez le sentiment de progresser dans votre image professionnelle.",
+            "besoin": 4
+        },
+        {
+            "id": 21,
+            "label": "Vous pouvez exprimer votre potentiel dans votre travail.",
+            "besoin": 5
+        },
+        {
+            "id": 22,
+            "label": "Vous réalisez des activités qui ont du sens pour vous.",
+            "besoin": 5
+        },
+        {
+            "id": 23,
+            "label": "Vous avez des opportunités d'apprendre et de vous développer.",
+            "besoin": 5
+        },
+        {
+            "id": 24,
+            "label": "Vous avez la liberté d'initier des idées qui vous tiennent à cœur.",
+            "besoin": 5
+        },
+        {
+            "id": 25,
+            "label": "Vous avez le sentiment d'avancer vers la personne professionnelle que vous souhaitez devenir.",
+            "besoin": 5
+        }
+    ]
+}

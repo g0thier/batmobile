@@ -1,0 +1,196 @@
+{
+    "nom": "Théorie des attentes",
+    "auteur": "Victor Vroom",
+    "definition": "La motivation dépend de trois facteurs : l’expectation (probabilité perçue que l’effort mène à la performance), l’instrumentalité (probabilité perçue que la performance mène à une récompense) et la valence (valeur accordée à la récompense). Si l’un de ces facteurs est faible, la motivation globale diminue.",
+    "titre": "Attentes",
+    "description": "Ce quiz explore les leviers de motivation.",
+    "facteurs": [
+        {
+            "id": 1,
+            "facteur": "expectancy",
+            "titre": "Expectation",
+            "label": "(Effort -> Performance)",
+            "question": "Pensez-vous que vos efforts vous permettront d’obtenir cela ?",
+            "reponses": [
+                {
+                    "id":1,
+                    "valeur": 0,
+                    "label": "Faux"
+                },
+                {
+                    "id":2,
+                    "valeur": 1,
+                    "label": "Vrai"
+                },
+                {
+                    "id":3,
+                    "valeur": 2,
+                    "label": "Carrément"
+                },
+                {
+                    "id":4,
+                    "valeur": 3,
+                    "label": "Toujours !"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "facteur": "instrumentality",
+            "titre": "Instrumentalité",
+            "label": "(Performance -> Récompense)",
+            "question": "Est-ce valorisé dans votre travail actuel ?",
+            "reponses": [
+                {
+                    "id":1,
+                    "valeur": 0,
+                    "label": "Pas vraiment"
+                },
+                {
+                    "id":2,
+                    "valeur": 1,
+                    "label": "Oui"
+                },
+                {
+                    "id":3,
+                    "valeur": 2,
+                    "label": "Vraiment"
+                },
+                {
+                    "id":4,
+                    "valeur": 3,
+                    "label": "Trés !"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "facteur": "valence",
+            "titre": "Valeur",
+            "label": "(Valeur de la récompense)",
+            "question": "Est-ce important pour vous ?",
+            "reponses": [
+                {
+                    "id":1,
+                    "valeur": 0,
+                    "label": "Non"
+                },
+                {
+                    "id":2,
+                    "valeur": 1,
+                    "label": "Oui"
+                },
+                {
+                    "id":3,
+                    "valeur": 2,
+                    "label": "Vraiment"
+                },
+                {
+                    "id":4,
+                    "valeur": 3,
+                    "label": "Énormément !"
+                }
+            ]
+        }
+    ],
+    "attentes": [
+        {
+            "id": 1,
+            "label": "financier"
+        },
+        {
+            "id": 2,
+            "label": "évolution"
+        },
+        {
+            "id": 3,
+            "label": "reconnaissance"
+        },
+        {
+            "id": 4,
+            "label": "vie pro / vie privée"
+        },
+        {
+            "id": 5,
+            "label": "sens du travail"
+        },
+        {
+            "id": 6,
+            "label": "développement personnel"
+        }
+    ],
+    "affirmations": [
+        {
+            "id": 1,
+            "label": "Obtenir une augmentation de salaire",
+            "image": "src/module/attentes/images/pieces.png",
+            "attente": 1
+        },
+        {
+            "id": 2,
+            "label": "Recevoir un bonus de performance",
+            "image": "src/module/attentes/images/pieces.png",
+            "attente": 1
+        },
+        {
+            "id": 3,
+            "label": "Évoluer vers un poste avec plus de responsabilités",
+            "image": "src/module/attentes/images/evolution.png",
+            "attente": 2
+        },
+        {
+            "id": 4,
+            "label": "Avoir accès à une promotion interne",
+            "image": "src/module/attentes/images/evolution.png",
+            "attente": 2
+        },
+        {
+            "id": 5,
+            "label": "Recevoir des retours positifs réguliers",
+            "image": "src/module/attentes/images/reconnaissance.png",
+            "attente": 3
+        },
+        {
+            "id": 6,
+            "label": "Voir mes résultats reconnus publiquement",
+            "image": "src/module/attentes/images/reconnaissance.png",
+            "attente": 3
+        },
+        {
+            "id": 7,
+            "label": "Avoir des horaires compatibles avec ma vie personnelle",
+            "image": "src/module/attentes/images/vie-pro-vie-privee.png",
+            "attente": 4
+        },
+        {
+            "id": 8,
+            "label": "Pouvoir déconnecter sereinement en dehors du travail",
+            "image": "src/module/attentes/images/vie-pro-vie-privee.png",
+            "attente": 4
+        },
+        {
+            "id": 9,
+            "label": "Contribuer à des projets utiles et alignés avec mes valeurs",
+            "image": "src/module/attentes/images/sens.png",
+            "attente": 5
+        },
+        {
+            "id": 10,
+            "label": "Comprendre l’impact concret de mon travail",
+            "image": "src/module/attentes/images/sens.png",
+            "attente": 5
+        },
+        {
+            "id": 11,
+            "label": "Développer de nouvelles compétences chaque année",
+            "image": "src/module/attentes/images/developpement.png",
+            "attente": 6
+        },
+        {
+            "id": 12,
+            "label": "Suivre des formations qui font progresser ma carrière",
+            "image": "src/module/attentes/images/developpement.png",
+            "attente": 6
+        }
+    ]
+}

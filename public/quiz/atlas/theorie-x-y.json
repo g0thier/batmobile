@@ -1,0 +1,143 @@
+{
+    "nom": "Théorie X et Y",
+    "auteur": "Douglas McGregor",
+    "definition": "La théorie X et Y propose deux visions du management et de la motivation. La théorie X repose sur le contrôle, la direction et la sanction, tandis que la théorie Y valorise le sens, l'autodétermination et la responsabilité.",
+    "titre": "Théorie X-Y",
+    "description": "Cela mesure l'évolution du management vers le leadership de l'équipe.",
+    "themes": [
+        {
+            "id": 1,
+            "label": "Cadre"
+        },
+        {
+            "id": 2,
+            "label": "Dynamique"
+        },
+        {
+            "id": 3,
+            "label": "Autonomie"
+        }
+    ],
+    "reponses": [
+        {
+            "id": 1,
+            "valeur": 0,
+            "label": "contrainte"
+        },
+        {
+            "id": 2,
+            "valeur": 1,
+            "label": "engagement"
+        }
+    ],
+    "affirmations": [
+        {
+            "id": 1,
+            "theme": 1,
+            "x": "Le cadre est imposé par la hiérarchie.",
+            "y": "Le cadre est co-construit avec l'équipe."
+        },
+        {
+            "id": 2,
+            "theme": 1,
+            "x": "Le respect des règles dépend du contrôle.",
+            "y": "Le respect des règles repose sur l'adhésion."
+        },
+        {
+            "id": 3,
+            "theme": 1,
+            "x": "Les objectifs sont fixés de manière descendante.",
+            "y": "Les objectifs sont partagés et discutés."
+        },
+        {
+            "id": 4,
+            "theme": 1,
+            "x": "La performance repose sur la discipline.",
+            "y": "La performance repose sur la compréhension du but."
+        },
+        {
+            "id": 5,
+            "theme": 1,
+            "x": "La sanction est appliquée en cas d'écart.",
+            "y": "L'accompagnement est privilégié en cas d'écart."
+        },
+        {
+            "id": 6,
+            "theme": 1,
+            "x": "Le manager dirige l'exécution.",
+            "y": "Le manager donne une direction et soutient l'équipe."
+        },
+        {
+            "id": 7,
+            "theme": 2,
+            "x": "Les collaborateurs agissent sous pression.",
+            "y": "Les collaborateurs agissent par implication."
+        },
+        {
+            "id": 8,
+            "theme": 2,
+            "x": "L'effort est obtenu par la surveillance.",
+            "y": "L'effort vient de l'utilité perçue du travail."
+        },
+        {
+            "id": 9,
+            "theme": 2,
+            "x": "La motivation vient de la contrainte externe.",
+            "y": "La motivation vient de l'engagement personnel."
+        },
+        {
+            "id": 10,
+            "theme": 2,
+            "x": "L'initiative est validée avant action.",
+            "y": "L'initiative est encouragée dans un cadre clair."
+        },
+        {
+            "id": 11,
+            "theme": 2,
+            "x": "Les erreurs sont corrigées par reprise en main.",
+            "y": "Les erreurs deviennent des occasions d'apprentissage."
+        },
+        {
+            "id": 12,
+            "theme": 2,
+            "x": "Le collectif avance quand chacun suit les consignes.",
+            "y": "Le collectif avance quand chacun comprend sa contribution."
+        },
+        {
+            "id": 13,
+            "theme": 3,
+            "x": "Les décisions restent centralisées.",
+            "y": "Les décisions sont partagées selon les responsabilités."
+        },
+        {
+            "id": 14,
+            "theme": 3,
+            "x": "La responsabilité est attribuée par la hiérarchie.",
+            "y": "La responsabilité est prise par les personnes concernées."
+        },
+        {
+            "id": 15,
+            "theme": 3,
+            "x": "L'autonomie augmente le risque de désalignement.",
+            "y": "L'autonomie renforce l'engagement avec des attentes explicites."
+        },
+        {
+            "id": 16,
+            "theme": 3,
+            "x": "Le manager décide de la méthode.",
+            "y": "Le manager laisse le choix de la méthode."
+        },
+        {
+            "id": 17,
+            "theme": 3,
+            "x": "La confiance se construit après l'obéissance.",
+            "y": "La confiance se construit par la responsabilisation."
+        },
+        {
+            "id": 18,
+            "theme": 3,
+            "x": "Le travail est encadré en détail.",
+            "y": "Le travail est piloté par des repères partagés."
+        }
+    ]
+}

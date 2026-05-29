@@ -1,0 +1,187 @@
+{
+    "nom": "Théorie du mimétisme",
+    "auteur": "René Girard",
+    "definition": "Le désir mimétique, signifie que nous désirons un objet parce qu’un modèle le désire, formant une relation triangulaire entre sujet, modèle et objet. Ce n’est donc pas l’objet en lui-même qui attire, mais le regard et le désir de l’autre qui lui donnent sa valeur.",
+    "titre": "Mimétisme",
+    "description": "Ce quiz met en valeur les aspirations du collaborateur par le biais de modèles de réussite pour comprendre ses leviers de motivation.",
+    "modèles": [
+        {
+            "id": 1,
+            "personnage": "Jeff Besos",
+            "portrait": "src/module/mimetisme/image/jeff-besos.png",
+            "inspiration": 1
+        },
+        {
+            "id": 2,
+            "personnage": "Warren Buffett",
+            "portrait": "src/module/mimetisme/image/warren-buffett.png",
+            "inspiration": 1
+        },
+        {
+            "id": 3,
+            "personnage": "Oprah Winfrey",
+            "portrait": "src/module/mimetisme/image/oprah-winfrey.png",
+            "inspiration": 1
+        },
+        {
+            "id": 4,
+            "personnage": "Meryl Streep",
+            "portrait": "src/module/mimetisme/image/meryl-streep.png",
+            "inspiration": 2
+        },
+        {
+            "id": 5,
+            "personnage": "Cristiano Ronaldo",
+            "portrait": "src/module/mimetisme/image/cristiano-ronaldo.png",
+            "inspiration": 2
+        },
+        {
+            "id": 6,
+            "personnage": "Rihanna",
+            "portrait": "src/module/mimetisme/image/rihanna.png",
+            "inspiration": 2
+        },
+        {
+            "id": 7,
+            "personnage": "Angela Merkel",
+            "portrait": "src/module/mimetisme/image/angela-merkel.png",
+            "inspiration": 3
+        },
+        {
+            "id": 8,
+            "personnage": "Nelson Mandela",
+            "portrait": "src/module/mimetisme/image/nelson-mandela.png",
+            "inspiration": 3
+        },
+        {
+            "id": 9,
+            "personnage": "Kamala Harris",
+            "portrait": "src/module/mimetisme/image/kamala-harris.png",
+            "inspiration": 3
+        },
+        {
+            "id": 10,
+            "personnage": "Ryan Gosling",
+            "portrait": "src/module/mimetisme/image/ryan-gosling.png",
+            "inspiration": 4
+        },
+        {
+            "id": 11,
+            "personnage": "Emma Stone",
+            "portrait": "src/module/mimetisme/image/emma-stone.png",
+            "inspiration": 4
+        },
+        {
+            "id": 12,
+            "personnage": "Keanu Reeves",
+            "portrait": "src/module/mimetisme/image/keanu-reeves.png",
+            "inspiration": 4
+        },
+        {
+            "id": 13,
+            "personnage": "Marie Curie",
+            "portrait": "src/module/mimetisme/image/marie-curie.png",
+            "inspiration": 5
+        },
+        {
+            "id": 14,
+            "personnage": "Yann LeCun",
+            "portrait": "src/module/mimetisme/image/yann-lecun.png",
+            "inspiration": 5
+        },
+        {
+            "id": 15,
+            "personnage": "Emmanuelle Charpentier",
+            "portrait": "src/module/mimetisme/image/emmanuelle-charpentier.png",
+            "inspiration": 5
+        },
+        {
+            "id": 16,
+            "personnage": "Rosa Parks",
+            "portrait": "src/module/mimetisme/image/rosa-parks.png",
+            "inspiration": 6
+        },
+        {
+            "id": 17,
+            "personnage": "Edward Snowden",
+            "portrait": "src/module/mimetisme/image/edward-snowden.png",
+            "inspiration": 6
+        },
+        {
+            "id": 18,
+            "personnage": "Dalai Lama",
+            "portrait": "src/module/mimetisme/image/dalai-lama.png",
+            "inspiration": 6
+        },
+        {
+            "id": 19,
+            "personnage": "Nadia Murad",
+            "portrait": "src/module/mimetisme/image/nadia-murad.png",
+            "inspiration": 7
+        },
+        {
+            "id": 20,
+            "personnage": "Denis Mukwege",
+            "portrait": "src/module/mimetisme/image/denis-mukwege.png",
+            "inspiration": 7
+        },
+        {
+            "id": 21,
+            "personnage": "Greta Thunberg",
+            "portrait": "src/module/mimetisme/image/greta-thunberg.png",
+            "inspiration": 7
+        },
+        {
+            "id": 22,
+            "personnage": "Hayao Miyazaki",
+            "portrait": "src/module/mimetisme/image/hayao-miyazaki.png",
+            "inspiration": 8
+        },
+        {
+            "id": 23,
+            "personnage": "Zaha Hadid",
+            "portrait": "src/module/mimetisme/image/zaha-hadid.png",
+            "inspiration": 8
+        },
+        {
+            "id": 24,
+            "personnage": "David Bowie",
+            "portrait": "src/module/mimetisme/image/david-bowie.png",
+            "inspiration": 8
+        }
+    ],
+    "inspiration": [
+        {
+            "id": 1,
+            "label": "Argent"
+        },
+        {
+            "id": 2,
+            "label": "Gloire"
+        },
+        {
+            "id": 3,
+            "label": "Pouvoir"
+        },
+        {
+            "id": 4,
+            "label": "Amour"
+        },
+        {
+            "id": 5,
+            "label": "Connaissance"
+        },
+        {
+            "id": 6,
+            "label": "Liberté"
+        },
+        {
+            "id": 7,
+            "label": "Justice"
+        },
+        {
+            "id": 8,
+            "label": "Créativité"
+        }
+    ]
+}

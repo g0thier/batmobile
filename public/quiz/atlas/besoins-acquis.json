@@ -1,0 +1,138 @@
+{
+    "nom": "Théorie des besoins acquis",
+    "auteur": "David McClelland",
+    "definition": "La motivation au travail repose principalement sur trois besoins acquis : le besoin d'accomplissement (nAch), le besoin de pouvoir (nPow) et le besoin d'affiliation (nAff). Chaque personne présente une combinaison propre de ces besoins, qui influence ses préférences et ses comportements professionnels.",
+    "titre": "Besoins acquis",
+    "description": "Ce quiz identifie vos leviers de motivation dominants selon la théorie de McClelland.",
+    "besoins": [
+        {
+            "id": 1,
+            "key": "nAch",
+            "label": "Besoin d'accomplissement"
+        },
+        {
+            "id": 2,
+            "key": "nPow",
+            "label": "Besoin de pouvoir"
+        },
+        {
+            "id": 3,
+            "key": "nAff",
+            "label": "Besoin d'affiliation"
+        }
+    ],
+    "reponses": [
+        {
+            "id": 1,
+            "valeur": -2,
+            "label": "pas du tout"
+        },
+        {
+            "id": 2,
+            "valeur": -1,
+            "label": "non"
+        },
+        {
+            "id": 3,
+            "valeur": 1,
+            "label": "oui"
+        },
+        {
+            "id": 4,
+            "valeur": 2,
+            "label": "carrément"
+        }
+    ],
+    "questions": [
+        {
+            "id": 1,
+            "label": "Aimez-vous vous fixer des objectifs ambitieux et mesurables ?",
+            "besoin": 1
+        },
+        {
+            "id": 2,
+            "label": "Préférez-vous des missions où votre performance peut être clairement évaluée ?",
+            "besoin": 1
+        },
+        {
+            "id": 3,
+            "label": "Ressentez-vous de la satisfaction quand vous dépassez un objectif difficile ?",
+            "besoin": 1
+        },
+        {
+            "id": 4,
+            "label": "Le feedback sur votre travail est-il important pour vous ?",
+            "besoin": 1
+        },
+        {
+            "id": 5,
+            "label": "Cherchez-vous régulièrement à améliorer vos méthodes pour être plus efficace ?",
+            "besoin": 1
+        },
+        {
+            "id": 6,
+            "label": "Préféreriez-vous un projet stimulant à un projet facile mais peu valorisant ?",
+            "besoin": 1
+        },
+        {
+            "id": 7,
+            "label": "Aimez-vous influencer les décisions dans votre équipe ?",
+            "besoin": 2
+        },
+        {
+            "id": 8,
+            "label": "Prenez-vous naturellement l'initiative pour orienter un groupe ?",
+            "besoin": 2
+        },
+        {
+            "id": 9,
+            "label": "Le fait d'avoir un impact visible sur l'organisation est-il important pour vous ?",
+            "besoin": 2
+        },
+        {
+            "id": 10,
+            "label": "Vous sentez-vous à l'aise pour défendre une position face à des interlocuteurs expérimentés ?",
+            "besoin": 2
+        },
+        {
+            "id": 11,
+            "label": "Recherchez-vous des rôles avec davantage de responsabilités décisionnelles ?",
+            "besoin": 2
+        },
+        {
+            "id": 12,
+            "label": "Avez-vous envie d'être reconnu comme une personne influente dans votre domaine ?",
+            "besoin": 2
+        },
+        {
+            "id": 13,
+            "label": "Le climat relationnel de votre équipe est-il essentiel à votre motivation ?",
+            "besoin": 3
+        },
+        {
+            "id": 14,
+            "label": "Préférez-vous collaborer plutôt que travailler seul sur la plupart des missions ?",
+            "besoin": 3
+        },
+        {
+            "id": 15,
+            "label": "Ressentez-vous le besoin de créer des liens de confiance durables au travail ?",
+            "besoin": 3
+        },
+        {
+            "id": 16,
+            "label": "Évitez-vous les situations de conflit pour préserver l'harmonie du groupe ?",
+            "besoin": 3
+        },
+        {
+            "id": 17,
+            "label": "Appréciez-vous les environnements où l'entraide est valorisée ?",
+            "besoin": 3
+        },
+        {
+            "id": 18,
+            "label": "Le sentiment d'appartenance à une équipe est-il important pour vous ?",
+            "besoin": 3
+        }
+    ]
+}

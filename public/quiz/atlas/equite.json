@@ -1,0 +1,263 @@
+{
+    "nom": "Théorie de l'équité",
+    "auteur": "John Stacey Adams",
+    "definition": "La théorie de l'équité repose sur la comparaison entre les contributions fournies et les rétributions reçues. La perception d'un déséquilibre peut réduire l'engagement et la motivation.",
+    "titre": "Équité",
+    "description": "Ce module explore la perception d'équité entre contributions et rétributions.",
+    "themes": [
+        {
+            "id": 1,
+            "label": "Engagement"
+        },
+        {
+            "id": 2,
+            "label": "Expertise"
+        },
+        {
+            "id": 3,
+            "label": "Responsabilité"
+        },
+        {
+            "id": 4,
+            "label": "Reconnaissance"
+        },
+        {
+            "id": 5,
+            "label": "Évolution"
+        },
+        {
+            "id": 6,
+            "label": "Conditions de travail"
+        }
+    ],
+    "reponses": [
+        {
+            "id": 1,
+            "valeur": 0,
+            "label": "contributions"
+        },
+        {
+            "id": 2,
+            "valeur": 1,
+            "label": "retributions"
+        }
+    ],
+    "oppositions": [
+        {
+            "id": 1,
+            "theme": 1,
+            "contribution": {
+                "label": "Effort",
+                "image": "src/module/equite/images/effort.png"
+            },
+            "retribution": {
+                "label": "Salaire",
+                "image": "src/module/equite/images/salaire.png"
+            }
+        },
+        {
+            "id": 2,
+            "theme": 1,
+            "contribution": {
+                "label": "Temps",
+                "image": "src/module/equite/images/temps.png"
+            },
+            "retribution": {
+                "label": "Prime",
+                "image": "src/module/equite/images/prime.png"
+            }
+        },
+        {
+            "id": 3,
+            "theme": 1,
+            "contribution": {
+                "label": "Disponibilité",
+                "image": "src/module/equite/images/disponibilite.png"
+            },
+            "retribution": {
+                "label": "Flexibilité",
+                "image": "src/module/equite/images/flexibilite.png"
+            }
+        },
+        {
+            "id": 4,
+            "theme": 2,
+            "contribution": {
+                "label": "Compétences",
+                "image": "src/module/equite/images/competences.png"
+            },
+            "retribution": {
+                "label": "Avantages",
+                "image": "src/module/equite/images/avantages.png"
+            }
+        },
+        {
+            "id": 5,
+            "theme": 2,
+            "contribution": {
+                "label": "Expérience",
+                "image": "src/module/equite/images/experience.png"
+            },
+            "retribution": {
+                "label": "Rémunération",
+                "image": "src/module/equite/images/remuneration.png"
+            }
+        },
+        {
+            "id": 6,
+            "theme": 2,
+            "contribution": {
+                "label": "Polyvalence",
+                "image": "src/module/equite/images/polyvalence.png"
+            },
+            "retribution": {
+                "label": "Bonus",
+                "image": "src/module/equite/images/bonus.png"
+            }
+        },
+        {
+            "id": 7,
+            "theme": 3,
+            "contribution": {
+                "label": "Responsabilité",
+                "image": "src/module/equite/images/responsabilite.png"
+            },
+            "retribution": {
+                "label": "Statut",
+                "image": "src/module/equite/images/statut.png"
+            }
+        },
+        {
+            "id": 8,
+            "theme": 3,
+            "contribution": {
+                "label": "Initiative",
+                "image": "src/module/equite/images/initiative.png"
+            },
+            "retribution": {
+                "label": "Reconnaissance",
+                "image": "src/module/equite/images/reconnaissance.png"
+            }
+        },
+        {
+            "id": 9,
+            "theme": 3,
+            "contribution": {
+                "label": "Fiabilité",
+                "image": "src/module/equite/images/fiabilite.png"
+            },
+            "retribution": {
+                "label": "Confiance",
+                "image": "src/module/equite/images/confiance.png"
+            }
+        },
+        {
+            "id": 10,
+            "theme": 4,
+            "contribution": {
+                "label": "Performance",
+                "image": "src/module/equite/images/performance.png"
+            },
+            "retribution": {
+                "label": "Promotion",
+                "image": "src/module/equite/images/promotion.png"
+            }
+        },
+        {
+            "id": 11,
+            "theme": 4,
+            "contribution": {
+                "label": "Résultats",
+                "image": "src/module/equite/images/resultats.png"
+            },
+            "retribution": {
+                "label": "Gratification",
+                "image": "src/module/equite/images/gratification.png"
+            }
+        },
+        {
+            "id": 12,
+            "theme": 4,
+            "contribution": {
+                "label": "Implication",
+                "image": "src/module/equite/images/implication.png"
+            },
+            "retribution": {
+                "label": "Visibilité",
+                "image": "src/module/equite/images/visibilite.png"
+            }
+        },
+        {
+            "id": 13,
+            "theme": 5,
+            "contribution": {
+                "label": "Apprentissage",
+                "image": "src/module/equite/images/apprentissage.png"
+            },
+            "retribution": {
+                "label": "Formation",
+                "image": "src/module/equite/images/formation.png"
+            }
+        },
+        {
+            "id": 14,
+            "theme": 5,
+            "contribution": {
+                "label": "Adaptabilité",
+                "image": "src/module/equite/images/adaptabilite.png"
+            },
+            "retribution": {
+                "label": "Opportunités",
+                "image": "src/module/equite/images/opportunites.png"
+            }
+        },
+        {
+            "id": 15,
+            "theme": 5,
+            "contribution": {
+                "label": "Leadership",
+                "image": "src/module/equite/images/leadership.png"
+            },
+            "retribution": {
+                "label": "Autonomie",
+                "image": "src/module/equite/images/autonomie.png"
+            }
+        },
+        {
+            "id": 16,
+            "theme": 6,
+            "contribution": {
+                "label": "Assiduité",
+                "image": "src/module/equite/images/assiduite.png"
+            },
+            "retribution": {
+                "label": "Télétravail",
+                "image": "src/module/equite/images/teletravail.png"
+            }
+        },
+        {
+            "id": 17,
+            "theme": 6,
+            "contribution": {
+                "label": "Coopération",
+                "image": "src/module/equite/images/cooperation.png"
+            },
+            "retribution": {
+                "label": "Ambiance",
+                "image": "src/module/equite/images/ambiance.png"
+            }
+        },
+        {
+            "id": 18,
+            "theme": 6,
+            "contribution": {
+                "label": "Charge",
+                "image": "src/module/equite/images/charge.png"
+            },
+            "retribution": {
+                "label": "Équilibre",
+                "image": "src/module/equite/images/equilibre.png"
+            }
+        }
+    ]
+}

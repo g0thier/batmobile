@@ -1,0 +1,125 @@
+{
+    "nom": "Théorie de l'autodétermination",
+    "auteur": "Edward Deci",
+    "definition": "La théorie de l'autodétermination distingue la motivation extrinsèque, orientée vers des récompenses externes, et la motivation intrinsèque, orientée vers l'intérêt et le plaisir de l'activité. Elle s'appuie notamment sur trois besoins psychologiques fondamentaux : l'autonomie, la compétence et l'affiliation.",
+    "titre": "Autodétermination",
+    "description": "Ce module identifie, par thème, si vos choix sont plutôt guidés par une motivation extrinsèque ou intrinsèque.",
+    "themes": [
+        {
+            "id": 1,
+            "label": "Autonomie"
+        },
+        {
+            "id": 2,
+            "label": "Compétence"
+        },
+        {
+            "id": 3,
+            "label": "Affiliation"
+        }
+    ],
+    "reponses": [
+        {
+            "id": 1,
+            "valeur": 0,
+            "label": "extrinseque"
+        },
+        {
+            "id": 2,
+            "valeur": 1,
+            "label": "intrinseque"
+        }
+    ],
+    "affirmations": [
+        {
+            "id": 1,
+            "theme": 1,
+            "extrinseque": "Vous choisissez une mission pour la prime associée.",
+            "intrinseque": "Vous choisissez une mission parce qu'elle vous intéresse."
+        },
+        {
+            "id": 2,
+            "theme": 1,
+            "extrinseque": "Vous suivez une méthode parce qu'on vous l'impose.",
+            "intrinseque": "Vous adaptez votre méthode parce que cela vous semble plus pertinent."
+        },
+        {
+            "id": 3,
+            "theme": 1,
+            "extrinseque": "Vous proposez des idées pour être mieux évalué.",
+            "intrinseque": "Vous proposez des idées parce que vous aimez améliorer les choses."
+        },
+        {
+            "id": 4,
+            "theme": 1,
+            "extrinseque": "Vous prenez des initiatives pour obtenir plus de visibilité.",
+            "intrinseque": "Vous prenez des initiatives parce que vous aimez agir avec liberté."
+        },
+        {
+            "id": 5,
+            "theme": 1,
+            "extrinseque": "Vous organisez votre travail pour répondre aux attentes hiérarchiques.",
+            "intrinseque": "Vous organisez votre travail selon la manière qui vous convient le mieux."
+        },
+        {
+            "id": 6,
+            "theme": 2,
+            "extrinseque": "Apprendre pour progresser dans mon entreprise.",
+            "intrinseque": "Apprendre par curiosité."
+        },
+        {
+            "id": 7,
+            "theme": 2,
+            "extrinseque": "Vous développez vos compétences pour obtenir une promotion.",
+            "intrinseque": "Vous développez vos compétences parce que progresser vous stimule."
+        },
+        {
+            "id": 8,
+            "theme": 2,
+            "extrinseque": "Vous cherchez à réussir une tâche pour éviter les critiques.",
+            "intrinseque": "Vous cherchez à réussir une tâche pour le plaisir de relever le défi."
+        },
+        {
+            "id": 9,
+            "theme": 2,
+            "extrinseque": "Vous suivez une formation pour valoriser votre CV.",
+            "intrinseque": "Vous suivez une formation parce que le sujet vous passionne."
+        },
+        {
+            "id": 10,
+            "theme": 2,
+            "extrinseque": "Vous mesurez vos progrès pour atteindre les objectifs fixés.",
+            "intrinseque": "Vous mesurez vos progrès pour comprendre comment vous améliorer."
+        },
+        {
+            "id": 11,
+            "theme": 3,
+            "extrinseque": "Vous participez à un projet d'équipe pour être bien perçu.",
+            "intrinseque": "Vous participez à un projet d'équipe parce que vous aimez coopérer."
+        },
+        {
+            "id": 12,
+            "theme": 3,
+            "extrinseque": "Vous entretenez vos relations professionnelles pour élargir votre réseau.",
+            "intrinseque": "Vous entretenez vos relations professionnelles parce que les liens humains comptent pour vous."
+        },
+        {
+            "id": 13,
+            "theme": 3,
+            "extrinseque": "Vous aidez un collègue pour renforcer votre image.",
+            "intrinseque": "Vous aidez un collègue parce que vous appréciez l'entraide."
+        },
+        {
+            "id": 14,
+            "theme": 3,
+            "extrinseque": "Vous vous impliquez dans la vie d'équipe pour être reconnu par le groupe.",
+            "intrinseque": "Vous vous impliquez dans la vie d'équipe parce que vous aimez créer du lien."
+        },
+        {
+            "id": 15,
+            "theme": 3,
+            "extrinseque": "Vous cherchez des retours positifs pour valider votre place dans l'équipe.",
+            "intrinseque": "Vous cherchez des retours positifs pour nourrir une relation de confiance."
+        }
+    ]
+}

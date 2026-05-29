@@ -1,0 +1,407 @@
+{
+    "nom": "Identité professionnelle",
+    "auteur": "Claude Dubar",
+    "definition": "L’identité professionnelle se construit dans l’articulation entre l’identité pour soi et l’identité pour autrui. Elle évolue à travers les expériences, les interactions et la reconnaissance au travail.",
+    "titre": "Identité Pro",
+    "description": "Ce module décrit des traits d’identité professionnelle selon deux dimensions: identité de soi et identité perçue au travail avec pour objectif l'alignement des deux.",
+    "dimensions_identite": [
+        {
+            "id": 1,
+            "key": "identite_de_soi",
+            "label": "Je me sens..."
+        },
+        {
+            "id": 2,
+            "key": "identite_percue",
+            "label": "Au travail, je suis perçu comme..."
+        }
+    ],
+    "themes": [
+        {
+            "id": 1,
+            "label": "Intellect & réflexion"
+        },
+        {
+            "id": 2,
+            "label": "Confiance"
+        },
+        {
+            "id": 3,
+            "label": "Relations & social"
+        },
+        {
+            "id": 4,
+            "label": "Émotions & sensibilité"
+        },
+        {
+            "id": 5,
+            "label": "Dynamisme & action"
+        },
+        {
+            "id": 6,
+            "label": "Identité & singularité"
+        }
+    ],
+    "traits": [
+        {
+            "id": 1,
+            "label": "Intelligent",
+            "image": "src/module/identite-pro/images/intelligent.png",
+            "theme": 1
+        },
+        {
+            "id": 2,
+            "label": "Réfléchi",
+            "image": "src/module/identite-pro/images/reflechi.png",
+            "theme": 1
+        },
+        {
+            "id": 3,
+            "label": "Analytique",
+            "image": "src/module/identite-pro/images/analytique.png",
+            "theme": 1
+        },
+        {
+            "id": 4,
+            "label": "Curieux",
+            "image": "src/module/identite-pro/images/curieux.png",
+            "theme": 1
+        },
+        {
+            "id": 5,
+            "label": "Créatif",
+            "image": "src/module/identite-pro/images/creatif.png",
+            "theme": 1
+        },
+        {
+            "id": 6,
+            "label": "Logique",
+            "image": "src/module/identite-pro/images/logique.png",
+            "theme": 1
+        },
+        {
+            "id": 7,
+            "label": "Ingénieux",
+            "image": "src/module/identite-pro/images/ingenieux.png",
+            "theme": 1
+        },
+        {
+            "id": 8,
+            "label": "Observateur",
+            "image": "src/module/identite-pro/images/observateur.png",
+            "theme": 1
+        },
+        {
+            "id": 9,
+            "label": "Cultivé",
+            "image": "src/module/identite-pro/images/cultive.png",
+            "theme": 1
+        },
+        {
+            "id": 10,
+            "label": "Visionnaire",
+            "image": "src/module/identite-pro/images/visionnaire.png",
+            "theme": 1
+        },
+        {
+            "id": 11,
+            "label": "Confiant",
+            "image": "src/module/identite-pro/images/confiant.png",
+            "theme": 2
+        },
+        {
+            "id": 12,
+            "label": "Assuré",
+            "image": "src/module/identite-pro/images/assure.png",
+            "theme": 2
+        },
+        {
+            "id": 13,
+            "label": "Déterminé",
+            "image": "src/module/identite-pro/images/determine.png",
+            "theme": 2
+        },
+        {
+            "id": 14,
+            "label": "Courageux",
+            "image": "src/module/identite-pro/images/courageux.png",
+            "theme": 2
+        },
+        {
+            "id": 15,
+            "label": "Résilient",
+            "image": "src/module/identite-pro/images/resilient.png",
+            "theme": 2
+        },
+        {
+            "id": 16,
+            "label": "Ambitieux",
+            "image": "src/module/identite-pro/images/ambitieux.png",
+            "theme": 2
+        },
+        {
+            "id": 17,
+            "label": "Audacieux",
+            "image": "src/module/identite-pro/images/audacieux.png",
+            "theme": 2
+        },
+        {
+            "id": 18,
+            "label": "Indépendant",
+            "image": "src/module/identite-pro/images/independant.png",
+            "theme": 2
+        },
+        {
+            "id": 19,
+            "label": "Persévérant",
+            "image": "src/module/identite-pro/images/perseverant.png",
+            "theme": 2
+        },
+        {
+            "id": 20,
+            "label": "Fier",
+            "image": "src/module/identite-pro/images/fier.png",
+            "theme": 2
+        },
+        {
+            "id": 21,
+            "label": "Sociable",
+            "image": "src/module/identite-pro/images/sociable.png",
+            "theme": 3
+        },
+        {
+            "id": 22,
+            "label": "Empathique",
+            "image": "src/module/identite-pro/images/empathique.png",
+            "theme": 3
+        },
+        {
+            "id": 23,
+            "label": "Chaleureux",
+            "image": "src/module/identite-pro/images/chaleureux.png",
+            "theme": 3
+        },
+        {
+            "id": 24,
+            "label": "Bienveillant",
+            "image": "src/module/identite-pro/images/bienveillant.png",
+            "theme": 3
+        },
+        {
+            "id": 25,
+            "label": "Ouvert",
+            "image": "src/module/identite-pro/images/ouvert.png",
+            "theme": 3
+        },
+        {
+            "id": 26,
+            "label": "Amical",
+            "image": "src/module/identite-pro/images/amical.png",
+            "theme": 3
+        },
+        {
+            "id": 27,
+            "label": "À l’écoute",
+            "image": "src/module/identite-pro/images/a-l-ecoute.png",
+            "theme": 3
+        },
+        {
+            "id": 28,
+            "label": "Diplomate",
+            "image": "src/module/identite-pro/images/diplomate.png",
+            "theme": 3
+        },
+        {
+            "id": 29,
+            "label": "Charismatique",
+            "image": "src/module/identite-pro/images/charismatique.png",
+            "theme": 3
+        },
+        {
+            "id": 30,
+            "label": "Généreux",
+            "image": "src/module/identite-pro/images/genereux.png",
+            "theme": 3
+        },
+        {
+            "id": 31,
+            "label": "Sensible",
+            "image": "src/module/identite-pro/images/sensible.png",
+            "theme": 4
+        },
+        {
+            "id": 32,
+            "label": "Émotif",
+            "image": "src/module/identite-pro/images/emotif.png",
+            "theme": 4
+        },
+        {
+            "id": 33,
+            "label": "Calme",
+            "image": "src/module/identite-pro/images/calme.png",
+            "theme": 4
+        },
+        {
+            "id": 34,
+            "label": "Posé",
+            "image": "src/module/identite-pro/images/pose.png",
+            "theme": 4
+        },
+        {
+            "id": 35,
+            "label": "Introspectif",
+            "image": "src/module/identite-pro/images/introspectif.png",
+            "theme": 4
+        },
+        {
+            "id": 36,
+            "label": "Passionné",
+            "image": "src/module/identite-pro/images/passionne.png",
+            "theme": 4
+        },
+        {
+            "id": 37,
+            "label": "Authentique",
+            "image": "src/module/identite-pro/images/authentique.png",
+            "theme": 4
+        },
+        {
+            "id": 38,
+            "label": "Vulnérable",
+            "image": "src/module/identite-pro/images/vulnerable.png",
+            "theme": 4
+        },
+        {
+            "id": 39,
+            "label": "Serein",
+            "image": "src/module/identite-pro/images/serein.png",
+            "theme": 4
+        },
+        {
+            "id": 40,
+            "label": "Profond",
+            "image": "src/module/identite-pro/images/profond.png",
+            "theme": 4
+        },
+        {
+            "id": 41,
+            "label": "Dynamique",
+            "image": "src/module/identite-pro/images/dynamique.png",
+            "theme": 5
+        },
+        {
+            "id": 42,
+            "label": "Énergique",
+            "image": "src/module/identite-pro/images/energique.png",
+            "theme": 5
+        },
+        {
+            "id": 43,
+            "label": "Motivé",
+            "image": "src/module/identite-pro/images/motive.png",
+            "theme": 5
+        },
+        {
+            "id": 44,
+            "label": "Actif",
+            "image": "src/module/identite-pro/images/actif.png",
+            "theme": 5
+        },
+        {
+            "id": 45,
+            "label": "Enthousiaste",
+            "image": "src/module/identite-pro/images/enthousiaste.png",
+            "theme": 5
+        },
+        {
+            "id": 46,
+            "label": "Proactif",
+            "image": "src/module/identite-pro/images/proactif.png",
+            "theme": 5
+        },
+        {
+            "id": 47,
+            "label": "Rapide",
+            "image": "src/module/identite-pro/images/rapide.png",
+            "theme": 5
+        },
+        {
+            "id": 48,
+            "label": "Efficace",
+            "image": "src/module/identite-pro/images/efficace.png",
+            "theme": 5
+        },
+        {
+            "id": 49,
+            "label": "Entreprenant",
+            "image": "src/module/identite-pro/images/entreprenant.png",
+            "theme": 5
+        },
+        {
+            "id": 50,
+            "label": "Productif",
+            "image": "src/module/identite-pro/images/productif.png",
+            "theme": 5
+        },
+        {
+            "id": 51,
+            "label": "Unique",
+            "image": "src/module/identite-pro/images/unique.png",
+            "theme": 6
+        },
+        {
+            "id": 52,
+            "label": "Original",
+            "image": "src/module/identite-pro/images/original.png",
+            "theme": 6
+        },
+        {
+            "id": 53,
+            "label": "Authentique",
+            "image": "src/module/identite-pro/images/authentique.png",
+            "theme": 6
+        },
+        {
+            "id": 54,
+            "label": "Excentrique",
+            "image": "src/module/identite-pro/images/excentrique.png",
+            "theme": 6
+        },
+        {
+            "id": 55,
+            "label": "Complexe",
+            "image": "src/module/identite-pro/images/complexe.png",
+            "theme": 6
+        },
+        {
+            "id": 56,
+            "label": "Mystérieux",
+            "image": "src/module/identite-pro/images/mysterieux.png",
+            "theme": 6
+        },
+        {
+            "id": 57,
+            "label": "Libre",
+            "image": "src/module/identite-pro/images/libre.png",
+            "theme": 6
+        },
+        {
+            "id": 58,
+            "label": "Rebelle",
+            "image": "src/module/identite-pro/images/rebelle.png",
+            "theme": 6
+        },
+        {
+            "id": 59,
+            "label": "Évolutif",
+            "image": "src/module/identite-pro/images/evolutif.png",
+            "theme": 6
+        },
+        {
+            "id": 60,
+            "label": "Inclassable",
+            "image": "src/module/identite-pro/images/inclassable.png",
+            "theme": 6
+        }
+    ]
+}
