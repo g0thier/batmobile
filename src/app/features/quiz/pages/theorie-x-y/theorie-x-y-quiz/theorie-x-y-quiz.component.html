@@ -1,1 +1,64 @@
-<p>theorie-x-y-quiz works!</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Théorie X-Y</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="theorie-xy-page">
+    @if (isLoading) {
+      <div class="state-row">
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>Chargement des affirmations...</span>
+      </div>
+    } @else {
+      @if (errorMessage) {
+        <ion-text color="danger" class="state-error">{{ errorMessage }}</ion-text>
+      }
+
+      @if (affirmation; as currentAffirmation) {
+        <p class="progress-label">Question {{ answeredCount + 1 }} / {{ totalCount }}</p>
+
+        <h2>Dans l'équipe,</h2>
+        <ion-card
+          class="choice-card"
+          [class.is-disabled]="isSubmitting"
+          role="button"
+          tabindex="0"
+          (click)="onChoiceTap(1)"
+          (keydown)="onChoiceKeyDown($event, 1)"
+        >
+          <ion-card-content>
+            <p>{{ currentAffirmation.x }}</p>
+          </ion-card-content>
+        </ion-card>
+
+        <h2 class="choice-separator">ou</h2>
+        <ion-card
+          class="choice-card"
+          [class.is-disabled]="isSubmitting"
+          role="button"
+          tabindex="0"
+          (click)="onChoiceTap(2)"
+          (keydown)="onChoiceKeyDown($event, 2)"
+        >
+          <ion-card-content>
+            <p>{{ currentAffirmation.y }}</p>
+          </ion-card-content>
+        </ion-card>
+
+        @if (isSubmitting) {
+          <div class="state-row">
+            <ion-spinner name="crescent"></ion-spinner>
+            <span>Enregistrement en cours...</span>
+          </div>
+        }
+      } @else {
+        <div class="state-row">
+          <ion-spinner name="crescent"></ion-spinner>
+          <span>Préparation de la prochaine session...</span>
+        </div>
+      }
+    }
+  </div>
+</ion-content>

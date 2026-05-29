@@ -24,6 +24,11 @@ interface NormalizedUserQuizSession extends UserQuizSessionViewModel {
   selectedGuestIds: string[];
 }
 
+interface UserResponseMeta {
+  status: string;
+  updatedAt: string;
+}
+
 const QUIZ_SESSIONS_LOAD_ERROR = 'Impossible de charger les quiz pour le moment.';
 
 const EMPTY_STATE: UserQuizSessionsState = {
@@ -115,6 +120,19 @@ const toPublicSessionModel = ({
   ...session
 }: NormalizedUserQuizSession): UserQuizSessionViewModel => session;
 
+const readUserResponseMeta = (
+  sessionDetails: Record<string, unknown>,
+  userId: string,
+): UserResponseMeta => {
+  const responsesByUser = asRecord(sessionDetails['responsesByUser']);
+  const currentUserResponses = asRecord(responsesByUser[userId]);
+
+  return {
+    status: readString(currentUserResponses['status']),
+    updatedAt: readString(currentUserResponses['updatedAt']),
+  };
+};
+
 const splitSessionsByDeadline = (
   sessions: UserQuizSessionViewModel[],
   snapshotNowMs: number,
@@ -156,18 +174,32 @@ export class UserQuizSessionsService {
 
     const visibleSessions = await Promise.all(
       sessions.map(async (session) => {
-        if (session.selectedGuestIds.length > 0) {
-          return session.selectedGuestIds.includes(normalizedUserId) ? toPublicSessionModel(session) : null;
-        }
-
         try {
           const sessionRef = ref(this.database, `quizSessions/${session.sessionId}`);
           const snapshot = await get(sessionRef);
           const sessionDetails = snapshot.exists() ? asRecord(snapshot.val()) : {};
-          const selectedGuestIds = extractSelectedGuestIds(sessionDetails['selectedGuests']);
-          return selectedGuestIds.includes(normalizedUserId) ? toPublicSessionModel(session) : null;
+          const selectedGuestIdsFromDetails = extractSelectedGuestIds(sessionDetails['selectedGuests']);
+          const selectedGuestIds =
+            session.selectedGuestIds.length > 0 ? session.selectedGuestIds : selectedGuestIdsFromDetails;
+
+          if (selectedGuestIds.length > 0 && !selectedGuestIds.includes(normalizedUserId)) {
+            return null;
+          }
+
+          const userResponseMeta = readUserResponseMeta(sessionDetails, normalizedUserId);
+          const publicSession = toPublicSessionModel(session);
+
+          return {
+            ...publicSession,
+            status: userResponseMeta.status || publicSession.status,
+            updatedAt: userResponseMeta.updatedAt || publicSession.updatedAt,
+          };
         } catch (error: unknown) {
           console.error('Impossible de vérifier les invités de la session quiz :', error);
+          if (session.selectedGuestIds.length > 0 && session.selectedGuestIds.includes(normalizedUserId)) {
+            return toPublicSessionModel(session);
+          }
+
           return null;
         }
       }),

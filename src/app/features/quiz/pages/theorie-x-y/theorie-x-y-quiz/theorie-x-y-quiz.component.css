@@ -1,0 +1,75 @@
+:host {
+  display: block;
+}
+
+.theorie-xy-page {
+  display: grid;
+  gap: 14px;
+  margin: 0 auto;
+  max-width: 680px;
+  min-height: 100%;
+  padding: 20px 16px calc(56px + var(--ion-safe-area-bottom, 0px) + 16px);
+}
+
+.progress-label {
+  color: var(--ion-color-medium, #666);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+h2 {
+  color: var(--ion-color-dark, #111);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 2px 0 0;
+}
+
+.choice-separator {
+  margin-top: 8px;
+  text-align: center;
+}
+
+.choice-card {
+  cursor: pointer;
+  margin: 0;
+  outline: none;
+  transition: transform 0.15s ease;
+}
+
+.choice-card ion-card-content {
+  padding: 20px;
+}
+
+.choice-card p {
+  color: var(--ion-color-dark, #111);
+  font-size: 1rem;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.choice-card:focus-visible {
+  box-shadow: 0 0 0 2px var(--ion-color-primary, #3880ff);
+}
+
+.choice-card:active {
+  transform: scale(0.99);
+}
+
+.choice-card.is-disabled {
+  cursor: wait;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.state-row {
+  align-items: center;
+  color: var(--ion-color-medium, #666);
+  display: flex;
+  font-size: 0.85rem;
+  gap: 10px;
+}
+
+.state-error {
+  display: block;
+  font-size: 0.85rem;
+}
