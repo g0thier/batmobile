@@ -1,6 +1,17 @@
-import { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router, Routes } from '@angular/router';
 import { authGuard } from './core/auth/guards/auth-guard';
 import { guestGuard } from './core/auth/guards/guest-guard';
+import { isQuizId } from './core/quiz/quiz-page-registry';
+
+const quizIdRouteGuard: CanActivateFn = (route) => {
+  const quizId = route.paramMap.get('quizId')?.trim().toLowerCase() ?? '';
+  if (isQuizId(quizId)) {
+    return true;
+  }
+
+  return inject(Router).createUrlTree(['/tabs/history']);
+};
 
 export const routes: Routes = [
   {
@@ -38,9 +49,20 @@ export const routes: Routes = [
         loadComponent: () => import('./features/quiz/quiz.component').then((m) => m.QuizComponent),
       },
       {
-        path: 'quiz/session/:sessionId',
+        path: 'quiz-session/:quizId/:sessionId',
+        canActivate: [quizIdRouteGuard],
         loadComponent: () =>
-          import('./features/quiz/session/session.component').then((m) => m.SessionComponent),
+          import('./features/quiz/session-router/session-router.component').then(
+            (m) => m.SessionRouterComponent,
+          ),
+      },
+      {
+        path: 'quiz-stats/:quizId/:sessionId',
+        canActivate: [quizIdRouteGuard],
+        loadComponent: () =>
+          import('./features/history/stats-router/stats-router.component').then(
+            (m) => m.StatsRouterComponent,
+          ),
       },
       {
         path: 'success',

@@ -34,8 +34,8 @@
               class="quiz-card"
               role="button"
               tabindex="0"
-              (click)="onQuizCardTap(quiz)"
-              (keydown)="onQuizCardKeyDown($event, quiz)"
+              (click)="onUpcomingQuizCardTap(quiz)"
+              (keydown)="onUpcomingQuizCardKeyDown($event, quiz)"
             >
               <ion-card-content>
                 <div class="quiz-row">
@@ -80,8 +80,8 @@
               class="quiz-card"
               role="button"
               tabindex="0"
-              (click)="onQuizCardTap(quiz)"
-              (keydown)="onQuizCardKeyDown($event, quiz)"
+              (click)="onPastQuizCardTap(quiz)"
+              (keydown)="onPastQuizCardKeyDown($event, quiz)"
             >
               <ion-card-content>
                 <div class="quiz-row">

@@ -1,12 +1,22 @@
 import { Injectable } from '@angular/core';
 
+export type QuizId =
+  | 'theorie-x-y'
+  | 'identite-pro'
+  | 'pyramide-besoins'
+  | 'autodetermination'
+  | 'attentes'
+  | 'equite'
+  | 'besoins-acquis'
+  | 'mimetisme';
+
 export interface QuizCatalogItem {
-  id: string;
+  id: QuizId | string;
   title: string;
   coverUrl: string;
 }
 
-const QUIZ_CATALOG_BY_ID: Record<string, QuizCatalogItem> = {
+const QUIZ_CATALOG_BY_ID: Record<QuizId, QuizCatalogItem> = {
   'theorie-x-y': {
     id: 'theorie-x-y',
     title: 'Théorie X-Y',
@@ -49,12 +59,23 @@ const QUIZ_CATALOG_BY_ID: Record<string, QuizCatalogItem> = {
   },
 };
 
+const KNOWN_QUIZ_IDS = Object.keys(QUIZ_CATALOG_BY_ID) as QuizId[];
+
 const normalizeQuizId = (quizId: string): string => quizId.trim().toLowerCase();
 
 @Injectable({
   providedIn: 'root',
 })
 export class QuizCatalogService {
+  getKnownQuizIds(): QuizId[] {
+    return [...KNOWN_QUIZ_IDS];
+  }
+
+  isKnownQuizId(quizId: string): quizId is QuizId {
+    const normalizedQuizId = normalizeQuizId(quizId);
+    return KNOWN_QUIZ_IDS.includes(normalizedQuizId as QuizId);
+  }
+
   getQuiz(quizId: string): QuizCatalogItem {
     const normalizedQuizId = normalizeQuizId(quizId);
     if (!normalizedQuizId) {
@@ -66,7 +87,7 @@ export class QuizCatalogService {
     }
 
     return (
-      QUIZ_CATALOG_BY_ID[normalizedQuizId] ?? {
+      QUIZ_CATALOG_BY_ID[normalizedQuizId as QuizId] ?? {
         id: normalizedQuizId,
         title: 'Quiz motivation',
         coverUrl: '',

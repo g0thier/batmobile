@@ -1,7 +1,7 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import {
-  AlertController,
   IonCard,
   IonCardContent,
   IonContent,
@@ -37,9 +37,9 @@ import { MaterialIconComponent } from '../../shared/material-icon/material-icon.
   ],
 })
 export class HistoryComponent {
-  private readonly alertController = inject(AlertController);
   private readonly userQuizSessionsService = inject(UserQuizSessionsService);
   private readonly quizCatalogService = inject(QuizCatalogService);
+  private readonly router = inject(Router);
 
   readonly state$ = this.userQuizSessionsService.state$;
 
@@ -84,27 +84,29 @@ export class HistoryComponent {
     return quiz.sessionId;
   }
 
-  async onQuizCardTap(quiz: UserQuizSessionViewModel): Promise<void> {
-    const alert = await this.alertController.create({
-      header: 'Informations du quiz',
-      message: [
-        `Quiz: ${this.getQuizTitle(quiz.quizId)}`,
-        `Session ID: ${quiz.sessionId || 'N/A'}`,
-        `Deadline: ${quiz.responseDeadline || 'Non renseignée'}`,
-        `Statut: ${quiz.status || 'invited'}`,
-      ].join('<br />'),
-      buttons: ['Fermer'],
-    });
-
-    await alert.present();
+  async onUpcomingQuizCardTap(quiz: UserQuizSessionViewModel): Promise<void> {
+    await this.router.navigateByUrl(`/tabs/quiz-session/${quiz.quizId.trim().toLowerCase()}/${quiz.sessionId}`);
   }
 
-  async onQuizCardKeyDown(event: KeyboardEvent, quiz: UserQuizSessionViewModel): Promise<void> {
+  async onPastQuizCardTap(quiz: UserQuizSessionViewModel): Promise<void> {
+    await this.router.navigateByUrl(`/tabs/quiz-stats/${quiz.quizId.trim().toLowerCase()}/${quiz.sessionId}`);
+  }
+
+  async onUpcomingQuizCardKeyDown(event: KeyboardEvent, quiz: UserQuizSessionViewModel): Promise<void> {
     if (event.key !== 'Enter' && event.key !== ' ') {
       return;
     }
 
     event.preventDefault();
-    await this.onQuizCardTap(quiz);
+    await this.onUpcomingQuizCardTap(quiz);
+  }
+
+  async onPastQuizCardKeyDown(event: KeyboardEvent, quiz: UserQuizSessionViewModel): Promise<void> {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+
+    event.preventDefault();
+    await this.onPastQuizCardTap(quiz);
   }
 }

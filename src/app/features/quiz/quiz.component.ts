@@ -22,7 +22,7 @@ type LauncherAction = 'history' | 'session';
 interface QuizLauncherState {
   buttonLabel: string;
   action: LauncherAction;
-  selectedSessionId: string;
+  selectedSession: UserQuizSessionViewModel | null;
   isLoading: boolean;
   loadError: string;
 }
@@ -107,20 +107,20 @@ const hasAnsweredToday = (sessions: UserQuizSessionViewModel[]): boolean => {
   });
 };
 
-const pickSessionId = (sessions: UserQuizSessionViewModel[]): string => {
+const pickSession = (sessions: UserQuizSessionViewModel[]): UserQuizSessionViewModel | null => {
   const startedSessions = sessions
     .filter((session) => normalizeStatus(session.status) === 'started')
     .sort(sortByUpdatedAtAsc);
 
   if (startedSessions.length > 0) {
-    return startedSessions[0].sessionId;
+    return startedSessions[0] ?? null;
   }
 
   const remainingSessions = sessions
     .filter((session) => !isFinishedStatus(session.status))
     .sort(sortByDeadlineAsc);
 
-  return remainingSessions[0]?.sessionId ?? '';
+  return remainingSessions[0] ?? null;
 };
 
 const toLauncherState = (state: UserQuizSessionsState): QuizLauncherState => {
@@ -131,18 +131,18 @@ const toLauncherState = (state: UserQuizSessionsState): QuizLauncherState => {
     return {
       buttonLabel: "Voir l'historique",
       action: 'history',
-      selectedSessionId: '',
+      selectedSession: null,
       isLoading: state.isLoading,
       loadError: state.loadError,
     };
   }
 
-  const selectedSessionId = pickSessionId(sessions);
+  const selectedSession = pickSession(sessions);
 
   return {
     buttonLabel: hasAnsweredToday(sessions) ? 'En faire plus' : 'Question du jour',
-    action: selectedSessionId ? 'session' : 'history',
-    selectedSessionId,
+    action: selectedSession ? 'session' : 'history',
+    selectedSession,
     isLoading: state.isLoading,
     loadError: state.loadError,
   };
@@ -171,8 +171,16 @@ export class QuizComponent {
   readonly launcherState$ = this.userQuizSessionsService.state$.pipe(map(toLauncherState));
 
   async onLauncherTap(state: QuizLauncherState): Promise<void> {
-    if (state.action === 'session' && state.selectedSessionId) {
-      await this.router.navigateByUrl(`/tabs/quiz/session/${state.selectedSessionId}`);
+    if (state.action === 'session' && state.selectedSession) {
+      const quizId = state.selectedSession.quizId.trim().toLowerCase();
+      if (!quizId) {
+        await this.router.navigateByUrl('/tabs/history');
+        return;
+      }
+
+      await this.router.navigateByUrl(
+        `/tabs/quiz-session/${quizId}/${state.selectedSession.sessionId}`,
+      );
       return;
     }
 
