@@ -23,7 +23,7 @@
 
 h2 {
   color: var(--ion-color-dark, #111);
-  font-size: 1.6rem;
+  font-size: 1.2rem;
   font-weight: 800;
   margin: 4px 0 0;
 }
@@ -31,25 +31,43 @@ h2 {
 .choice-row {
   align-items: center;
   display: grid;
-  gap: 10px;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  position: relative;
 }
 
 .portrait-card {
+  --card-tilt-rotation: rotate(0deg);
+  --card-tilt-shift: translateX(0);
   cursor: pointer;
   margin: 0;
   outline: none;
+  position: relative;
+  transform: var(--card-tilt-shift) var(--card-tilt-rotation);
   transition: transform 0.15s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  z-index: 1;
 }
 
 .portrait-card ion-card-content {
-  padding: 12px;
+  padding: 6px;
+}
+
+.portrait-card--left {
+  --card-tilt-rotation: rotate(-6deg);
+  --card-tilt-shift: translateX(12px);
+}
+
+.portrait-card--right {
+  --card-tilt-rotation: rotate(6deg);
+  --card-tilt-shift: translateX(-12px);
 }
 
 .portrait-wrapper {
   align-items: center;
-  aspect-ratio: 1 / 1;
-  border-radius: 16px;
+  aspect-ratio: 3 / 4;
+  border-radius: 8px;
   display: flex;
   justify-content: center;
   overflow: hidden;
@@ -59,6 +77,9 @@ h2 {
   display: block;
   height: 100%;
   object-fit: cover;
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
   width: 100%;
 }
 
@@ -78,10 +99,20 @@ h2 {
 }
 
 .choice-separator {
+  background: color-mix(in srgb, var(--ion-color-light, #fff) 86%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ion-color-medium, #666) 28%, transparent);
+  border-radius: 999px;
   color: var(--ion-color-dark, #111);
-  font-size: 2.2rem;
+  font-size: 1.2rem;
   font-weight: 900;
   margin: 0;
+  padding: 0 10px 2px;
+  pointer-events: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9;
 }
 
 .name-row {
@@ -108,7 +139,7 @@ h2 {
 }
 
 .portrait-card:active {
-  transform: scale(0.99);
+  transform: var(--card-tilt-shift) var(--card-tilt-rotation) scale(0.99);
 }
 
 .portrait-card.is-disabled {
@@ -131,16 +162,23 @@ h2 {
 }
 
 @media (max-width: 620px) {
-  h2 {
-    font-size: 1.45rem;
-  }
-
   .choice-row {
-    gap: 8px;
+    gap: 0;
   }
 
   .choice-separator {
-    font-size: 1.6rem;
+    font-size: 1.2rem;
+    padding: 0 8px 1px;
+  }
+
+  .portrait-card--left {
+    --card-tilt-rotation: rotate(-4deg);
+    --card-tilt-shift: translateX(8px);
+  }
+
+  .portrait-card--right {
+    --card-tilt-rotation: rotate(4deg);
+    --card-tilt-shift: translateX(-8px);
   }
 
   .name-row {
