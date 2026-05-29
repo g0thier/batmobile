@@ -1,0 +1,28 @@
+:host {
+  display: block;
+}
+
+.session-page {
+  display: grid;
+  gap: 12px;
+  margin: 0 auto;
+  max-width: 640px;
+  min-height: 100%;
+  padding: 20px 16px calc(56px + var(--ion-safe-area-bottom, 0px) + 16px);
+}
+
+.session-page h2 {
+  color: var(--ion-color-dark, #111);
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.session-page p {
+  margin: 0;
+}
+
+.actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}

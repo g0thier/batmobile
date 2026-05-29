@@ -4,6 +4,25 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <p>Page Quiz</p>
+<ion-content [fullscreen]="true">
+  <div class="quiz-page">
+    <img class="quiz-hero" src="/quiz/covers/quiz-cards.png" alt="Cartes des quiz" />
+
+    @if (launcherState$ | async; as state) {
+      @if (state.isLoading) {
+        <div class="state-row">
+          <ion-spinner name="crescent"></ion-spinner>
+          <span>Chargement des quiz...</span>
+        </div>
+      }
+
+      @if (state.loadError) {
+        <ion-text color="danger" class="state-error">{{ state.loadError }}</ion-text>
+      }
+
+      <ion-button expand="block" [disabled]="state.isLoading" (click)="onLauncherTap(state)">
+        {{ state.buttonLabel }}
+      </ion-button>
+    }
+  </div>
 </ion-content>

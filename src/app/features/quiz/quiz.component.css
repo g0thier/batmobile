@@ -1,0 +1,38 @@
+:host {
+  display: block;
+}
+
+.quiz-page {
+  align-items: center;
+  display: grid;
+  gap: 16px;
+  margin: 0 auto;
+  max-width: 520px;
+  min-height: 100%;
+  padding: 28px 16px calc(56px + var(--ion-safe-area-bottom, 0px) + 16px);
+}
+
+.quiz-hero {
+  display: block;
+  height: auto;
+  margin: 0 auto;
+  max-width: 320px;
+  width: 100%;
+}
+
+ion-button {
+  margin-top: 2px;
+}
+
+.state-row {
+  align-items: center;
+  color: var(--ion-color-medium, #666);
+  display: flex;
+  font-size: 0.85rem;
+  gap: 10px;
+}
+
+.state-error {
+  display: block;
+  font-size: 0.85rem;
+}

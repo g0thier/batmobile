@@ -38,6 +38,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/quiz/quiz.component').then((m) => m.QuizComponent),
       },
       {
+        path: 'quiz/session/:sessionId',
+        loadComponent: () =>
+          import('./features/quiz/session/session.component').then((m) => m.SessionComponent),
+      },
+      {
         path: 'success',
         loadComponent: () =>
           import('./features/success/success.component').then((m) => m.SuccessComponent),

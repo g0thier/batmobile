@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Questionnaire</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="session-page">
+    <h2>Session active</h2>
+    <p>Session ID: {{ sessionId || 'Non renseigné' }}</p>
+    <ion-text color="medium">
+      <p>Écran placeholder prêt pour brancher la passation du questionnaire.</p>
+    </ion-text>
+
+    <div class="actions">
+      <ion-button expand="block" routerLink="/tabs/quiz">Retour au launcher</ion-button>
+      <ion-button expand="block" fill="outline" routerLink="/tabs/history">
+        Voir l'historique
+      </ion-button>
+    </div>
+  </div>
+</ion-content>
