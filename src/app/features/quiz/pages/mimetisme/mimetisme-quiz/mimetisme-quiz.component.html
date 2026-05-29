@@ -1,1 +1,103 @@
-<p>mimetisme-quiz works!</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Mimétisme</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="mimetisme-page">
+    @if (isLoading) {
+      <div class="state-row">
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>Chargement des modèles...</span>
+      </div>
+    } @else {
+      @if (errorMessage) {
+        <ion-text color="danger" class="state-error">{{ errorMessage }}</ion-text>
+      }
+
+      @if (pair; as currentPair) {
+        <p class="progress-label">
+          Classement {{ rankedCount }} / {{ totalCount }}
+          <span class="progress-separator">•</span>
+          {{ comparisonsCount }} comparaisons
+        </p>
+
+        <h2>Plutôt</h2>
+
+        <div class="choice-row">
+          <ion-card
+            class="portrait-card"
+            [class.is-disabled]="isSubmitting"
+            role="button"
+            tabindex="0"
+            (click)="onChoiceTap(currentPair.a, currentPair.b)"
+            (keydown)="onChoiceKeyDown($event, currentPair.a, currentPair.b)"
+          >
+            <ion-card-content>
+              <div class="portrait-wrapper">
+                @if (hasPortrait(currentPair.a.id)) {
+                  <img
+                    [src]="resolvePortraitUrl(currentPair.a.portrait)"
+                    [alt]="currentPair.a.personnage"
+                    loading="lazy"
+                    (error)="onPortraitError(currentPair.a.id)"
+                  />
+                } @else {
+                  <div class="portrait-fallback" aria-hidden="true">
+                    {{ currentPair.a.personnage }}
+                  </div>
+                }
+              </div>
+            </ion-card-content>
+          </ion-card>
+
+          <p class="choice-separator">VS</p>
+
+          <ion-card
+            class="portrait-card"
+            [class.is-disabled]="isSubmitting"
+            role="button"
+            tabindex="0"
+            (click)="onChoiceTap(currentPair.b, currentPair.a)"
+            (keydown)="onChoiceKeyDown($event, currentPair.b, currentPair.a)"
+          >
+            <ion-card-content>
+              <div class="portrait-wrapper">
+                @if (hasPortrait(currentPair.b.id)) {
+                  <img
+                    [src]="resolvePortraitUrl(currentPair.b.portrait)"
+                    [alt]="currentPair.b.personnage"
+                    loading="lazy"
+                    (error)="onPortraitError(currentPair.b.id)"
+                  />
+                } @else {
+                  <div class="portrait-fallback" aria-hidden="true">
+                    {{ currentPair.b.personnage }}
+                  </div>
+                }
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </div>
+
+        <div class="name-row" aria-hidden="true">
+          <h3>{{ currentPair.a.personnage }}</h3>
+          <h3>{{ currentPair.b.personnage }}</h3>
+        </div>
+
+        @if (isSubmitting) {
+          <div class="state-row">
+            <ion-spinner name="crescent"></ion-spinner>
+            <span>Enregistrement en cours...</span>
+          </div>
+        }
+      } @else {
+        <div class="state-row">
+          <ion-spinner name="crescent"></ion-spinner>
+          <span>Préparation de la prochaine comparaison...</span>
+        </div>
+      }
+    }
+  </div>
+</ion-content>
