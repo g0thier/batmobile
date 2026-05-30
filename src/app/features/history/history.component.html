@@ -21,15 +21,15 @@
       <section class="history-section">
         <div class="section-header">
           <app-material-icon name="event_upcoming" [size]="20"></app-material-icon>
-          <h2>Quiz à venir ({{ state.upcomingQuiz.length }})</h2>
+          <h2>Quiz à faire ({{ getTodoQuiz(state).length }})</h2>
         </div>
 
-        @if (state.upcomingQuiz.length === 0) {
+        @if (getTodoQuiz(state).length === 0) {
           <ion-card class="empty-card">
-            <ion-card-content>Aucun quiz à venir.</ion-card-content>
+            <ion-card-content>Aucun quiz à faire.</ion-card-content>
           </ion-card>
         } @else {
-          @for (quiz of state.upcomingQuiz; track trackBySessionId($index, quiz)) {
+          @for (quiz of getTodoQuiz(state); track trackBySessionId($index, quiz)) {
             <ion-card
               class="quiz-card"
               role="button"
@@ -52,10 +52,16 @@
                   <div class="quiz-content">
                     <div class="quiz-head">
                       <h3>{{ getQuizTitle(quiz.quizId) }}</h3>
-                      <span class="quiz-badge">À venir</span>
+                      <span
+                        class="quiz-badge"
+                        [class.is-todo]="getTodoBadgeLabel(quiz) === 'À faire'"
+                        [class.is-in-progress]="getTodoBadgeLabel(quiz) === 'En cours'"
+                      >
+                        {{ getTodoBadgeLabel(quiz) }}
+                      </span>
                     </div>
                     <p class="quiz-meta">Date limite: {{ formatDateTime(quiz.responseDeadline) }}</p>
-                    <p class="quiz-meta">Statut: {{ getStatusLabel(quiz.status) }}</p>
+                    <p class="quiz-meta">Statut: {{ getTodoStatusLabel(quiz) }}</p>
                   </div>
                 </div>
               </ion-card-content>
@@ -67,15 +73,15 @@
       <section class="history-section">
         <div class="section-header">
           <app-material-icon name="history" [size]="20"></app-material-icon>
-          <h2>Quiz passés ({{ state.pastQuiz.length }})</h2>
+          <h2>Quiz terminés ({{ getCompletedQuiz(state).length }})</h2>
         </div>
 
-        @if (state.pastQuiz.length === 0) {
+        @if (getCompletedQuiz(state).length === 0) {
           <ion-card class="empty-card">
-            <ion-card-content>Aucun quiz passé.</ion-card-content>
+            <ion-card-content>Aucun quiz terminé.</ion-card-content>
           </ion-card>
         } @else {
-          @for (quiz of state.pastQuiz; track trackBySessionId($index, quiz)) {
+          @for (quiz of getCompletedQuiz(state); track trackBySessionId($index, quiz)) {
             <ion-card
               class="quiz-card"
               role="button"
@@ -87,7 +93,11 @@
                 <div class="quiz-row">
                   <div class="quiz-cover" [class.quiz-cover--empty]="!getQuizCover(quiz.quizId)">
                     @if (getQuizCover(quiz.quizId)) {
-                      <img [src]="getQuizCover(quiz.quizId)" [alt]="'Cover ' + getQuizTitle(quiz.quizId)" />
+                      <img
+                        [src]="getQuizCover(quiz.quizId)"
+                        [alt]="'Cover ' + getQuizTitle(quiz.quizId)"
+                        [class.quiz-cover-image--grayscale]="isNeverLaunchedQuiz(quiz)"
+                      />
                     } @else {
                       <div class="quiz-cover-fallback">
                         <app-material-icon name="quiz" [size]="28"></app-material-icon>
@@ -98,7 +108,13 @@
                   <div class="quiz-content">
                     <div class="quiz-head">
                       <h3>{{ getQuizTitle(quiz.quizId) }}</h3>
-                      <span class="quiz-badge is-past">Passé</span>
+                      <span
+                        class="quiz-badge"
+                        [class.is-forgotten]="isNeverLaunchedQuiz(quiz)"
+                        [class.is-past]="!isNeverLaunchedQuiz(quiz)"
+                      >
+                        {{ isNeverLaunchedQuiz(quiz) ? 'Oublié' : 'Terminé' }}
+                      </span>
                     </div>
                     <p class="quiz-meta">Date limite: {{ formatDateTime(quiz.responseDeadline) }}</p>
                     <p class="quiz-meta">Statut: {{ getStatusLabel(quiz.status) }}</p>

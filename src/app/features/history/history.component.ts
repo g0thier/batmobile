@@ -13,6 +13,7 @@ import {
 } from '@ionic/angular/standalone';
 import { QuizCatalogService } from '../../core/quiz/quiz-catalog.service';
 import {
+  UserQuizSessionsState,
   UserQuizSessionViewModel,
   UserQuizSessionsService,
 } from '../../core/quiz/user-quiz-sessions.service';
@@ -51,6 +52,20 @@ export class HistoryComponent {
     return this.quizCatalogService.getQuiz(quizId).coverUrl;
   }
 
+  getTodoQuiz(state: UserQuizSessionsState): UserQuizSessionViewModel[] {
+    return state.upcomingQuiz.filter((quiz) => !this.isCompletedStatus(quiz.status));
+  }
+
+  getCompletedQuiz(state: UserQuizSessionsState): UserQuizSessionViewModel[] {
+    const completedUpcoming = state.upcomingQuiz.filter((quiz) => this.isCompletedStatus(quiz.status));
+    return [...completedUpcoming, ...state.pastQuiz];
+  }
+
+  isNeverLaunchedQuiz(quiz: UserQuizSessionViewModel): boolean {
+    const normalizedStatus = this.normalizeStatus(quiz.status);
+    return !normalizedStatus || normalizedStatus === 'invited';
+  }
+
   formatDateTime(value: string): string {
     const parsedTimestamp = new Date(String(value || '')).getTime();
     if (!Number.isFinite(parsedTimestamp)) {
@@ -65,13 +80,13 @@ export class HistoryComponent {
   }
 
   getStatusLabel(rawStatus: string): string {
-    const normalizedStatus = rawStatus.trim().toLowerCase();
+    const normalizedStatus = this.normalizeStatus(rawStatus);
     if (!normalizedStatus) {
-      return 'Invité';
+      return 'Oublié';
     }
 
     const labels: Record<string, string> = {
-      invited: 'Invité',
+      invited: 'Oublié',
       started: 'En cours',
       completed: 'Terminé',
       archived: 'Archivé',
@@ -80,8 +95,35 @@ export class HistoryComponent {
     return labels[normalizedStatus] ?? normalizedStatus;
   }
 
+  getTodoBadgeLabel(quiz: UserQuizSessionViewModel): string {
+    const normalizedStatus = this.normalizeStatus(quiz.status);
+    return normalizedStatus === 'started' ? 'En cours' : 'À faire';
+  }
+
+  getTodoStatusLabel(quiz: UserQuizSessionViewModel): string {
+    const normalizedStatus = this.normalizeStatus(quiz.status);
+
+    if (normalizedStatus === 'started') {
+      return 'En cours';
+    }
+
+    if (!normalizedStatus || normalizedStatus === 'invited') {
+      return 'À faire';
+    }
+
+    return this.getStatusLabel(quiz.status);
+  }
+
   trackBySessionId(_index: number, quiz: UserQuizSessionViewModel): string {
     return quiz.sessionId;
+  }
+
+  private isCompletedStatus(rawStatus: string): boolean {
+    return this.normalizeStatus(rawStatus) === 'completed';
+  }
+
+  private normalizeStatus(rawStatus: string): string {
+    return rawStatus.trim().toLowerCase();
   }
 
   async onUpcomingQuizCardTap(quiz: UserQuizSessionViewModel): Promise<void> {

@@ -69,6 +69,10 @@
   width: 100%;
 }
 
+.quiz-cover-image--grayscale {
+  filter: grayscale(1);
+}
+
 .quiz-cover--empty {
   background: var(--ion-color-light, #f2f2f2);
 }
@@ -111,6 +115,21 @@
   font-weight: 600;
   line-height: 1;
   padding: 6px 10px;
+}
+
+.quiz-badge.is-todo {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.quiz-badge.is-in-progress {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.quiz-badge.is-forgotten {
+  background: #f1f5f9;
+  color: #64748b;
 }
 
 .quiz-badge.is-past {
