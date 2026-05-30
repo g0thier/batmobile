@@ -48,11 +48,11 @@
             "theme": 1,
             "contribution": {
                 "label": "Effort",
-                "image": "src/module/equite/images/effort.png"
+                "image": "quiz/graphics/equite/effort.png"
             },
             "retribution": {
                 "label": "Salaire",
-                "image": "src/module/equite/images/salaire.png"
+                "image": "quiz/graphics/equite/salaire.png"
             }
         },
         {
@@ -60,11 +60,11 @@
             "theme": 1,
             "contribution": {
                 "label": "Temps",
-                "image": "src/module/equite/images/temps.png"
+                "image": "quiz/graphics/equite/temps.png"
             },
             "retribution": {
                 "label": "Prime",
-                "image": "src/module/equite/images/prime.png"
+                "image": "quiz/graphics/equite/prime.png"
             }
         },
         {
@@ -72,11 +72,11 @@
             "theme": 1,
             "contribution": {
                 "label": "Disponibilité",
-                "image": "src/module/equite/images/disponibilite.png"
+                "image": "quiz/graphics/equite/disponibilite.png"
             },
             "retribution": {
                 "label": "Flexibilité",
-                "image": "src/module/equite/images/flexibilite.png"
+                "image": "quiz/graphics/equite/flexibilite.png"
             }
         },
         {
@@ -84,11 +84,11 @@
             "theme": 2,
             "contribution": {
                 "label": "Compétences",
-                "image": "src/module/equite/images/competences.png"
+                "image": "quiz/graphics/equite/competences.png"
             },
             "retribution": {
                 "label": "Avantages",
-                "image": "src/module/equite/images/avantages.png"
+                "image": "quiz/graphics/equite/avantages.png"
             }
         },
         {
@@ -96,11 +96,11 @@
             "theme": 2,
             "contribution": {
                 "label": "Expérience",
-                "image": "src/module/equite/images/experience.png"
+                "image": "quiz/graphics/equite/experience.png"
             },
             "retribution": {
                 "label": "Rémunération",
-                "image": "src/module/equite/images/remuneration.png"
+                "image": "quiz/graphics/equite/remuneration.png"
             }
         },
         {
@@ -108,11 +108,11 @@
             "theme": 2,
             "contribution": {
                 "label": "Polyvalence",
-                "image": "src/module/equite/images/polyvalence.png"
+                "image": "quiz/graphics/equite/polyvalence.png"
             },
             "retribution": {
                 "label": "Bonus",
-                "image": "src/module/equite/images/bonus.png"
+                "image": "quiz/graphics/equite/bonus.png"
             }
         },
         {
@@ -120,11 +120,11 @@
             "theme": 3,
             "contribution": {
                 "label": "Responsabilité",
-                "image": "src/module/equite/images/responsabilite.png"
+                "image": "quiz/graphics/equite/responsabilite.png"
             },
             "retribution": {
                 "label": "Statut",
-                "image": "src/module/equite/images/statut.png"
+                "image": "quiz/graphics/equite/statut.png"
             }
         },
         {
@@ -132,11 +132,11 @@
             "theme": 3,
             "contribution": {
                 "label": "Initiative",
-                "image": "src/module/equite/images/initiative.png"
+                "image": "quiz/graphics/equite/initiative.png"
             },
             "retribution": {
                 "label": "Reconnaissance",
-                "image": "src/module/equite/images/reconnaissance.png"
+                "image": "quiz/graphics/equite/reconnaissance.png"
             }
         },
         {
@@ -144,11 +144,11 @@
             "theme": 3,
             "contribution": {
                 "label": "Fiabilité",
-                "image": "src/module/equite/images/fiabilite.png"
+                "image": "quiz/graphics/equite/fiabilite.png"
             },
             "retribution": {
                 "label": "Confiance",
-                "image": "src/module/equite/images/confiance.png"
+                "image": "quiz/graphics/equite/confiance.png"
             }
         },
         {
@@ -156,11 +156,11 @@
             "theme": 4,
             "contribution": {
                 "label": "Performance",
-                "image": "src/module/equite/images/performance.png"
+                "image": "quiz/graphics/equite/performance.png"
             },
             "retribution": {
                 "label": "Promotion",
-                "image": "src/module/equite/images/promotion.png"
+                "image": "quiz/graphics/equite/promotion.png"
             }
         },
         {
@@ -168,11 +168,11 @@
             "theme": 4,
             "contribution": {
                 "label": "Résultats",
-                "image": "src/module/equite/images/resultats.png"
+                "image": "quiz/graphics/equite/resultats.png"
             },
             "retribution": {
                 "label": "Gratification",
-                "image": "src/module/equite/images/gratification.png"
+                "image": "quiz/graphics/equite/gratification.png"
             }
         },
         {
@@ -180,11 +180,11 @@
             "theme": 4,
             "contribution": {
                 "label": "Implication",
-                "image": "src/module/equite/images/implication.png"
+                "image": "quiz/graphics/equite/implication.png"
             },
             "retribution": {
                 "label": "Visibilité",
-                "image": "src/module/equite/images/visibilite.png"
+                "image": "quiz/graphics/equite/visibilite.png"
             }
         },
         {
@@ -192,11 +192,11 @@
             "theme": 5,
             "contribution": {
                 "label": "Apprentissage",
-                "image": "src/module/equite/images/apprentissage.png"
+                "image": "quiz/graphics/equite/apprentissage.png"
             },
             "retribution": {
                 "label": "Formation",
-                "image": "src/module/equite/images/formation.png"
+                "image": "quiz/graphics/equite/formation.png"
             }
         },
         {
@@ -204,11 +204,11 @@
             "theme": 5,
             "contribution": {
                 "label": "Adaptabilité",
-                "image": "src/module/equite/images/adaptabilite.png"
+                "image": "quiz/graphics/equite/adaptabilite.png"
             },
             "retribution": {
                 "label": "Opportunités",
-                "image": "src/module/equite/images/opportunites.png"
+                "image": "quiz/graphics/equite/opportunites.png"
             }
         },
         {
@@ -216,11 +216,11 @@
             "theme": 5,
             "contribution": {
                 "label": "Leadership",
-                "image": "src/module/equite/images/leadership.png"
+                "image": "quiz/graphics/equite/leadership.png"
             },
             "retribution": {
                 "label": "Autonomie",
-                "image": "src/module/equite/images/autonomie.png"
+                "image": "quiz/graphics/equite/autonomie.png"
             }
         },
         {
@@ -228,11 +228,11 @@
             "theme": 6,
             "contribution": {
                 "label": "Assiduité",
-                "image": "src/module/equite/images/assiduite.png"
+                "image": "quiz/graphics/equite/assiduite.png"
             },
             "retribution": {
                 "label": "Télétravail",
-                "image": "src/module/equite/images/teletravail.png"
+                "image": "quiz/graphics/equite/teletravail.png"
             }
         },
         {
@@ -240,11 +240,11 @@
             "theme": 6,
             "contribution": {
                 "label": "Coopération",
-                "image": "src/module/equite/images/cooperation.png"
+                "image": "quiz/graphics/equite/cooperation.png"
             },
             "retribution": {
                 "label": "Ambiance",
-                "image": "src/module/equite/images/ambiance.png"
+                "image": "quiz/graphics/equite/ambiance.png"
             }
         },
         {
@@ -252,11 +252,11 @@
             "theme": 6,
             "contribution": {
                 "label": "Charge",
-                "image": "src/module/equite/images/charge.png"
+                "image": "quiz/graphics/equite/charge.png"
             },
             "retribution": {
                 "label": "Équilibre",
-                "image": "src/module/equite/images/equilibre.png"
+                "image": "quiz/graphics/equite/equilibre.png"
             }
         }
     ]
