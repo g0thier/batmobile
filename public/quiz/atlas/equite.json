@@ -32,14 +32,59 @@
     ],
     "reponses": [
         {
-            "id": 1,
+            "id": -5,
+            "valeur": -5,
+            "label": "contributions 10 / retributions 0"
+        },
+        {
+            "id": -4,
+            "valeur": -4,
+            "label": "contributions 9 / retributions 1"
+        },
+        {
+            "id": -3,
+            "valeur": -3,
+            "label": "contributions 8 / retributions 2"
+        },
+        {
+            "id": -2,
+            "valeur": -2,
+            "label": "contributions 7 / retributions 3"
+        },
+        {
+            "id": -1,
+            "valeur": -1,
+            "label": "contributions 6 / retributions 4"
+        },
+        {
+            "id": 0,
             "valeur": 0,
-            "label": "contributions"
+            "label": "contributions 5 / retributions 5"
+        },
+        {
+            "id": 1,
+            "valeur": 1,
+            "label": "contributions 4 / retributions 6"
         },
         {
             "id": 2,
-            "valeur": 1,
-            "label": "retributions"
+            "valeur": 2,
+            "label": "contributions 3 / retributions 7"
+        },
+        {
+            "id": 3,
+            "valeur": 3,
+            "label": "contributions 2 / retributions 8"
+        },
+        {
+            "id": 4,
+            "valeur": 4,
+            "label": "contributions 1 / retributions 9"
+        },
+        {
+            "id": 5,
+            "valeur": 5,
+            "label": "contributions 0 / retributions 10"
         }
     ],
     "oppositions": [
