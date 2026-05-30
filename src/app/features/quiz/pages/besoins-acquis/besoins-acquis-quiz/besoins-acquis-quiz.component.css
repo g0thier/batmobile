@@ -1,0 +1,54 @@
+:host {
+  display: block;
+}
+
+.besoins-acquis-page {
+  display: grid;
+  gap: 14px;
+  margin: 0 auto;
+  max-width: 760px;
+  min-height: 100%;
+  padding: 20px 16px calc(56px + var(--ion-safe-area-bottom, 0px) + 16px);
+}
+
+.progress-label {
+  color: var(--ion-color-medium, #666);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.question-card {
+  margin: 0;
+}
+
+.question-card ion-card-content {
+  padding: 20px;
+}
+
+.question-card p {
+  color: var(--ion-color-dark, #111);
+  font-size: 1rem;
+  line-height: 1.45;
+  margin: 0;
+}
+
+ion-segment {
+  --indicator-color: var(--ion-color-primary, #3880ff);
+}
+
+ion-segment-button {
+  text-transform: none;
+}
+
+.state-row {
+  align-items: center;
+  color: var(--ion-color-medium, #666);
+  display: flex;
+  font-size: 0.85rem;
+  gap: 10px;
+}
+
+.state-error {
+  display: block;
+  font-size: 0.85rem;
+}
