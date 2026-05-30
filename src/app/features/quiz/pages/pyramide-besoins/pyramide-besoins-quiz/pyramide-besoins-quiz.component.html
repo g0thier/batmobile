@@ -1,1 +1,56 @@
-<p>pyramide-besoins-quiz works!</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Besoins de Maslow</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="pyramide-besoins-page">
+    @if (isLoading) {
+      <div class="state-row">
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>Chargement des affirmations...</span>
+      </div>
+    } @else {
+      @if (errorMessage) {
+        <ion-text color="danger" class="state-error">{{ errorMessage }}</ion-text>
+      }
+
+      @if (affirmation; as currentAffirmation) {
+        <p class="progress-label">Question {{ answeredCount + 1 }} / {{ totalCount }}</p>
+
+        <ion-card class="affirmation-card">
+          <ion-card-content>
+            <p>{{ currentAffirmation.label }}</p>
+          </ion-card-content>
+        </ion-card>
+
+        <div class="response-row" aria-label="Choix de réponse">
+          @for (reponse of reponses; track reponse.id) {
+            <ion-button
+              class="response-button"
+              expand="block"
+              [disabled]="isSubmitting"
+              (click)="onChoiceTap(reponse.id)"
+              (keydown)="onChoiceKeyDown($event, reponse.id)"
+            >
+              {{ reponse.label }}
+            </ion-button>
+          }
+        </div>
+
+        @if (isSubmitting) {
+          <div class="state-row">
+            <ion-spinner name="crescent"></ion-spinner>
+            <span>Enregistrement en cours...</span>
+          </div>
+        }
+      } @else {
+        <div class="state-row">
+          <ion-spinner name="crescent"></ion-spinner>
+          <span>Préparation de la prochaine question...</span>
+        </div>
+      }
+    }
+  </div>
+</ion-content>
