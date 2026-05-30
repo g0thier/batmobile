@@ -42,6 +42,63 @@
             "label": "Identité & singularité"
         }
     ],
+    "reponses": [
+        {
+            "id": 0,
+            "valeur": 0,
+            "label": "0"
+        },
+        {
+            "id": 1,
+            "valeur": 1,
+            "label": "1"
+        },
+        {
+            "id": 2,
+            "valeur": 2,
+            "label": "2"
+        },
+        {
+            "id": 3,
+            "valeur": 3,
+            "label": "3"
+        },
+        {
+            "id": 4,
+            "valeur": 4,
+            "label": "4"
+        },
+        {
+            "id": 5,
+            "valeur": 5,
+            "label": "5"
+        },
+        {
+            "id": 6,
+            "valeur": 6,
+            "label": "6"
+        },
+        {
+            "id": 7,
+            "valeur": 7,
+            "label": "7"
+        },
+        {
+            "id": 8,
+            "valeur": 8,
+            "label": "8"
+        },
+        {
+            "id": 9,
+            "valeur": 9,
+            "label": "9"
+        },
+        {
+            "id": 10,
+            "valeur": 10,
+            "label": "10"
+        }
+    ],
     "traits": [
         {
             "id": 1,

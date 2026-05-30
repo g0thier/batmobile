@@ -1,1 +1,68 @@
-<p>identite-pro-quiz works!</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Identité Pro</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="identite-pro-page">
+    @if (isLoading) {
+      <div class="state-row">
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>Chargement des traits...</span>
+      </div>
+    } @else {
+      @if (errorMessage) {
+        <ion-text color="danger" class="state-error">{{ errorMessage }}</ion-text>
+      }
+
+      @if (question; as currentQuestion) {
+        <p class="progress-label">Question {{ answeredCount + 1 }} / {{ totalCount }}</p>
+
+        <h2>{{ currentQuestion.dimension.label }}</h2>
+
+        <ion-card class="trait-card">
+          <ion-card-content>
+            <div class="image-wrapper">
+              <img
+                [src]="resolveImageUrl(currentQuestion.trait.image)"
+                [alt]="currentQuestion.trait.label"
+                loading="lazy"
+              />
+            </div>
+          </ion-card-content>
+        </ion-card>
+        <h3 class="trait-label">{{ currentQuestion.trait.label }}</h3>
+
+        <div class="range-wrapper" [class.is-percue]="isPerceivedIdentityQuestion">
+          <ion-range
+            aria-label="Niveau du trait"
+            [ticks]="true"
+            [snaps]="true"
+            [min]="0"
+            [max]="10"
+            [value]="rangeValue"
+            [disabled]="isSubmitting"
+            (ionChange)="onRangeChange($event)"
+          ></ion-range>
+        </div>
+
+        <ion-button expand="block" [disabled]="isSubmitting" (click)="onValidateTap()">
+          Valider
+        </ion-button>
+
+        @if (isSubmitting) {
+          <div class="state-row">
+            <ion-spinner name="crescent"></ion-spinner>
+            <span>Enregistrement en cours...</span>
+          </div>
+        }
+      } @else {
+        <div class="state-row">
+          <ion-spinner name="crescent"></ion-spinner>
+          <span>Préparation de la prochaine question...</span>
+        </div>
+      }
+    }
+  </div>
+</ion-content>
