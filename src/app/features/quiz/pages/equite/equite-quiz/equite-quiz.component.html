@@ -21,24 +21,34 @@
 
         <div class="opposition-row">
           <div class="opposition-side opposition-side--left">
-            <div class="image-wrapper">
-              <img
-                [src]="resolveImageUrl(currentOpposition.contribution.image)"
-                [alt]="currentOpposition.contribution.label"
-                loading="lazy"
-              />
-            </div>
+            <p class="side-title">Vous</p>
+            <ion-card class="image-card image-card--left" [style.transform]="leftImageTransform">
+              <ion-card-content>
+                <div class="image-wrapper">
+                  <img
+                    [src]="resolveImageUrl(currentOpposition.contribution.image)"
+                    [alt]="currentOpposition.contribution.label"
+                    loading="lazy"
+                  />
+                </div>
+              </ion-card-content>
+            </ion-card>
             <h3>{{ currentOpposition.contribution.label }}</h3>
           </div>
 
           <div class="opposition-side opposition-side--right">
-            <div class="image-wrapper">
-              <img
-                [src]="resolveImageUrl(currentOpposition.retribution.image)"
-                [alt]="currentOpposition.retribution.label"
-                loading="lazy"
-              />
-            </div>
+            <p class="side-title">L'employeur</p>
+            <ion-card class="image-card image-card--right" [style.transform]="rightImageTransform">
+              <ion-card-content>
+                <div class="image-wrapper">
+                  <img
+                    [src]="resolveImageUrl(currentOpposition.retribution.image)"
+                    [alt]="currentOpposition.retribution.label"
+                    loading="lazy"
+                  />
+                </div>
+              </ion-card-content>
+            </ion-card>
             <h3>{{ currentOpposition.retribution.label }}</h3>
           </div>
         </div>

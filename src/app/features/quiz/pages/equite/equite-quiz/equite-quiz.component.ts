@@ -2,6 +2,8 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   IonButton,
+  IonCard,
+  IonCardContent,
   IonContent,
   IonHeader,
   IonRange,
@@ -17,11 +19,13 @@ import { EquiteOpposition, EquiteSession } from '../../../../../core/quiz/equite
 @Component({
   selector: 'app-equite-quiz',
   standalone: true,
-  imports: [IonButton, IonContent, IonHeader, IonRange, IonSpinner, IonText, IonTitle, IonToolbar],
+  imports: [IonButton, IonCard, IonCardContent, IonContent, IonHeader, IonRange, IonSpinner, IonText, IonTitle, IonToolbar],
   templateUrl: './equite-quiz.component.html',
   styleUrl: './equite-quiz.component.css',
 })
 export class EquiteQuizComponent {
+  private static readonly IMAGE_SCALE_AMPLITUDE = 0.2;
+
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -54,6 +58,14 @@ export class EquiteQuizComponent {
 
   get retributionsScore(): number {
     return 5 + this.responseId;
+  }
+
+  get leftImageTransform(): string {
+    return `scale(${this.computeImageScale(-1).toFixed(2)})`;
+  }
+
+  get rightImageTransform(): string {
+    return `scale(${this.computeImageScale(1).toFixed(2)})`;
   }
 
   resolveImageUrl(rawPath: string): string {
@@ -152,5 +164,11 @@ export class EquiteQuizComponent {
 
   private async goToHistory(): Promise<void> {
     await this.router.navigateByUrl('/tabs/history', { replaceUrl: true });
+  }
+
+  private computeImageScale(direction: -1 | 1): number {
+    const normalizedOffset = (this.rangeValue - 5) / 5;
+    const scale = 1 + normalizedOffset * direction * EquiteQuizComponent.IMAGE_SCALE_AMPLITUDE;
+    return Math.max(0.8, Math.min(1.2, scale));
   }
 }
