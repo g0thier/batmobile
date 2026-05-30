@@ -92,6 +92,19 @@ h3 {
   margin-top: 2px;
 }
 
+.range-wrapper ion-range {
+  --bar-background: var(--ion-color-success, #2dd36f);
+  --bar-background-active: var(--ion-color-primary, #3880ff);
+}
+
+.range-wrapper ion-range::part(tick) {
+  background: var(--ion-color-success, #2dd36f);
+}
+
+.range-wrapper ion-range::part(tick-active) {
+  background: var(--ion-color-primary, #3880ff);
+}
+
 .state-row {
   align-items: center;
   color: var(--ion-color-medium, #666);
