@@ -123,73 +123,73 @@
         {
             "id": 1,
             "label": "Obtenir une augmentation de salaire",
-            "image": "src/module/attentes/images/pieces.png",
+            "image": "quiz/graphics/attentes/pieces.png",
             "attente": 1
         },
         {
             "id": 2,
             "label": "Recevoir un bonus de performance",
-            "image": "src/module/attentes/images/pieces.png",
+            "image": "quiz/graphics/attentes/pieces.png",
             "attente": 1
         },
         {
             "id": 3,
             "label": "Évoluer vers un poste avec plus de responsabilités",
-            "image": "src/module/attentes/images/evolution.png",
+            "image": "quiz/graphics/attentes/evolution.png",
             "attente": 2
         },
         {
             "id": 4,
             "label": "Avoir accès à une promotion interne",
-            "image": "src/module/attentes/images/evolution.png",
+            "image": "quiz/graphics/attentes/evolution.png",
             "attente": 2
         },
         {
             "id": 5,
             "label": "Recevoir des retours positifs réguliers",
-            "image": "src/module/attentes/images/reconnaissance.png",
+            "image": "quiz/graphics/attentes/reconnaissance.png",
             "attente": 3
         },
         {
             "id": 6,
             "label": "Voir mes résultats reconnus publiquement",
-            "image": "src/module/attentes/images/reconnaissance.png",
+            "image": "quiz/graphics/attentes/reconnaissance.png",
             "attente": 3
         },
         {
             "id": 7,
             "label": "Avoir des horaires compatibles avec ma vie personnelle",
-            "image": "src/module/attentes/images/vie-pro-vie-privee.png",
+            "image": "quiz/graphics/attentes/vie-pro-vie-privee.png",
             "attente": 4
         },
         {
             "id": 8,
             "label": "Pouvoir déconnecter sereinement en dehors du travail",
-            "image": "src/module/attentes/images/vie-pro-vie-privee.png",
+            "image": "quiz/graphics/attentes/vie-pro-vie-privee.png",
             "attente": 4
         },
         {
             "id": 9,
             "label": "Contribuer à des projets utiles et alignés avec mes valeurs",
-            "image": "src/module/attentes/images/sens.png",
+            "image": "quiz/graphics/attentes/sens.png",
             "attente": 5
         },
         {
             "id": 10,
             "label": "Comprendre l’impact concret de mon travail",
-            "image": "src/module/attentes/images/sens.png",
+            "image": "quiz/graphics/attentes/sens.png",
             "attente": 5
         },
         {
             "id": 11,
             "label": "Développer de nouvelles compétences chaque année",
-            "image": "src/module/attentes/images/developpement.png",
+            "image": "quiz/graphics/attentes/developpement.png",
             "attente": 6
         },
         {
             "id": 12,
             "label": "Suivre des formations qui font progresser ma carrière",
-            "image": "src/module/attentes/images/developpement.png",
+            "image": "quiz/graphics/attentes/developpement.png",
             "attente": 6
         }
     ]
