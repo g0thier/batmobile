@@ -10,7 +10,7 @@
             "facteur": "expectancy",
             "titre": "Expectation",
             "label": "(Effort -> Performance)",
-            "question": "Pensez-vous que vos efforts vous permettront d’obtenir cela ?",
+            "question": "Pensez-vous que vos efforts vous permettront ?",
             "reponses": [
                 {
                     "id":1,
@@ -39,7 +39,7 @@
             "facteur": "instrumentality",
             "titre": "Instrumentalité",
             "label": "(Performance -> Récompense)",
-            "question": "Est-ce valorisé dans votre travail actuel ?",
+            "question": "Est-ce valorisé dans votre travail ?",
             "reponses": [
                 {
                     "id":1,
@@ -140,7 +140,7 @@
         },
         {
             "id": 4,
-            "label": "Avoir accès à une promotion interne",
+            "label": "Obtenir promotion interne",
             "image": "quiz/graphics/attentes/evolution.png",
             "attente": 2
         },
@@ -152,13 +152,13 @@
         },
         {
             "id": 6,
-            "label": "Voir mes résultats reconnus publiquement",
+            "label": "Voir vos résultats reconnus publiquement",
             "image": "quiz/graphics/attentes/reconnaissance.png",
             "attente": 3
         },
         {
             "id": 7,
-            "label": "Avoir des horaires compatibles avec ma vie personnelle",
+            "label": "Avoir des horaires compatibles avec votre vie personnelle",
             "image": "quiz/graphics/attentes/vie-pro-vie-privee.png",
             "attente": 4
         },
@@ -170,13 +170,13 @@
         },
         {
             "id": 9,
-            "label": "Contribuer à des projets utiles et alignés avec mes valeurs",
+            "label": "Contribuer à des projets utiles et alignés avec vos valeurs",
             "image": "quiz/graphics/attentes/sens.png",
             "attente": 5
         },
         {
             "id": 10,
-            "label": "Comprendre l’impact concret de mon travail",
+            "label": "Comprendre l’impact concret de votre travail",
             "image": "quiz/graphics/attentes/sens.png",
             "attente": 5
         },
@@ -188,7 +188,7 @@
         },
         {
             "id": 12,
-            "label": "Suivre des formations qui font progresser ma carrière",
+            "label": "Suivre des formations qui font progresser votre carrière",
             "image": "quiz/graphics/attentes/developpement.png",
             "attente": 6
         }
