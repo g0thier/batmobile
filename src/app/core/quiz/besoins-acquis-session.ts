@@ -144,6 +144,101 @@ export class BesoinsAcquisSession {
     };
   }
 
+  async getSessionStats(sessionId: string, userId: string): Promise<BesoinsAcquisSessionStats> {
+    const normalizedSessionId = readString(sessionId);
+    const normalizedUserId = readString(userId);
+
+    if (!normalizedSessionId || !normalizedUserId) {
+      throw new Error('Session ou utilisateur introuvable.');
+    }
+
+    const [atlas, userNode] = await Promise.all([
+      this.loadAtlas(),
+      this.readUserResponsesNode(normalizedSessionId, normalizedUserId),
+    ]);
+
+    const questionById = new Map(atlas.questions.map((question) => [question.id, question]));
+    const responseById = new Map(atlas.reponses.map((response) => [response.id, response]));
+    const questionCountByBesoinId = new Map<number, number>();
+
+    atlas.questions.forEach((question) => {
+      const currentCount = questionCountByBesoinId.get(question.besoin) ?? 0;
+      questionCountByBesoinId.set(question.besoin, currentCount + 1);
+    });
+
+    const deltaByBesoinId = new Map<number, number>();
+    const answeredQuestionIdsByBesoinId = new Map<number, Set<number>>();
+    const normalizedResponses = dedupeResponses(userNode.responses).filter(
+      (response) => response.quizId === BESOINS_ACQUIS_QUIZ_ID,
+    );
+
+    normalizedResponses.forEach((responseEntry) => {
+      const matchedQuestion = questionById.get(responseEntry.questionId);
+      const matchedResponse = responseById.get(responseEntry.reponseId);
+
+      if (!matchedQuestion || !matchedResponse) {
+        return;
+      }
+
+      if (matchedQuestion.besoin !== responseEntry.besoinId) {
+        return;
+      }
+
+      const questionCount = questionCountByBesoinId.get(responseEntry.besoinId) ?? 0;
+      if (questionCount <= 0) {
+        return;
+      }
+
+      const delta = matchedResponse.valeur * (25 / questionCount);
+      const currentDelta = deltaByBesoinId.get(responseEntry.besoinId) ?? 0;
+      deltaByBesoinId.set(responseEntry.besoinId, currentDelta + delta);
+
+      const answeredSet = answeredQuestionIdsByBesoinId.get(responseEntry.besoinId) ?? new Set<number>();
+      answeredSet.add(responseEntry.questionId);
+      answeredQuestionIdsByBesoinId.set(responseEntry.besoinId, answeredSet);
+    });
+
+    const dimensions = atlas.besoins.map((besoin) => {
+      const questionCount = questionCountByBesoinId.get(besoin.id) ?? 0;
+      const answeredSet = answeredQuestionIdsByBesoinId.get(besoin.id);
+      const answeredCount = answeredSet?.size ?? 0;
+      const delta = deltaByBesoinId.get(besoin.id) ?? 0;
+      const score = clamp(50 + delta, 0, 100);
+
+      return {
+        besoinId: besoin.id,
+        key: besoin.key,
+        label: besoin.label,
+        questionCount,
+        answeredCount,
+        score: Number(score.toFixed(2)),
+      } satisfies BesoinsAcquisDimensionScore;
+    });
+
+    const validAnsweredQuestionIds = new Set<number>();
+    dimensions.forEach((dimension) => {
+      const answeredSet = answeredQuestionIdsByBesoinId.get(dimension.besoinId);
+      answeredSet?.forEach((id) => {
+        validAnsweredQuestionIds.add(id);
+      });
+    });
+
+    const answeredCount = validAnsweredQuestionIds.size;
+    const totalCount = atlas.questions.length;
+
+    return {
+      title: atlas.titre,
+      labels: dimensions.map((dimension) => dimension.key),
+      scores: dimensions.map((dimension) => dimension.score),
+      dimensions,
+      answeredCount,
+      totalCount,
+      remainingCount: Math.max(totalCount - answeredCount, 0),
+      isCompleted: answeredCount >= totalCount,
+      updatedAt: userNode.updatedAt,
+    };
+  }
+
   async pickRandomNextEligibleSession(
     userId: string,
     currentSessionId: string,
@@ -253,6 +348,7 @@ export interface BesoinsAcquisQuestion {
 }
 
 export interface BesoinsAcquisAtlas {
+  titre: string;
   besoins: BesoinsAcquisBesoin[];
   reponses: BesoinsAcquisReponse[];
   questions: BesoinsAcquisQuestion[];
@@ -293,6 +389,27 @@ export interface BesoinsAcquisSubmitAnswerResult {
   isCompleted: boolean;
 }
 
+export interface BesoinsAcquisDimensionScore {
+  besoinId: number;
+  key: string;
+  label: string;
+  questionCount: number;
+  answeredCount: number;
+  score: number;
+}
+
+export interface BesoinsAcquisSessionStats {
+  title: string;
+  labels: string[];
+  scores: number[];
+  dimensions: BesoinsAcquisDimensionScore[];
+  answeredCount: number;
+  totalCount: number;
+  remainingCount: number;
+  isCompleted: boolean;
+  updatedAt: string;
+}
+
 interface BesoinsAcquisEligibleSession {
   sessionId: string;
   quizId: string;
@@ -317,6 +434,8 @@ const readNumber = (value: unknown): number | null => {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
 };
+
+const clamp = (value: number, min: number, max: number): number => Math.min(Math.max(value, min), max);
 
 const normalizeAtlas = (payload: unknown): BesoinsAcquisAtlas => {
   const record = asRecord(payload);
@@ -377,7 +496,12 @@ const normalizeAtlas = (payload: unknown): BesoinsAcquisAtlas => {
         .filter((question): question is BesoinsAcquisQuestion => question !== null)
     : [];
 
-  return { besoins, reponses, questions };
+  return {
+    titre: readString(record['titre']),
+    besoins,
+    reponses,
+    questions,
+  };
 };
 
 const normalizeAnswerEntry = (payload: unknown): BesoinsAcquisAnswerEntry | null => {

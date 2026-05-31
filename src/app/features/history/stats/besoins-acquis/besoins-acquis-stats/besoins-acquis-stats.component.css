@@ -1,0 +1,47 @@
+:host {
+  display: block;
+}
+
+.stats-page {
+  display: grid;
+  gap: 14px;
+  margin: 0 auto;
+  max-width: 760px;
+  min-height: 100%;
+  padding: 20px 16px calc(56px + var(--ion-safe-area-bottom, 0px) + 16px);
+}
+
+.progress-label {
+  color: var(--ion-color-medium, #666);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.chart-wrapper {
+  margin: 0 auto;
+  max-width: 560px;
+  position: relative;
+  width: 100%;
+}
+
+.chart-wrapper canvas {
+  display: block;
+  height: min(72vw, 520px);
+  margin: 0 auto;
+  max-height: 520px;
+  max-width: 100%;
+  width: 100%;
+}
+
+.state-row {
+  align-items: center;
+  color: var(--ion-color-medium, #666);
+  display: flex;
+  font-size: 0.85rem;
+  gap: 10px;
+}
+
+.state-error {
+  display: block;
+  font-size: 0.85rem;
+}
