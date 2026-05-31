@@ -24,6 +24,12 @@
         <div class="chart-wrapper">
           <canvas #radarCanvas></canvas>
         </div>
+
+        <div class="dimension-help" aria-label="Explications des dimensions">
+          @for (dimension of stats.dimensions; track dimension.besoinId) {
+            <p><strong>{{ dimension.key }}</strong> : {{ dimension.label }}</p>
+          }
+        </div>
       }
     }
   </div>

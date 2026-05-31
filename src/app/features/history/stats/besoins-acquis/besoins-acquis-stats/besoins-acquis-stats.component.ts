@@ -56,6 +56,7 @@ export class BesoinsAcquisStatsComponent implements AfterViewInit, OnDestroy {
   isLoading = true;
   errorMessage = '';
   stats: BesoinsAcquisSessionStats | null = null;
+  userLegendLabel = 'Vous';
 
   constructor() {
     void this.initialize();
@@ -119,7 +120,7 @@ export class BesoinsAcquisStatsComponent implements AfterViewInit, OnDestroy {
           labels,
           datasets: [
             {
-              label: 'Profil utilisateur',
+              label: this.userLegendLabel,
               data: this.stats.scores,
               borderColor: '#3b82f6',
               backgroundColor: 'rgba(59, 130, 246, 0.16)',
@@ -129,16 +130,17 @@ export class BesoinsAcquisStatsComponent implements AfterViewInit, OnDestroy {
               pointBackgroundColor: '#1d4ed8',
             },
             {
-              label: '25%',
-              data: referenceAt25,
-              borderColor: '#dc2626',
+              label: 'Positif',
+              data: referenceAt75,
+              borderColor: '#16a34a',
+              backgroundColor: 'rgba(22, 163, 74, 0.16)',
               borderWidth: 1.5,
               fill: false,
               pointRadius: 0,
               pointHoverRadius: 0,
             },
             {
-              label: '50%',
+              label: 'Neutre',
               data: referenceAt50,
               borderColor: '#94a3b8',
               borderDash: [6, 6],
@@ -148,9 +150,10 @@ export class BesoinsAcquisStatsComponent implements AfterViewInit, OnDestroy {
               pointHoverRadius: 0,
             },
             {
-              label: '75%',
-              data: referenceAt75,
-              borderColor: '#16a34a',
+              label: 'Négatif',
+              data: referenceAt25,
+              borderColor: '#dc2626',
+              backgroundColor: 'rgba(220, 38, 38, 0.16)',
               borderWidth: 1.5,
               fill: false,
               pointRadius: 0,
@@ -162,7 +165,12 @@ export class BesoinsAcquisStatsComponent implements AfterViewInit, OnDestroy {
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              display: false,
+              display: true,
+              position: 'bottom',
+              labels: {
+                color: '#334155',
+                padding: 14,
+              },
             },
             title: {
               display: true,
@@ -182,11 +190,7 @@ export class BesoinsAcquisStatsComponent implements AfterViewInit, OnDestroy {
               min: 0,
               max: 100,
               ticks: {
-                stepSize: 25,
-                backdropColor: 'transparent',
-                showLabelBackdrop: false,
-                color: '#64748b',
-                callback: (value) => `${value}%`,
+                display: false,
               },
               grid: {
                 color: '#dbe3ef',
@@ -214,4 +218,5 @@ export class BesoinsAcquisStatsComponent implements AfterViewInit, OnDestroy {
     this.chart?.destroy();
     this.chart = null;
   }
+
 }

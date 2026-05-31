@@ -19,18 +19,29 @@
 
 .chart-wrapper {
   margin: 0 auto;
-  max-width: 560px;
+  max-width: 620px;
   position: relative;
   width: 100%;
 }
 
 .chart-wrapper canvas {
   display: block;
-  height: min(72vw, 520px);
+  height: min(76vw, 520px);
   margin: 0 auto;
   max-height: 520px;
   max-width: 100%;
   width: 100%;
+}
+
+.dimension-help {
+  display: grid;
+  gap: 4px;
+}
+
+.dimension-help p {
+  color: #475569;
+  font-size: 0.82rem;
+  margin: 0;
 }
 
 .state-row {
@@ -44,4 +55,17 @@
 .state-error {
   display: block;
   font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+  .chart-wrapper {
+    margin-left: -16px;
+    margin-right: -16px;
+    max-width: none;
+    width: calc(100% + 32px);
+  }
+
+  .chart-wrapper canvas {
+    height: min(100vw, 520px);
+  }
 }
