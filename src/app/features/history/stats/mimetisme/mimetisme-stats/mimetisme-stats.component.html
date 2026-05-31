@@ -1,1 +1,30 @@
-<p>mimetisme-stats works!</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Mimétisme</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="stats-page">
+    @if (isLoading) {
+      <div class="state-row">
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>Chargement des statistiques...</span>
+      </div>
+    } @else {
+      @if (errorMessage) {
+        <ion-text color="danger" class="state-error">{{ errorMessage }}</ion-text>
+      }
+
+      @if (stats && !errorMessage) {
+        <p class="progress-label">
+          Modèles classés: {{ stats.rankedCount }} / {{ stats.totalCount }}
+        </p>
+
+        <div class="chart-wrapper">
+          <canvas #radarCanvas></canvas>
+        </div>
+      }
+    }
+  </div>
+</ion-content>

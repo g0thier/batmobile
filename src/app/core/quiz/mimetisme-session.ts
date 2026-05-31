@@ -217,6 +217,79 @@ export class MimetismeSession {
     };
   }
 
+  async getSessionStats(sessionId: string, userId: string): Promise<MimetismeSessionStats> {
+    const normalizedSessionId = readString(sessionId);
+    const normalizedUserId = readString(userId);
+
+    if (!normalizedSessionId || !normalizedUserId) {
+      throw new Error('Session ou utilisateur introuvable.');
+    }
+
+    const atlas = await this.loadAtlas();
+    const userNode = await this.readUserResponsesNode(normalizedSessionId, normalizedUserId, atlas);
+
+    const orderedModelIdsRaw =
+      userNode.ranking.orderedModelIds.length > 0
+        ? userNode.ranking.orderedModelIds
+        : userNode.rankingState.sortedModelIds;
+    const orderedModelIds = orderedModelIdsRaw.filter(
+      (modelId, index, source) => source.indexOf(modelId) === index && atlas.modelById.has(modelId),
+    );
+
+    const totalCount = atlas.modeles.length;
+    const rankedCount = orderedModelIds.length;
+    const totalPoints = (totalCount * (totalCount + 1)) / 2;
+    const pointsByInspirationId = new Map<number, number>();
+    const rankedCountByInspirationId = new Map<number, number>();
+    const modelCountByInspirationId = new Map<number, number>();
+
+    atlas.modeles.forEach((model) => {
+      const currentCount = modelCountByInspirationId.get(model.inspiration) ?? 0;
+      modelCountByInspirationId.set(model.inspiration, currentCount + 1);
+    });
+
+    orderedModelIds.forEach((modelId, index) => {
+      const model = atlas.modelById.get(modelId);
+      if (!model) {
+        return;
+      }
+
+      const points = totalCount - index;
+      const currentPoints = pointsByInspirationId.get(model.inspiration) ?? 0;
+      pointsByInspirationId.set(model.inspiration, currentPoints + points);
+
+      const currentRankedCount = rankedCountByInspirationId.get(model.inspiration) ?? 0;
+      rankedCountByInspirationId.set(model.inspiration, currentRankedCount + 1);
+    });
+
+    const dimensions = atlas.inspirations.map((inspiration) => {
+      const modelCount = modelCountByInspirationId.get(inspiration.id) ?? 0;
+      const inspirationRankedCount = rankedCountByInspirationId.get(inspiration.id) ?? 0;
+      const points = pointsByInspirationId.get(inspiration.id) ?? 0;
+      const score = totalPoints > 0 ? (points / totalPoints) * 100 : 0;
+
+      return {
+        id: inspiration.id,
+        label: inspiration.label,
+        modelCount,
+        rankedCount: inspirationRankedCount,
+        score: Number(clampToRange(score, 0, 100).toFixed(2)),
+      } satisfies MimetismeInspirationScore;
+    });
+
+    return {
+      title: atlas.title || 'Mimetisme',
+      labels: dimensions.map((dimension) => dimension.label),
+      scores: dimensions.map((dimension) => dimension.score),
+      dimensions,
+      rankedCount,
+      totalCount,
+      remainingCount: Math.max(totalCount - rankedCount, 0),
+      isCompleted: rankedCount >= totalCount,
+      updatedAt: userNode.updatedAt,
+    };
+  }
+
   async pickRandomNextEligibleSession(
     userId: string,
     currentSessionId: string,
@@ -316,6 +389,7 @@ interface MimetismeInspiration {
 }
 
 interface MimetismeAtlas {
+  title: string;
   modeles: MimetismeModele[];
   inspirations: MimetismeInspiration[];
   modelById: Map<number, MimetismeModele>;
@@ -377,6 +451,26 @@ export interface MimetismeSubmitChoiceResult {
   comparisonsCount: number;
   remainingCount: number;
   isCompleted: boolean;
+}
+
+export interface MimetismeInspirationScore {
+  id: number;
+  label: string;
+  modelCount: number;
+  rankedCount: number;
+  score: number;
+}
+
+export interface MimetismeSessionStats {
+  title: string;
+  labels: string[];
+  scores: number[];
+  dimensions: MimetismeInspirationScore[];
+  rankedCount: number;
+  totalCount: number;
+  remainingCount: number;
+  isCompleted: boolean;
+  updatedAt: string;
 }
 
 interface MimetismeEligibleSession {
@@ -448,6 +542,7 @@ const normalizeAtlas = (payload: unknown): MimetismeAtlas => {
   const modelById = new Map(modeles.map((modele) => [modele.id, modele]));
 
   return {
+    title: readString(record['titre']),
     modeles,
     inspirations,
     modelById,
