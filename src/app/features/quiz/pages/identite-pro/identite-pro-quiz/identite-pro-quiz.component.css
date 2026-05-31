@@ -25,13 +25,12 @@ h2 {
 }
 
 .trait-card {
-  margin: 0;
+  margin: 0 auto;
+  width: 50%;
 }
 
 .trait-card ion-card-content {
-  display: grid;
-  gap: 10px;
-  padding: 12px;
+  padding: 0;
 }
 
 .image-wrapper {
