@@ -238,10 +238,10 @@ export class MimetismeSession {
 
     const totalCount = atlas.modeles.length;
     const rankedCount = orderedModelIds.length;
-    const totalPoints = (totalCount * (totalCount + 1)) / 2;
-    const pointsByInspirationId = new Map<number, number>();
+    const percentileSumByInspirationId = new Map<number, number>();
     const rankedCountByInspirationId = new Map<number, number>();
     const modelCountByInspirationId = new Map<number, number>();
+    const percentileDenominator = Math.max(totalCount - 1, 1);
 
     atlas.modeles.forEach((model) => {
       const currentCount = modelCountByInspirationId.get(model.inspiration) ?? 0;
@@ -254,9 +254,9 @@ export class MimetismeSession {
         return;
       }
 
-      const points = totalCount - index;
-      const currentPoints = pointsByInspirationId.get(model.inspiration) ?? 0;
-      pointsByInspirationId.set(model.inspiration, currentPoints + points);
+      const percentile = totalCount <= 1 ? 1 : (totalCount - 1 - index) / percentileDenominator;
+      const currentPercentileSum = percentileSumByInspirationId.get(model.inspiration) ?? 0;
+      percentileSumByInspirationId.set(model.inspiration, currentPercentileSum + percentile);
 
       const currentRankedCount = rankedCountByInspirationId.get(model.inspiration) ?? 0;
       rankedCountByInspirationId.set(model.inspiration, currentRankedCount + 1);
@@ -265,8 +265,9 @@ export class MimetismeSession {
     const dimensions = atlas.inspirations.map((inspiration) => {
       const modelCount = modelCountByInspirationId.get(inspiration.id) ?? 0;
       const inspirationRankedCount = rankedCountByInspirationId.get(inspiration.id) ?? 0;
-      const points = pointsByInspirationId.get(inspiration.id) ?? 0;
-      const score = totalPoints > 0 ? (points / totalPoints) * 100 : 0;
+      const percentileSum = percentileSumByInspirationId.get(inspiration.id) ?? 0;
+      const averagePercentile = modelCount > 0 ? percentileSum / modelCount : 0;
+      const score = averagePercentile * 100;
 
       return {
         id: inspiration.id,
