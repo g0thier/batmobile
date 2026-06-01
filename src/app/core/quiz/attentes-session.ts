@@ -161,6 +161,120 @@ export class AttentesSession {
     };
   }
 
+  async getSessionStats(sessionId: string, userId: string): Promise<AttentesSessionStats> {
+    const normalizedSessionId = readString(sessionId);
+    const normalizedUserId = readString(userId);
+
+    if (!normalizedSessionId || !normalizedUserId) {
+      throw new Error('Session ou utilisateur introuvable.');
+    }
+
+    const [atlas, userNode] = await Promise.all([
+      this.loadAtlas(),
+      this.readUserResponsesNode(normalizedSessionId, normalizedUserId),
+    ]);
+
+    const affirmationCountByAttenteId = new Map<number, number>();
+    atlas.affirmations.forEach((affirmation) => {
+      const currentCount = affirmationCountByAttenteId.get(affirmation.attente) ?? 0;
+      affirmationCountByAttenteId.set(affirmation.attente, currentCount + 1);
+    });
+
+    const maxResponseValueByFacteurId = new Map<number, number>();
+    atlas.facteurs.forEach((facteur) => {
+      const maxValue = facteur.reponses.reduce((currentMax, response) => {
+        return Math.max(currentMax, response.valeur);
+      }, 0);
+      maxResponseValueByFacteurId.set(facteur.id, Math.max(maxValue, 0));
+    });
+
+    const pointsByCell = new Map<string, number>();
+    const answeredKeysByCell = new Map<string, Set<string>>();
+    const validAnsweredQuestionKeys = new Set<string>();
+
+    const normalizedResponses = dedupeResponses(userNode.responses).filter(
+      (response) => response.quizId === ATTENTES_QUIZ_ID,
+    );
+
+    normalizedResponses.forEach((responseEntry) => {
+      const matchedFacteur = atlas.facteurById.get(responseEntry.facteurId);
+      const matchedAffirmation = atlas.affirmationById.get(responseEntry.affirmationId);
+      const matchedAttente = atlas.attenteById.get(responseEntry.attenteId);
+
+      if (!matchedFacteur || !matchedAffirmation || !matchedAttente) {
+        return;
+      }
+
+      if (matchedAffirmation.attente !== responseEntry.attenteId) {
+        return;
+      }
+
+      const matchedResponse = matchedFacteur.reponses.find(
+        (response) => response.id === responseEntry.reponseId,
+      );
+      if (!matchedResponse) {
+        return;
+      }
+
+      const cellKey = buildQuestionKey(responseEntry.attenteId, responseEntry.facteurId);
+      const currentPoints = pointsByCell.get(cellKey) ?? 0;
+      pointsByCell.set(cellKey, currentPoints + matchedResponse.valeur);
+
+      const questionKey = buildQuestionKey(responseEntry.facteurId, responseEntry.affirmationId);
+      validAnsweredQuestionKeys.add(questionKey);
+
+      const answeredSet = answeredKeysByCell.get(cellKey) ?? new Set<string>();
+      answeredSet.add(questionKey);
+      answeredKeysByCell.set(cellKey, answeredSet);
+    });
+
+    const attentes = atlas.attentes.map((attente) => {
+      const labels = atlas.facteurs.map((facteur) => facteur.titre || facteur.facteur);
+      const dimensions = atlas.facteurs.map((facteur) => {
+        const questionCount = affirmationCountByAttenteId.get(attente.id) ?? 0;
+        const maxResponseValue = maxResponseValueByFacteurId.get(facteur.id) ?? 0;
+        const maxPoints = questionCount * maxResponseValue;
+        const cellKey = buildQuestionKey(attente.id, facteur.id);
+        const points = pointsByCell.get(cellKey) ?? 0;
+        const answeredCount = answeredKeysByCell.get(cellKey)?.size ?? 0;
+        const score = maxPoints > 0 ? clamp((points / maxPoints) * 100, 0, 100) : 0;
+
+        return {
+          attenteId: attente.id,
+          facteurId: facteur.id,
+          key: facteur.facteur,
+          label: facteur.titre || facteur.facteur,
+          questionCount,
+          answeredCount,
+          points: Number(points.toFixed(2)),
+          maxPoints: Number(maxPoints.toFixed(2)),
+          score: Number(score.toFixed(2)),
+        } satisfies AttentesDimensionScore;
+      });
+
+      return {
+        attenteId: attente.id,
+        title: attente.label,
+        labels,
+        scores: dimensions.map((dimension) => dimension.score),
+        dimensions,
+      } satisfies AttentesAttenteStats;
+    });
+
+    const answeredCount = validAnsweredQuestionKeys.size;
+    const totalCount = buildAllQuestionKeys(atlas).length;
+
+    return {
+      title: atlas.titre || 'Attentes',
+      attentes,
+      answeredCount,
+      totalCount,
+      remainingCount: Math.max(totalCount - answeredCount, 0),
+      isCompleted: answeredCount >= totalCount,
+      updatedAt: userNode.updatedAt,
+    };
+  }
+
   async pickRandomNextEligibleSession(
     userId: string,
     currentSessionId: string,
@@ -279,6 +393,7 @@ export interface AttentesAffirmation {
 }
 
 export interface AttentesAtlas {
+  titre: string;
   facteurs: AttentesFacteur[];
   attentes: AttentesAttente[];
   affirmations: AttentesAffirmation[];
@@ -328,6 +443,36 @@ export interface AttentesSubmitAnswerResult {
   isCompleted: boolean;
 }
 
+export interface AttentesDimensionScore {
+  attenteId: number;
+  facteurId: number;
+  key: string;
+  label: string;
+  questionCount: number;
+  answeredCount: number;
+  points: number;
+  maxPoints: number;
+  score: number;
+}
+
+export interface AttentesAttenteStats {
+  attenteId: number;
+  title: string;
+  labels: string[];
+  scores: number[];
+  dimensions: AttentesDimensionScore[];
+}
+
+export interface AttentesSessionStats {
+  title: string;
+  attentes: AttentesAttenteStats[];
+  answeredCount: number;
+  totalCount: number;
+  remainingCount: number;
+  isCompleted: boolean;
+  updatedAt: string;
+}
+
 interface AttentesEligibleSession {
   sessionId: string;
   quizId: string;
@@ -352,6 +497,8 @@ const readNumber = (value: unknown): number | null => {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
 };
+
+const clamp = (value: number, min: number, max: number): number => Math.min(Math.max(value, min), max);
 
 const normalizeReponse = (payload: unknown): AttentesReponse | null => {
   const record = asRecord(payload);
@@ -442,6 +589,7 @@ const normalizeAtlas = (payload: unknown): AttentesAtlas => {
     : [];
 
   return {
+    titre: readString(record['titre']),
     facteurs,
     attentes,
     affirmations,

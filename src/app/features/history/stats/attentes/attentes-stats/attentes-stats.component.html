@@ -1,1 +1,36 @@
-<p>attentes-stats works!</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Attentes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="stats-page">
+    @if (isLoading) {
+      <div class="state-row">
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>Chargement des statistiques...</span>
+      </div>
+    } @else {
+      @if (errorMessage) {
+        <ion-text color="danger" class="state-error">{{ errorMessage }}</ion-text>
+      }
+
+      @if (stats && !errorMessage) {
+        <p class="progress-label">
+          Questions répondues: {{ stats.answeredCount }} / {{ stats.totalCount }}
+        </p>
+
+        <div class="charts-grid" aria-label="Grille des attentes">
+          @for (attenteStats of stats.attentes; track attenteStats.attenteId) {
+            <section class="chart-card" [attr.aria-label]="'Attente ' + attenteStats.title">
+              <div class="chart-wrapper">
+                <canvas #radarCanvas></canvas>
+              </div>
+            </section>
+          }
+        </div>
+      }
+    }
+  </div>
+</ion-content>

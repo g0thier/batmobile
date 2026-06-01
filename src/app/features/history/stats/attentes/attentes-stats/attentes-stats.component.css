@@ -1,0 +1,58 @@
+:host {
+  display: block;
+}
+
+.stats-page {
+  display: grid;
+  gap: 14px;
+  margin: 0 auto;
+  max-width: 960px;
+  min-height: 100%;
+  padding: 20px 12px calc(56px + var(--ion-safe-area-bottom, 0px) + 16px);
+}
+
+.progress-label {
+  color: var(--ion-color-medium, #666);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.charts-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.chart-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 10px 8px;
+}
+
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.chart-wrapper canvas {
+  display: block;
+  height: min(44vw, 330px);
+  max-height: 330px;
+  min-height: 210px;
+  width: 100%;
+}
+
+.state-row {
+  align-items: center;
+  color: var(--ion-color-medium, #666);
+  display: flex;
+  font-size: 0.85rem;
+  gap: 10px;
+}
+
+.state-error {
+  display: block;
+  font-size: 0.85rem;
+}
