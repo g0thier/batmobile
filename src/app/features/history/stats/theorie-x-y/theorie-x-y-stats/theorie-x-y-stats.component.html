@@ -21,25 +21,10 @@
 
         <div class="chart-card">
           <div class="chart-wrapper">
-            <canvas #stackedCanvas></canvas>
+            <canvas #stackedCanvas [style.height.px]="chartCanvasHeightPx"></canvas>
           </div>
         </div>
 
-        <div class="dimension-help" aria-label="Répartition par thème">
-          @for (dimension of stats.dimensions; track dimension.themeId) {
-            <p>
-              <strong>{{ dimension.label }}</strong>
-              <span class="legend-item">
-                <span class="legend-color is-engagement"></span>
-                Engagement {{ formatPercentage(dimension.engagementPct) }}
-              </span>
-              <span class="legend-item">
-                <span class="legend-color is-contrainte"></span>
-                Contrainte {{ formatPercentage(dimension.contraintePct) }}
-              </span>
-            </p>
-          }
-        </div>
       }
     }
   </div>

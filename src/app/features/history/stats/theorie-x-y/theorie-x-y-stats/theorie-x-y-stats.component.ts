@@ -53,6 +53,7 @@ export class TheorieXYStatsComponent implements AfterViewInit, OnDestroy {
   isLoading = true;
   errorMessage = '';
   stats: TheorieXYSessionStats | null = null;
+  chartCanvasHeightPx = 360;
 
   constructor() {
     void this.initialize();
@@ -110,32 +111,52 @@ export class TheorieXYStatsComponent implements AfterViewInit, OnDestroy {
     this.destroyChart();
 
     try {
+      const themeLabels = sessionStats.dimensions.map((dimension) => dimension.label);
+      const chartLabels = ['', ...themeLabels, ''];
+      const withOuterNullBars = (values: number[]): Array<number | null> => [null, ...values, null];
+      this.chartCanvasHeightPx = Math.max(
+        360,
+        chartLabels.length * BAR_THICKNESS + CHART_VERTICAL_PADDING,
+      );
+
       this.chart = new Chart(canvas, {
         type: 'bar',
         data: {
-          labels: sessionStats.dimensions.map((dimension) => dimension.label),
+          labels: chartLabels,
           datasets: [
             {
               label: 'Contrainte',
-              data: sessionStats.dimensions.map((dimension) => dimension.contraintePct),
+              data: withOuterNullBars(
+                sessionStats.dimensions.map((dimension) => dimension.contraintePct),
+              ),
               backgroundColor: '#ef4444',
               stack: 'theorie-xy',
+              barThickness: BAR_THICKNESS,
+              maxBarThickness: BAR_THICKNESS,
               borderRadius: 3,
               borderSkipped: false,
             },
             {
               label: 'Engagement',
-              data: sessionStats.dimensions.map((dimension) => dimension.engagementPct),
+              data: withOuterNullBars(
+                sessionStats.dimensions.map((dimension) => dimension.engagementPct),
+              ),
               backgroundColor: '#3b82f6',
               stack: 'theorie-xy',
+              barThickness: BAR_THICKNESS,
+              maxBarThickness: BAR_THICKNESS,
               borderRadius: 3,
               borderSkipped: false,
             },
             {
               label: '',
-              data: sessionStats.dimensions.map((dimension) => dimension.incompletePct),
+              data: withOuterNullBars(
+                sessionStats.dimensions.map((dimension) => dimension.incompletePct),
+              ),
               backgroundColor: '#94a3b8',
               stack: 'theorie-xy',
+              barThickness: BAR_THICKNESS,
+              maxBarThickness: BAR_THICKNESS,
               borderRadius: 3,
               borderSkipped: false,
             },
@@ -339,6 +360,9 @@ const MINORITY_PERCENT_LABELS_PLUGIN = {
     ctx.restore();
   },
 };
+
+const BAR_THICKNESS = 44;
+const CHART_VERTICAL_PADDING = 160;
 
 Chart.register(
   BarController,

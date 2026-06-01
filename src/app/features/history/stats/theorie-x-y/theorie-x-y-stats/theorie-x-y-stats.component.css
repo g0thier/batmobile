@@ -32,9 +32,8 @@
 
 .chart-wrapper canvas {
   display: block;
-  height: min(56vw, 360px);
-  max-height: 360px;
-  min-height: 220px;
+  max-height: none;
+  min-height: 0;
   width: 100%;
 }
 
