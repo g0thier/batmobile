@@ -29,7 +29,7 @@
           @for (dimension of stats.dimensions; track dimension.besoinId; let index = $index) {
             <p>
               <span class="legend-color" [style.background-color]="getNeedColor(index)"></span>
-              <strong>{{ dimension.label }}</strong> : {{ formatPercentage(dimension.score) }}
+              <strong>{{ dimension.label }}</strong> : {{ formatNeedPercentage(dimension.score) }}
             </p>
           }
         </div>

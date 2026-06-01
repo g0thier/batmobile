@@ -76,6 +76,12 @@ export class PyramideBesoinsStatsComponent implements AfterViewInit, OnDestroy {
     return `${Math.round(value)}%`;
   }
 
+  formatNeedPercentage(value: number): string {
+    const needCount = this.stats?.dimensions.length ?? 1;
+    const normalized = clampValue(value * needCount, 0, 100);
+    return `${Math.round(normalized)}%`;
+  }
+
   getNeedColor(index: number): string {
     return NEED_COLORS[index % NEED_COLORS.length] ?? '#64748b';
   }
