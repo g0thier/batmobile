@@ -300,8 +300,9 @@ const TOTAL_ACCOMPLISHED_MARKER_PLUGIN = {
   id: 'totalAccomplishedMarker',
   afterDraw(chart: Chart<'bar'>): void {
     const yScale = chart.scales['y'];
+    const triangle = getEquilateralTriangle(chart);
 
-    if (!yScale) {
+    if (!yScale || !triangle) {
       return;
     }
 
@@ -321,6 +322,14 @@ const TOTAL_ACCOMPLISHED_MARKER_PLUGIN = {
     const ctx = chart.ctx;
     const chartLeft = chart.chartArea.left;
     const chartRight = chart.chartArea.right;
+    const totalRatio =
+      triangle.baseY === triangle.apexY
+        ? 0
+        : clampValue((markerY - triangle.apexY) / (triangle.baseY - triangle.apexY), 0, 1);
+    const halfBase = (triangle.rightX - triangle.leftX) / 2;
+    const triangleRightAtMarker = triangle.apexX + halfBase * totalRatio;
+    const rawTextX = triangleRightAtMarker + (chartRight - triangleRightAtMarker) / 2;
+    const textX = clampValue(rawTextX, triangleRightAtMarker + 12, chartRight - 12);
 
     ctx.save();
     ctx.setLineDash([6, 4]);
@@ -333,11 +342,11 @@ const TOTAL_ACCOMPLISHED_MARKER_PLUGIN = {
 
     ctx.setLineDash([]);
     ctx.fillStyle = '#64748b';
-    ctx.textAlign = 'right';
+    ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.font = '600 11px system-ui, -apple-system, sans-serif';
     const textOffsetY = cappedTotal > 90 ? 10 : -10;
-    ctx.fillText(`${Math.round(cappedTotal)}%`, chartRight - 8, markerY + textOffsetY);
+    ctx.fillText(`${Math.round(cappedTotal)}%`, textX, markerY + textOffsetY);
     ctx.restore();
   },
 };
