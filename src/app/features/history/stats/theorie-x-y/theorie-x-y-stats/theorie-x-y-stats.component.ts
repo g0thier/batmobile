@@ -132,7 +132,7 @@ export class TheorieXYStatsComponent implements AfterViewInit, OnDestroy {
               borderSkipped: false,
             },
             {
-              label: 'Incomplet',
+              label: '',
               data: sessionStats.dimensions.map((dimension) => dimension.incompletePct),
               backgroundColor: '#94a3b8',
               stack: 'theorie-xy',
@@ -152,6 +152,10 @@ export class TheorieXYStatsComponent implements AfterViewInit, OnDestroy {
               labels: {
                 color: '#334155',
                 padding: 14,
+                filter: (legendItem) => {
+                  const datasetIndex = legendItem.datasetIndex ?? -1;
+                  return datasetIndex !== 2;
+                },
               },
             },
             title: {
@@ -167,6 +171,7 @@ export class TheorieXYStatsComponent implements AfterViewInit, OnDestroy {
               },
             },
             tooltip: {
+              filter: (tooltipItem) => tooltipItem.datasetIndex !== 2,
               callbacks: {
                 label: (context) => {
                   const rawValue = Number(context.raw ?? 0);
@@ -192,6 +197,7 @@ export class TheorieXYStatsComponent implements AfterViewInit, OnDestroy {
             y: {
               stacked: true,
               ticks: {
+                display: false,
                 color: '#334155',
               },
               grid: {
@@ -214,7 +220,7 @@ export class TheorieXYStatsComponent implements AfterViewInit, OnDestroy {
 
 const FIFTY_PERCENT_REFERENCE_PLUGIN = {
   id: 'fiftyPercentReference',
-  afterDraw(chart: Chart<'bar'>): void {
+  beforeDatasetsDraw(chart: Chart<'bar'>): void {
     const xScale = chart.scales['x'];
     const chartArea = chart.chartArea;
     if (!xScale || !chartArea) {
@@ -236,6 +242,104 @@ const FIFTY_PERCENT_REFERENCE_PLUGIN = {
   },
 };
 
+const STACK_CENTER_LABELS_PLUGIN = {
+  id: 'stackCenterLabels',
+  afterDatasetsDraw(chart: Chart<'bar'>): void {
+    const labels = (chart.data.labels ?? []).map((label) => String(label ?? ''));
+    if (labels.length === 0) {
+      return;
+    }
+
+    const xScale = chart.scales['x'];
+    const yScale = chart.scales['y'];
+    if (!xScale || !yScale) {
+      return;
+    }
+
+    const firstDatasetMeta = chart.getDatasetMeta(0);
+    const centerX = xScale.getPixelForValue(50);
+    const ctx = chart.ctx;
+
+    ctx.save();
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = '600 11px system-ui, -apple-system, sans-serif';
+
+    labels.forEach((label, index) => {
+      const barElement = firstDatasetMeta.data[index];
+      if (!barElement) {
+        return;
+      }
+
+      const y = barElement.y;
+      ctx.fillText(label, centerX, y);
+    });
+
+    ctx.restore();
+  },
+};
+
+const MINORITY_PERCENT_LABELS_PLUGIN = {
+  id: 'minorityPercentLabels',
+  afterDatasetsDraw(chart: Chart<'bar'>): void {
+    const labels = (chart.data.labels ?? []).map((label) => String(label ?? ''));
+    if (labels.length === 0) {
+      return;
+    }
+
+    const contraDataset = chart.data.datasets[0];
+    const engageDataset = chart.data.datasets[1];
+    if (!contraDataset || !engageDataset) {
+      return;
+    }
+
+    const ctx = chart.ctx;
+    ctx.save();
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = '600 10px system-ui, -apple-system, sans-serif';
+
+    labels.forEach((_, index) => {
+      const contrainteValue = Number(contraDataset.data[index] ?? 0);
+      const engagementValue = Number(engageDataset.data[index] ?? 0);
+
+      if (!Number.isFinite(contrainteValue) || !Number.isFinite(engagementValue)) {
+        return;
+      }
+
+      if (Math.abs(contrainteValue - engagementValue) < Number.EPSILON) {
+        return;
+      }
+
+      const minorityDatasetIndex = contrainteValue < engagementValue ? 0 : 1;
+      const minorityValue = minorityDatasetIndex === 0 ? contrainteValue : engagementValue;
+
+      if (minorityValue <= 5) {
+        return;
+      }
+
+      const minorityMeta = chart.getDatasetMeta(minorityDatasetIndex);
+      const barElement = minorityMeta.data[index] as BarElement | undefined;
+      if (!barElement) {
+        return;
+      }
+
+      const geometry = barElement.getProps(['x', 'base', 'y'], true) as {
+        x: number;
+        base: number;
+        y: number;
+      };
+
+      const centerX = (geometry.x + geometry.base) / 2;
+      ctx.fillText(`${Math.round(minorityValue)}%`, centerX, geometry.y);
+    });
+
+    ctx.restore();
+  },
+};
+
 Chart.register(
   BarController,
   BarElement,
@@ -245,4 +349,6 @@ Chart.register(
   Legend,
   Title,
   FIFTY_PERCENT_REFERENCE_PLUGIN,
+  STACK_CENTER_LABELS_PLUGIN,
+  MINORITY_PERCENT_LABELS_PLUGIN,
 );
