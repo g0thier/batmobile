@@ -5,6 +5,7 @@ import {
   BarElement,
   CategoryScale,
   Chart,
+  ChartDataset,
   Legend,
   LinearScale,
   Title,
@@ -72,7 +73,7 @@ export class PyramideBesoinsStatsComponent implements AfterViewInit, OnDestroy {
   }
 
   formatPercentage(value: number): string {
-    return `${value.toFixed(2)}%`;
+    return `${Math.round(value)}%`;
   }
 
   getNeedColor(index: number): string {
@@ -124,7 +125,8 @@ export class PyramideBesoinsStatsComponent implements AfterViewInit, OnDestroy {
         borderColor: '#ffffff',
         borderWidth: 1,
         stack: 'pyramide-besoins',
-        barThickness: 72,
+        categoryPercentage: 1,
+        barPercentage: 1,
       };
     });
 
@@ -139,7 +141,8 @@ export class PyramideBesoinsStatsComponent implements AfterViewInit, OnDestroy {
         },
         options: {
           animation: false,
-          maintainAspectRatio: false,
+          maintainAspectRatio: true,
+          aspectRatio: 2 / Math.sqrt(3),
           plugins: {
             legend: {
               display: false,
@@ -160,7 +163,7 @@ export class PyramideBesoinsStatsComponent implements AfterViewInit, OnDestroy {
               callbacks: {
                 label: (context) => {
                   const rawValue = Number(context.raw ?? 0);
-                  return `${context.dataset.label}: ${rawValue.toFixed(2)}%`;
+                  return `${context.dataset.label}: ${Math.round(rawValue)}%`;
                 },
               },
             },
@@ -168,6 +171,7 @@ export class PyramideBesoinsStatsComponent implements AfterViewInit, OnDestroy {
           scales: {
             x: {
               stacked: true,
+              offset: true,
               grid: {
                 display: false,
               },
@@ -203,3 +207,132 @@ export class PyramideBesoinsStatsComponent implements AfterViewInit, OnDestroy {
 }
 
 const NEED_COLORS = ['#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#14b8a6'];
+
+const EQUILATERAL_TRIANGLE_MASK_PLUGIN = {
+  id: 'equilateralTriangleMask',
+  beforeDatasetsDraw(chart: Chart<'bar'>): void {
+    const ctx = chart.ctx;
+    const triangle = getEquilateralTriangle(chart);
+
+    if (!triangle) {
+      return;
+    }
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(triangle.leftX, triangle.baseY);
+    ctx.lineTo(triangle.rightX, triangle.baseY);
+    ctx.lineTo(triangle.apexX, triangle.apexY);
+    ctx.closePath();
+    ctx.clip();
+  },
+  afterDatasetsDraw(chart: Chart<'bar'>): void {
+    const ctx = chart.ctx;
+    const triangle = getEquilateralTriangle(chart);
+
+    if (!triangle) {
+      return;
+    }
+
+    ctx.restore();
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(triangle.leftX, triangle.baseY);
+    ctx.lineTo(triangle.rightX, triangle.baseY);
+    ctx.lineTo(triangle.apexX, triangle.apexY);
+    ctx.closePath();
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.restore();
+  },
+};
+
+const STACK_PERCENT_LABELS_PLUGIN = {
+  id: 'stackPercentLabels',
+  afterDatasetsDraw(chart: Chart<'bar'>): void {
+    const color = '#ffffff';
+    const fontSize = 12;
+    const ctx = chart.ctx;
+
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = `600 ${fontSize}px system-ui, -apple-system, sans-serif`;
+
+    chart.data.datasets.forEach((dataset: ChartDataset<'bar'>, datasetIndex: number) => {
+      const dataValue = Number(dataset.data?.[0] ?? 0);
+      if (!Number.isFinite(dataValue) || dataValue <= 0) {
+        return;
+      }
+
+      const meta = chart.getDatasetMeta(datasetIndex);
+      const barElement = meta.data[0] as BarElement | undefined;
+      if (!barElement) {
+        return;
+      }
+
+      const geometry = barElement.getProps(['x', 'y', 'base'], true) as {
+        x: number;
+        y: number;
+        base: number;
+      };
+
+      const segmentHeight = Math.abs(geometry.base - geometry.y);
+      if (segmentHeight < fontSize + 4) {
+        return;
+      }
+
+      const centerX = geometry.x;
+      const centerY = (geometry.base + geometry.y) / 2;
+      ctx.fillText(`${Math.round(dataValue)}%`, centerX, centerY);
+    });
+
+    ctx.restore();
+  },
+};
+
+Chart.register(EQUILATERAL_TRIANGLE_MASK_PLUGIN);
+Chart.register(STACK_PERCENT_LABELS_PLUGIN);
+
+const getEquilateralTriangle = (
+  chart: Chart<'bar'>,
+): {
+  leftX: number;
+  rightX: number;
+  baseY: number;
+  apexX: number;
+  apexY: number;
+} | null => {
+  const yScale = chart.scales['y'];
+  const xScale = chart.scales['x'];
+  if (!yScale || !xScale) {
+    return null;
+  }
+
+  const baseY = yScale.getPixelForValue(0);
+  const apexY = yScale.getPixelForValue(100);
+  const triangleHeight = baseY - apexY;
+  if (!Number.isFinite(triangleHeight) || triangleHeight <= 0) {
+    return null;
+  }
+
+  const side = (2 * triangleHeight) / Math.sqrt(3);
+  const chartAreaLeft = chart.chartArea.left;
+  const chartAreaRight = chart.chartArea.right;
+  const minCenterX = chartAreaLeft + side / 2;
+  const maxCenterX = chartAreaRight - side / 2;
+  const rawCenterX = xScale.getPixelForValue(0);
+  const centerX = Number.isFinite(rawCenterX)
+    ? Math.min(Math.max(rawCenterX, minCenterX), maxCenterX)
+    : (chartAreaLeft + chartAreaRight) / 2;
+
+  return {
+    leftX: centerX - side / 2,
+    rightX: centerX + side / 2,
+    baseY,
+    apexX: centerX,
+    apexY,
+  };
+};
