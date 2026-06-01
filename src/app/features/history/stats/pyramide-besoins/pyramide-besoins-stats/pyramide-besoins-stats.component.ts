@@ -346,7 +346,9 @@ const TOTAL_ACCOMPLISHED_MARKER_PLUGIN = {
     ctx.textBaseline = 'middle';
     ctx.font = '600 11px system-ui, -apple-system, sans-serif';
     const textOffsetY = cappedTotal > 90 ? 10 : -10;
-    ctx.fillText(`${Math.round(cappedTotal)}%`, textX, markerY + textOffsetY);
+    const totalLabel = `${Math.round(cappedTotal)}%`;
+    const paddedTotalLabel = cappedTotal > 90 ? ` ${totalLabel}` : `${totalLabel} `;
+    ctx.fillText(paddedTotalLabel, textX, markerY + textOffsetY);
     ctx.restore();
   },
 };
