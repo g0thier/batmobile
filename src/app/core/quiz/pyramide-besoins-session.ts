@@ -148,6 +148,102 @@ export class PyramideBesoinsSession {
     };
   }
 
+  async getSessionStats(sessionId: string, userId: string): Promise<PyramideBesoinsSessionStats> {
+    const normalizedSessionId = readString(sessionId);
+    const normalizedUserId = readString(userId);
+
+    if (!normalizedSessionId || !normalizedUserId) {
+      throw new Error('Session ou utilisateur introuvable.');
+    }
+
+    const [atlas, userNode] = await Promise.all([
+      this.loadAtlas(),
+      this.readUserResponsesNode(normalizedSessionId, normalizedUserId),
+    ]);
+
+    const besoinById = new Map(atlas.besoins.map((besoin) => [besoin.id, besoin]));
+    const affirmationById = new Map(atlas.affirmations.map((affirmation) => [affirmation.id, affirmation]));
+    const reponseById = new Map(atlas.reponses.map((reponse) => [reponse.id, reponse]));
+    const totalCount = atlas.affirmations.length;
+    const questionCountByBesoinId = new Map<number, number>();
+
+    atlas.affirmations.forEach((affirmation) => {
+      const currentCount = questionCountByBesoinId.get(affirmation.besoin) ?? 0;
+      questionCountByBesoinId.set(affirmation.besoin, currentCount + 1);
+    });
+
+    const scoreByBesoinId = new Map<number, number>();
+    const ouiCountByBesoinId = new Map<number, number>();
+    const answeredAffirmationsByBesoinId = new Map<number, Set<number>>();
+    const validAnsweredAffirmationIds = new Set<number>();
+
+    const normalizedResponses = dedupeResponses(userNode.responses).filter(
+      (response) => response.quizId === PYRAMIDE_BESOINS_QUIZ_ID,
+    );
+
+    normalizedResponses.forEach((responseEntry) => {
+      const matchedAffirmation = affirmationById.get(responseEntry.affirmationId);
+      const matchedReponse = reponseById.get(responseEntry.reponseId);
+      const matchedBesoin = besoinById.get(responseEntry.besoinId);
+
+      if (!matchedAffirmation || !matchedReponse || !matchedBesoin) {
+        return;
+      }
+
+      if (matchedAffirmation.besoin !== responseEntry.besoinId) {
+        return;
+      }
+
+      const normalizedValeur = clamp(matchedReponse.valeur, 0, 1);
+      const currentScore = scoreByBesoinId.get(responseEntry.besoinId) ?? 0;
+      scoreByBesoinId.set(responseEntry.besoinId, currentScore + normalizedValeur);
+
+      if (normalizedValeur >= 1) {
+        const currentOuiCount = ouiCountByBesoinId.get(responseEntry.besoinId) ?? 0;
+        ouiCountByBesoinId.set(responseEntry.besoinId, currentOuiCount + 1);
+      }
+
+      validAnsweredAffirmationIds.add(responseEntry.affirmationId);
+
+      const answeredSet = answeredAffirmationsByBesoinId.get(responseEntry.besoinId) ?? new Set<number>();
+      answeredSet.add(responseEntry.affirmationId);
+      answeredAffirmationsByBesoinId.set(responseEntry.besoinId, answeredSet);
+    });
+
+    const dimensions = atlas.besoins.map((besoin) => {
+      const questionCount = questionCountByBesoinId.get(besoin.id) ?? 0;
+      const answeredSet = answeredAffirmationsByBesoinId.get(besoin.id);
+      const answeredCount = answeredSet?.size ?? 0;
+      const ouiCount = ouiCountByBesoinId.get(besoin.id) ?? 0;
+      const userPoints = scoreByBesoinId.get(besoin.id) ?? 0;
+      const score = totalCount > 0 ? clamp((userPoints / totalCount) * 100, 0, 100) : 0;
+
+      return {
+        besoinId: besoin.id,
+        key: besoin.key,
+        label: besoin.label,
+        questionCount,
+        answeredCount,
+        ouiCount,
+        score: Number(score.toFixed(2)),
+      } satisfies PyramideBesoinsDimensionScore;
+    });
+
+    const answeredCount = validAnsweredAffirmationIds.size;
+
+    return {
+      title: atlas.nom || 'Pyramide des besoins',
+      labels: dimensions.map((dimension) => dimension.key),
+      scores: dimensions.map((dimension) => dimension.score),
+      dimensions,
+      answeredCount,
+      totalCount,
+      remainingCount: Math.max(totalCount - answeredCount, 0),
+      isCompleted: answeredCount >= totalCount,
+      updatedAt: userNode.updatedAt,
+    };
+  }
+
   async pickRandomNextEligibleSession(
     userId: string,
     currentSessionId: string,
@@ -257,6 +353,7 @@ export interface PyramideBesoinsAffirmation {
 }
 
 export interface PyramideBesoinsAtlas {
+  nom: string;
   besoins: PyramideBesoinsBesoin[];
   reponses: PyramideBesoinsReponse[];
   affirmations: PyramideBesoinsAffirmation[];
@@ -297,6 +394,28 @@ export interface PyramideBesoinsSubmitAnswerResult {
   isCompleted: boolean;
 }
 
+export interface PyramideBesoinsDimensionScore {
+  besoinId: number;
+  key: string;
+  label: string;
+  questionCount: number;
+  answeredCount: number;
+  ouiCount: number;
+  score: number;
+}
+
+export interface PyramideBesoinsSessionStats {
+  title: string;
+  labels: string[];
+  scores: number[];
+  dimensions: PyramideBesoinsDimensionScore[];
+  answeredCount: number;
+  totalCount: number;
+  remainingCount: number;
+  isCompleted: boolean;
+  updatedAt: string;
+}
+
 interface PyramideBesoinsEligibleSession {
   sessionId: string;
   quizId: string;
@@ -321,6 +440,8 @@ const readNumber = (value: unknown): number | null => {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
 };
+
+const clamp = (value: number, min: number, max: number): number => Math.min(Math.max(value, min), max);
 
 const normalizeAtlas = (payload: unknown): PyramideBesoinsAtlas => {
   const record = asRecord(payload);
@@ -381,7 +502,12 @@ const normalizeAtlas = (payload: unknown): PyramideBesoinsAtlas => {
         .filter((affirmation): affirmation is PyramideBesoinsAffirmation => affirmation !== null)
     : [];
 
-  return { besoins, reponses, affirmations };
+  return {
+    nom: readString(record['nom']),
+    besoins,
+    reponses,
+    affirmations,
+  };
 };
 
 const normalizeAnswerEntry = (payload: unknown): PyramideBesoinsAnswerEntry | null => {

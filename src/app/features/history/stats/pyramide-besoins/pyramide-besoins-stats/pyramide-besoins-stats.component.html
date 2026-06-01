@@ -1,1 +1,39 @@
-<p>pyramide-besoins-stats works!</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Besoins de Maslow</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="stats-page">
+    @if (isLoading) {
+      <div class="state-row">
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>Chargement des statistiques...</span>
+      </div>
+    } @else {
+      @if (errorMessage) {
+        <ion-text color="danger" class="state-error">{{ errorMessage }}</ion-text>
+      }
+
+      @if (stats && !errorMessage) {
+        <p class="progress-label">Questions répondues: {{ stats.answeredCount }} / {{ stats.totalCount }}</p>
+
+        <div class="chart-card">
+          <div class="chart-wrapper">
+            <canvas #stackedCanvas></canvas>
+          </div>
+        </div>
+
+        <div class="dimension-help" aria-label="Répartition des besoins">
+          @for (dimension of stats.dimensions; track dimension.besoinId; let index = $index) {
+            <p>
+              <span class="legend-color" [style.background-color]="getNeedColor(index)"></span>
+              <strong>{{ dimension.label }}</strong> : {{ formatPercentage(dimension.score) }}
+            </p>
+          }
+        </div>
+      }
+    }
+  </div>
+</ion-content>
