@@ -1,0 +1,91 @@
+:host {
+  display: block;
+}
+
+.stats-page {
+  display: grid;
+  gap: 14px;
+  margin: 0 auto;
+  max-width: 960px;
+  min-height: 100%;
+  padding: 20px 12px calc(56px + var(--ion-safe-area-bottom, 0px) + 16px);
+}
+
+.progress-label {
+  color: var(--ion-color-medium, #666);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.chart-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 12px 10px;
+}
+
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.chart-wrapper canvas {
+  display: block;
+  max-height: none;
+  min-height: 0;
+  width: 100%;
+}
+
+.dimension-help {
+  display: grid;
+  gap: 6px;
+}
+
+.dimension-help p {
+  align-items: center;
+  color: #475569;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.82rem;
+  gap: 10px;
+  margin: 0;
+}
+
+.legend-item {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.legend-color {
+  border-radius: 999px;
+  display: inline-block;
+  height: 8px;
+  width: 8px;
+}
+
+.legend-color.is-engagement {
+  background: #3b82f6;
+}
+
+.legend-color.is-contrainte {
+  background: #ef4444;
+}
+
+.legend-color.is-incomplete {
+  background: #94a3b8;
+}
+
+.state-row {
+  align-items: center;
+  color: var(--ion-color-medium, #666);
+  display: flex;
+  font-size: 0.85rem;
+  gap: 10px;
+}
+
+.state-error {
+  display: block;
+  font-size: 0.85rem;
+}

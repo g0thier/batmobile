@@ -135,6 +135,109 @@ export class AutodeterminationSession {
     };
   }
 
+  async getSessionStats(sessionId: string, userId: string): Promise<AutodeterminationSessionStats> {
+    const normalizedSessionId = readString(sessionId);
+    const normalizedUserId = readString(userId);
+
+    if (!normalizedSessionId || !normalizedUserId) {
+      throw new Error('Session ou utilisateur introuvable.');
+    }
+
+    const [atlas, userNode] = await Promise.all([
+      this.loadAtlas(),
+      this.readUserResponsesNode(normalizedSessionId, normalizedUserId),
+    ]);
+
+    const themeById = new Map(atlas.themes.map((theme) => [theme.id, theme]));
+    const affirmationById = new Map(atlas.affirmations.map((affirmation) => [affirmation.id, affirmation]));
+    const responseById = new Map(atlas.reponses.map((response) => [response.id, response]));
+
+    const totalCountByThemeId = new Map<number, number>();
+    atlas.affirmations.forEach((affirmation) => {
+      const currentCount = totalCountByThemeId.get(affirmation.theme) ?? 0;
+      totalCountByThemeId.set(affirmation.theme, currentCount + 1);
+    });
+
+    const normalizedResponses = dedupeResponses(userNode.responses).filter(
+      (response) => response.quizId === AUTODETERMINATION_QUIZ_ID,
+    );
+
+    const answeredAffirmationsByThemeId = new Map<number, Set<number>>();
+    const intrinsequeCountByThemeId = new Map<number, number>();
+    const extrinsequeCountByThemeId = new Map<number, number>();
+    const validAnsweredAffirmationIds = new Set<number>();
+
+    normalizedResponses.forEach((responseEntry) => {
+      const matchedAffirmation = affirmationById.get(responseEntry.affirmationId);
+      const matchedTheme = themeById.get(responseEntry.themeId);
+      const matchedResponse = responseById.get(responseEntry.responseId);
+
+      if (!matchedAffirmation || !matchedTheme || !matchedResponse) {
+        return;
+      }
+
+      if (matchedAffirmation.theme !== responseEntry.themeId) {
+        return;
+      }
+
+      validAnsweredAffirmationIds.add(responseEntry.affirmationId);
+
+      const answeredSet = answeredAffirmationsByThemeId.get(responseEntry.themeId) ?? new Set<number>();
+      answeredSet.add(responseEntry.affirmationId);
+      answeredAffirmationsByThemeId.set(responseEntry.themeId, answeredSet);
+
+      if (matchedResponse.valeur >= 1) {
+        const currentIntrinsequeCount = intrinsequeCountByThemeId.get(responseEntry.themeId) ?? 0;
+        intrinsequeCountByThemeId.set(responseEntry.themeId, currentIntrinsequeCount + 1);
+        return;
+      }
+
+      const currentExtrinsequeCount = extrinsequeCountByThemeId.get(responseEntry.themeId) ?? 0;
+      extrinsequeCountByThemeId.set(responseEntry.themeId, currentExtrinsequeCount + 1);
+    });
+
+    const dimensions = atlas.themes.map((theme) => {
+      const totalAffirmations = totalCountByThemeId.get(theme.id) ?? 0;
+      const answeredCount = answeredAffirmationsByThemeId.get(theme.id)?.size ?? 0;
+      const intrinsequeCount = intrinsequeCountByThemeId.get(theme.id) ?? 0;
+      const extrinsequeCount = extrinsequeCountByThemeId.get(theme.id) ?? 0;
+      const incompleteCount = Math.max(totalAffirmations - answeredCount, 0);
+
+      const intrinsequePct =
+        totalAffirmations > 0 ? clamp((intrinsequeCount / totalAffirmations) * 100, 0, 100) : 0;
+      const extrinsequePct =
+        totalAffirmations > 0 ? clamp((extrinsequeCount / totalAffirmations) * 100, 0, 100) : 0;
+      const incompletePct =
+        totalAffirmations > 0 ? clamp((incompleteCount / totalAffirmations) * 100, 0, 100) : 0;
+
+      return {
+        themeId: theme.id,
+        label: theme.label,
+        totalAffirmations,
+        answeredCount,
+        intrinsequeCount,
+        extrinsequeCount,
+        incompleteCount,
+        intrinsequePct: Number(intrinsequePct.toFixed(2)),
+        extrinsequePct: Number(extrinsequePct.toFixed(2)),
+        incompletePct: Number(incompletePct.toFixed(2)),
+      } satisfies AutodeterminationThemeStats;
+    });
+
+    const answeredCount = validAnsweredAffirmationIds.size;
+    const totalCount = atlas.affirmations.length;
+
+    return {
+      title: atlas.titre || atlas.nom || 'Autodétermination',
+      dimensions,
+      answeredCount,
+      totalCount,
+      remainingCount: Math.max(totalCount - answeredCount, 0),
+      isCompleted: answeredCount >= totalCount,
+      updatedAt: userNode.updatedAt,
+    };
+  }
+
   async pickRandomNextEligibleSession(
     userId: string,
     currentSessionId: string,
@@ -244,6 +347,8 @@ export interface AutodeterminationAffirmation {
 }
 
 export interface AutodeterminationAtlas {
+  nom: string;
+  titre: string;
   themes: AutodeterminationTheme[];
   reponses: AutodeterminationAnswer[];
   affirmations: AutodeterminationAffirmation[];
@@ -283,6 +388,29 @@ export interface AutodeterminationSubmitAnswerResult {
   isCompleted: boolean;
 }
 
+export interface AutodeterminationThemeStats {
+  themeId: number;
+  label: string;
+  totalAffirmations: number;
+  answeredCount: number;
+  intrinsequeCount: number;
+  extrinsequeCount: number;
+  incompleteCount: number;
+  intrinsequePct: number;
+  extrinsequePct: number;
+  incompletePct: number;
+}
+
+export interface AutodeterminationSessionStats {
+  title: string;
+  dimensions: AutodeterminationThemeStats[];
+  answeredCount: number;
+  totalCount: number;
+  remainingCount: number;
+  isCompleted: boolean;
+  updatedAt: string;
+}
+
 interface AutodeterminationEligibleSession {
   sessionId: string;
   quizId: string;
@@ -307,6 +435,8 @@ const readNumber = (value: unknown): number | null => {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
 };
+
+const clamp = (value: number, min: number, max: number): number => Math.min(Math.max(value, min), max);
 
 const normalizeAtlas = (payload: unknown): AutodeterminationAtlas => {
   const record = asRecord(payload);
@@ -367,7 +497,13 @@ const normalizeAtlas = (payload: unknown): AutodeterminationAtlas => {
         .filter((affirmation): affirmation is AutodeterminationAffirmation => affirmation !== null)
     : [];
 
-  return { themes, reponses, affirmations };
+  return {
+    nom: readString(record['nom']),
+    titre: readString(record['titre']),
+    themes,
+    reponses,
+    affirmations,
+  };
 };
 
 const normalizeAnswerEntry = (payload: unknown): AutodeterminationAnswerEntry | null => {
