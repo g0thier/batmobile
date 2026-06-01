@@ -1,1 +1,50 @@
-<p>theorie-x-y-stats works!</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Théorie X-Y</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="stats-page">
+    @if (isLoading) {
+      <div class="state-row">
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>Chargement des statistiques...</span>
+      </div>
+    } @else {
+      @if (errorMessage) {
+        <ion-text color="danger" class="state-error">{{ errorMessage }}</ion-text>
+      }
+
+      @if (stats && !errorMessage) {
+        <p class="progress-label">Questions répondues: {{ stats.answeredCount }} / {{ stats.totalCount }}</p>
+
+        <div class="chart-card">
+          <div class="chart-wrapper">
+            <canvas #stackedCanvas></canvas>
+          </div>
+        </div>
+
+        <div class="dimension-help" aria-label="Répartition par thème">
+          @for (dimension of stats.dimensions; track dimension.themeId) {
+            <p>
+              <strong>{{ dimension.label }}</strong>
+              <span class="legend-item">
+                <span class="legend-color is-engagement"></span>
+                Engagement {{ formatPercentage(dimension.engagementPct) }}
+              </span>
+              <span class="legend-item">
+                <span class="legend-color is-contrainte"></span>
+                Contrainte {{ formatPercentage(dimension.contraintePct) }}
+              </span>
+              <span class="legend-item">
+                <span class="legend-color is-incomplete"></span>
+                Incomplet {{ formatPercentage(dimension.incompletePct) }}
+              </span>
+            </p>
+          }
+        </div>
+      }
+    }
+  </div>
+</ion-content>
