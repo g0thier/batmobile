@@ -296,6 +296,54 @@ const STACK_PERCENT_LABELS_PLUGIN = {
 Chart.register(EQUILATERAL_TRIANGLE_MASK_PLUGIN);
 Chart.register(STACK_PERCENT_LABELS_PLUGIN);
 
+const TOTAL_ACCOMPLISHED_MARKER_PLUGIN = {
+  id: 'totalAccomplishedMarker',
+  afterDraw(chart: Chart<'bar'>): void {
+    const yScale = chart.scales['y'];
+
+    if (!yScale) {
+      return;
+    }
+
+    const totalAccomplished = chart.data.datasets.reduce((sum, dataset, index) => {
+      if (!chart.isDatasetVisible(index)) {
+        return sum;
+      }
+      return sum + Number(dataset.data?.[0] ?? 0);
+    }, 0);
+
+    const cappedTotal = clampValue(totalAccomplished, 0, 100);
+    const markerY = yScale.getPixelForValue(cappedTotal);
+    if (!Number.isFinite(markerY)) {
+      return;
+    }
+
+    const ctx = chart.ctx;
+    const chartLeft = chart.chartArea.left;
+    const chartRight = chart.chartArea.right;
+
+    ctx.save();
+    ctx.setLineDash([6, 4]);
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(chartLeft, markerY);
+    ctx.lineTo(chartRight, markerY);
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#64748b';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.font = '600 11px system-ui, -apple-system, sans-serif';
+    const textOffsetY = cappedTotal > 90 ? 10 : -10;
+    ctx.fillText(`${Math.round(cappedTotal)}%`, chartRight - 8, markerY + textOffsetY);
+    ctx.restore();
+  },
+};
+
+Chart.register(TOTAL_ACCOMPLISHED_MARKER_PLUGIN);
+
 const getEquilateralTriangle = (
   chart: Chart<'bar'>,
 ): {
@@ -336,3 +384,5 @@ const getEquilateralTriangle = (
     apexY,
   };
 };
+
+const clampValue = (value: number, min: number, max: number): number => Math.min(Math.max(value, min), max);
