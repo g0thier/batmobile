@@ -244,6 +244,7 @@ export class AttentesSession {
           facteurId: facteur.id,
           key: facteur.facteur,
           label: facteur.titre || facteur.facteur,
+          labelDetail: facteur.label,
           questionCount,
           answeredCount,
           points: Number(points.toFixed(2)),
@@ -448,6 +449,7 @@ export interface AttentesDimensionScore {
   facteurId: number;
   key: string;
   label: string;
+  labelDetail: string;
   questionCount: number;
   answeredCount: number;
   points: number;

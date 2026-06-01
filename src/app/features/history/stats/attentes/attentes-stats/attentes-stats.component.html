@@ -30,6 +30,12 @@
             </section>
           }
         </div>
+
+        <div class="dimension-help" aria-label="Explications des dimensions">
+          @for (definition of getAxisDefinitions(); track definition.axis) {
+            <p><strong>{{ definition.axis }}</strong> : {{ definition.label }}</p>
+          }
+        </div>
       }
     }
   </div>

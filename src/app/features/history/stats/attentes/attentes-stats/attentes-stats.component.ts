@@ -121,12 +121,13 @@ export class AttentesStatsComponent implements AfterViewInit, OnDestroy {
       if (!canvas) {
         return;
       }
+      const axisLabels = attenteStats.labels.map((label) => this.buildAxisLabel(label));
 
       try {
         const chart = new Chart(canvas, {
           type: 'radar',
           data: {
-            labels: attenteStats.labels,
+            labels: axisLabels,
             datasets: [
               {
                 data: attenteStats.scores,
@@ -198,6 +199,34 @@ export class AttentesStatsComponent implements AfterViewInit, OnDestroy {
         console.error('Erreur de rendu chart attentes :', error);
       }
     });
+  }
+
+  private buildAxisLabel(rawLabel: string): string {
+    const normalized = rawLabel
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
+
+    if (!normalized) {
+      return '';
+    }
+
+    const firstAlpha = normalized.match(/[A-Za-z]/)?.[0] ?? '';
+    return firstAlpha ? `${firstAlpha.toUpperCase()}.` : '';
+  }
+
+  getAxisDefinitions(): Array<{ axis: string; label: string }> {
+    const firstAttente = this.stats?.attentes[0];
+    if (!firstAttente) {
+      return [];
+    }
+
+    return firstAttente.dimensions.map((dimension) => ({
+      axis: this.buildAxisLabel(dimension.label),
+      label: dimension.labelDetail
+        ? `${dimension.label} ${dimension.labelDetail}`
+        : dimension.label,
+    }));
   }
 
   private destroyCharts(): void {
