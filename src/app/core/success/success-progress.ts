@@ -219,7 +219,7 @@ const buildQuizCards = (
       return {
         id: `quiz-${quizId}`,
         title: quiz.title,
-        subtitle: unlocked ? 'Débloqué au moins une fois' : 'Encore à découvrir',
+        subtitle: unlocked ? 'Découvert et apprécié' : 'Encore à découvrir',
         progressLabel: unlocked ? 'Validé' : 'À débloquer',
         progressPercent: unlocked ? 100 : 0,
         isUnlocked: unlocked,
@@ -236,7 +236,7 @@ const buildAllQuizUnlockedCard = (quizCards: SuccessAchievementCard[]): SuccessA
   return {
     id: 'all-quizzes',
     title: 'Catalogue complet',
-    subtitle: allUnlocked ? 'Tous les parcours ont déjà été ouverts' : 'Le catalogue n’est pas encore complet',
+    subtitle: allUnlocked ? 'Tous les quiz ont été parcourus' : 'Le catalogue reste à explorer',
     progressLabel: `${unlockedCount}/${quizCards.length}`,
     progressPercent: quizCards.length > 0 ? Math.round((unlockedCount / quizCards.length) * 100) : 0,
     isUnlocked: allUnlocked,
@@ -254,7 +254,7 @@ const buildQuestionMilestoneCards = (answeredCount: number): SuccessAchievementC
     return {
       id: `questions-${threshold}`,
       title: titles[index] ?? 'Progression',
-      subtitle: 'Réponses accumulées',
+      subtitle: `${formatCompactValue(threshold)} réponses à accumuler`,
       progressLabel: `${formatCompactValue(Math.min(answeredCount, threshold))}`,
       progressPercent,
       isUnlocked: unlocked,
@@ -366,11 +366,14 @@ const buildImprovementCards = (
       id: `improvement-${quizId}`,
       title: quiz.title,
       subtitle:
-        quizId === 'identite-pro'
-          ? 'Alignement et progression'
-          : quizId === 'attentes'
-            ? 'Équilibre et moyenne'
-            : 'Record personnel',
+        quizId === 'attentes' ? 'Valoriser ses attentes' :
+        quizId === 'autodetermination' ? 'Faire pour soi' :
+        quizId === 'besoins-acquis' ? 'Besoins acquis' :
+        quizId === 'equite' ? 'Donnant donnant' :
+        quizId === 'identite-pro' ? 'Positivité et alignement' :
+        quizId === 'pyramide-besoins' ? 'Se sentir complet' :
+        quizId === 'theorie-x-y' ? 'Plus de leadership' :
+        'Quiz inconnu',
       progressLabel: unlocked ? 'Nouveau sommet' : 'À construire',
       progressPercent: unlocked ? 100 : 0,
       isUnlocked: unlocked,
@@ -384,8 +387,8 @@ const buildImprovementOverview = (cards: SuccessAchievementCard[]): SuccessOverv
   const unlockedCount = cards.filter((card) => card.isUnlocked).length;
   return {
     id: 'improvements',
-    label: 'Records cachés',
-    value: `${unlockedCount}/${cards.length}`,
+    label: 'Records Battus',
+    value: `${unlockedCount} / ${cards.length}`,
     note: 'Progression personnelle',
   };
 };
@@ -394,9 +397,9 @@ const buildRhythmOverview = (cards: SuccessAchievementCard[]): SuccessOverviewCa
   const unlockedCount = cards.filter((card) => card.isUnlocked).length;
   return {
     id: 'rhythm',
-    label: 'Rythme',
-    value: `${unlockedCount}/${cards.length}`,
-    note: 'Réponses rapprochées',
+    label: 'Bon rythme',
+    value: `${unlockedCount} / ${cards.length}`,
+    note: 'Réponses ponctuelles',
   };
 };
 
@@ -405,16 +408,16 @@ const buildCatalogOverview = (cards: SuccessAchievementCard[]): SuccessOverviewC
   return {
     id: 'catalog',
     label: 'Quiz ouverts',
-    value: `${unlockedCount}/${cards.length}`,
+    value: `${unlockedCount} / ${cards.length}`,
     note: 'Parcours découverts',
   };
 };
 
 const buildQuestionOverview = (answeredCount: number): SuccessOverviewCard => ({
   id: 'questions',
-  label: 'Questions répondues',
+  label: 'Total cumulé',
   value: formatCompactValue(answeredCount),
-  note: 'Total cumulé',
+  note: 'Questions répondues',
 });
 
 const buildSections = (
@@ -431,8 +434,8 @@ const buildSections = (
   return [
     {
       id: 'questions',
-      title: 'Repères cachés',
-      subtitle: 'Des paliers qui s’ouvrent sans montrer le seuil exact.',
+      title: 'Questions répondues',
+      subtitle: 'Chaque question compte pour progresser.',
       unlockedCount: questionCards.filter((card) => card.isUnlocked).length,
       totalCount: questionCards.length,
       cards: questionCards,
@@ -440,23 +443,23 @@ const buildSections = (
     {
       id: 'catalog',
       title: 'Catalogue',
-      subtitle: 'Chaque quiz passe en couleur dès sa première complétion.',
+      subtitle: 'Chaque quiz est différent, profitez-en.',
       unlockedCount: [...quizCards, completionCard].filter((card) => card.isUnlocked).length,
       totalCount: quizCards.length + 1,
       cards: [...quizCards, completionCard],
     },
     {
       id: 'records',
-      title: 'Records personnels',
-      subtitle: 'Les meilleures courbes, sans afficher la mécanique interne.',
+      title: 'Records battus',
+      subtitle: 'Se sentir mieux, et mieux se connaître.',
       unlockedCount: improvementCards.filter((card) => card.isUnlocked).length,
       totalCount: improvementCards.length,
       cards: improvementCards,
     },
     {
       id: 'rhythm',
-      title: 'Assiduité',
-      subtitle: 'Un rythme de réponse qui se resserre par paliers.',
+      title: 'Bon rythme',
+      subtitle: 'Vite fait, bien fait, terminé !',
       unlockedCount: assiduityCards.filter((card) => card.isUnlocked).length,
       totalCount: assiduityCards.length,
       cards: assiduityCards,
