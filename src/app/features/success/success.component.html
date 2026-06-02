@@ -4,6 +4,97 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <p>Page Succès</p>
+<ion-content [fullscreen]="true">
+  <div class="success-page">
+    @if (state$ | async; as state) {
+      @if (state.isLoading) {
+        <div class="state-row">
+          <ion-spinner name="crescent"></ion-spinner>
+          <span>Chargement des succès...</span>
+        </div>
+      } @else {
+        @if (state.loadError) {
+          <ion-text color="danger" class="state-error">{{ state.loadError }}</ion-text>
+        }
+
+        <section class="success-hero">
+          <div class="hero-copy">
+            <p class="hero-kicker">Progression cachée</p>
+            <h1>Les succès se débloquent en coulisses.</h1>
+            <p class="hero-description">
+              Chaque carte suit la progression réelle de l’utilisateur sans exposer les seuils
+              exacts.
+            </p>
+          </div>
+
+          <div class="overview-grid" aria-label="Résumé des succès">
+            @for (card of state.overviewCards; track trackByOverviewCardId($index, card)) {
+              <article class="overview-card" [class.is-locked]="card.value === '0'">
+                <span class="overview-label">{{ card.label }}</span>
+                <strong class="overview-value">{{ card.value }}</strong>
+                <span class="overview-note">{{ card.note }}</span>
+              </article>
+            }
+          </div>
+        </section>
+
+        @for (section of state.sections; track trackBySectionId($index, section)) {
+          <section class="success-section">
+            <div class="section-header">
+              <div>
+                <h2>{{ section.title }}</h2>
+                <p>{{ section.subtitle }}</p>
+              </div>
+              <span class="section-counter">{{ section.unlockedCount }}/{{ section.totalCount }}</span>
+            </div>
+
+            <div class="achievement-grid">
+              @for (achievement of section.cards; track trackByAchievementId($index, achievement)) {
+                <ion-card
+                  class="achievement-card"
+                  [class.is-unlocked]="achievement.isUnlocked"
+                  [class.is-locked]="!achievement.isUnlocked"
+                >
+                  <ion-card-content>
+                    <div class="achievement-row">
+                      <div class="achievement-cover" [class.is-fallback]="hasBrokenCover(achievement.id)">
+                        @if (!hasBrokenCover(achievement.id) && achievement.coverUrl) {
+                          <img
+                            [src]="achievement.coverUrl"
+                            [alt]="achievement.title"
+                            [class.is-locked]="!achievement.isUnlocked"
+                            (error)="onCoverError(achievement.id)"
+                          />
+                        } @else {
+                          <div class="achievement-cover-fallback">
+                            <app-material-icon [name]="achievement.fallbackIcon" [size]="28"></app-material-icon>
+                          </div>
+                        }
+                      </div>
+
+                      <div class="achievement-content">
+                        <div class="achievement-head">
+                          <div>
+                            <h3>{{ achievement.title }}</h3>
+                            <p>{{ achievement.subtitle }}</p>
+                          </div>
+                          <span class="achievement-pill">
+                            {{ achievement.progressLabel }}
+                          </span>
+                        </div>
+
+                        <div class="achievement-meter" [attr.aria-label]="achievement.title">
+                          <span [style.width.%]="achievement.progressPercent"></span>
+                        </div>
+                      </div>
+                    </div>
+                  </ion-card-content>
+                </ion-card>
+              }
+            </div>
+          </section>
+        }
+      }
+    }
+  </div>
 </ion-content>

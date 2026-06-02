@@ -1,11 +1,48 @@
-import { Component } from '@angular/core';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { AsyncPipe } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import {
+  IonCard,
+  IonCardContent,
+  IonContent,
+  IonHeader,
+  IonSpinner,
+  IonText,
+  IonTitle,
+  IonToolbar,
+} from '@ionic/angular/standalone';
+import { SuccessAchievementCard, SuccessPageState, SuccessProgressService } from '../../core/success/success-progress';
+import { MaterialIconComponent } from '../../shared/material-icon/material-icon.component';
 
 @Component({
   selector: 'app-success',
   templateUrl: './success.component.html',
   styleUrls: ['./success.component.css'],
   standalone: true,
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent],
+  imports: [AsyncPipe, IonCard, IonCardContent, IonContent, IonHeader, IonSpinner, IonText, IonTitle, IonToolbar, MaterialIconComponent],
 })
-export class SuccessComponent {}
+export class SuccessComponent {
+  private readonly successProgressService = inject(SuccessProgressService);
+
+  readonly state$ = this.successProgressService.state$;
+  private readonly brokenCovers = new Set<string>();
+
+  onCoverError(cardId: string): void {
+    this.brokenCovers.add(cardId);
+  }
+
+  hasBrokenCover(cardId: string): boolean {
+    return this.brokenCovers.has(cardId);
+  }
+
+  trackByOverviewCardId(_index: number, card: SuccessPageState['overviewCards'][number]): string {
+    return card.id;
+  }
+
+  trackBySectionId(_index: number, section: SuccessPageState['sections'][number]): string {
+    return section.id;
+  }
+
+  trackByAchievementId(_index: number, achievement: SuccessAchievementCard): string {
+    return achievement.id;
+  }
+}

@@ -1,12 +1,19 @@
 import { inject, Injectable } from '@angular/core';
 import { Database } from '@angular/fire/database';
 import { get, ref, set } from 'firebase/database';
+import { QuizCatalogService } from '../quiz/quiz-catalog.service';
+import {
+  buildSessionSummaryFromAttentes,
+  SuccessProgressService,
+} from '../success/success-progress';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AttentesSession {
   private readonly database = inject(Database);
+  private readonly quizCatalogService = inject(QuizCatalogService);
+  private readonly successProgressService = inject(SuccessProgressService);
 
   private atlasPromise: Promise<AttentesAtlas> | null = null;
 
@@ -153,6 +160,21 @@ export class AttentesSession {
       `quizSessions/${normalizedSessionId}/responsesByUser/${normalizedUserId}`,
     );
     await set(userResponsesRef, nodeToWrite);
+
+    if (!alreadyAnswered) {
+      const sessionStats = await this.getSessionStats(normalizedSessionId, normalizedUserId);
+      await this.successProgressService.recordSessionSummary(
+        buildSessionSummaryFromAttentes(
+          {
+            sessionId: normalizedSessionId,
+            quizId: ATTENTES_QUIZ_ID,
+          },
+          sessionStats,
+          nowIso,
+          this.quizCatalogService,
+        ),
+      );
+    }
 
     return {
       answeredCount,

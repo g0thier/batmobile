@@ -1,12 +1,19 @@
 import { inject, Injectable } from '@angular/core';
 import { Database } from '@angular/fire/database';
 import { get, ref, set } from 'firebase/database';
+import { QuizCatalogService } from '../quiz/quiz-catalog.service';
+import {
+  buildSessionSummaryFromTheorieXY,
+  SuccessProgressService,
+} from '../success/success-progress';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TheorieXYSession {
   private readonly database = inject(Database);
+  private readonly quizCatalogService = inject(QuizCatalogService);
+  private readonly successProgressService = inject(SuccessProgressService);
 
   private atlasPromise: Promise<TheorieXYAtlas> | null = null;
 
@@ -127,6 +134,21 @@ export class TheorieXYSession {
       `quizSessions/${normalizedSessionId}/responsesByUser/${normalizedUserId}`,
     );
     await set(userResponsesRef, nodeToWrite);
+
+    if (!alreadyAnswered) {
+      const sessionStats = await this.getSessionStats(normalizedSessionId, normalizedUserId);
+      await this.successProgressService.recordSessionSummary(
+        buildSessionSummaryFromTheorieXY(
+          {
+            sessionId: normalizedSessionId,
+            quizId: THEORIE_XY_QUIZ_ID,
+          },
+          sessionStats,
+          nowIso,
+          this.quizCatalogService,
+        ),
+      );
+    }
 
     return {
       answeredCount: answeredIds.size,

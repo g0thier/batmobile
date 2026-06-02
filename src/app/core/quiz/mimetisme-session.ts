@@ -1,12 +1,19 @@
 import { inject, Injectable } from '@angular/core';
 import { Database } from '@angular/fire/database';
 import { get, ref, set } from 'firebase/database';
+import { QuizCatalogService } from '../quiz/quiz-catalog.service';
+import {
+  buildSessionSummaryFromMimetisme,
+  SuccessProgressService,
+} from '../success/success-progress';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MimetismeSession {
   private readonly database = inject(Database);
+  private readonly quizCatalogService = inject(QuizCatalogService);
+  private readonly successProgressService = inject(SuccessProgressService);
 
   private atlasPromise: Promise<MimetismeAtlas> | null = null;
 
@@ -178,17 +185,25 @@ export class MimetismeSession {
       throw new Error('Modèle introuvable.');
     }
 
-    const updatedResponses = [
-      ...currentNode.responses,
-      {
-        quizId: MIMETISME_QUIZ_ID,
-        preferredModelId: normalizedPreferredModelId,
-        otherModelId: normalizedOtherModelId,
-        preferredInspirationId: preferredModel.inspiration,
-        otherInspirationId: otherModel.inspiration,
-        answeredAt: nowIso,
-      } satisfies MimetismeChoiceEntry,
-    ];
+    const alreadyAnswered = currentNode.responses.some(
+      (response) =>
+        response.quizId === MIMETISME_QUIZ_ID &&
+        response.preferredModelId === normalizedPreferredModelId &&
+        response.otherModelId === normalizedOtherModelId,
+    );
+    const updatedResponses = alreadyAnswered
+      ? currentNode.responses
+      : [
+          ...currentNode.responses,
+          {
+            quizId: MIMETISME_QUIZ_ID,
+            preferredModelId: normalizedPreferredModelId,
+            otherModelId: normalizedOtherModelId,
+            preferredInspirationId: preferredModel.inspiration,
+            otherInspirationId: otherModel.inspiration,
+            answeredAt: nowIso,
+          } satisfies MimetismeChoiceEntry,
+        ];
 
     const snapshot = buildRankingSnapshot(rankingState.sortedModelIds, atlas);
     const isCompleted = rankingState.finished;
@@ -208,6 +223,21 @@ export class MimetismeSession {
       `quizSessions/${normalizedSessionId}/responsesByUser/${normalizedUserId}`,
     );
     await set(userResponsesRef, nodeToWrite);
+
+    if (!alreadyAnswered) {
+      const sessionStats = await this.getSessionStats(normalizedSessionId, normalizedUserId);
+      await this.successProgressService.recordSessionSummary(
+        buildSessionSummaryFromMimetisme(
+          {
+            sessionId: normalizedSessionId,
+            quizId: MIMETISME_QUIZ_ID,
+          },
+          sessionStats,
+          nowIso,
+          this.quizCatalogService,
+        ),
+      );
+    }
 
     return {
       rankedCount: rankingState.sortedModelIds.length,
