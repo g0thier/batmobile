@@ -215,12 +215,14 @@ export class IdentiteProStatsComponent implements AfterViewInit, OnDestroy {
               ticks: {
                 color: '#334155',
                 font: {
-                  size: 12,
+                  size: 11,
                   weight: 600,
                 },
                 callback: (value, index) => this.formatThemeLabel(themeStats[index]?.label ?? String(value)),
-                maxRotation: 0,
-                minRotation: 0,
+                autoSkip: false,
+                maxRotation: 45,
+                minRotation: 45,
+                padding: 8,
               },
               grid: {
                 display: false,
@@ -346,7 +348,21 @@ export class IdentiteProStatsComponent implements AfterViewInit, OnDestroy {
       return label;
     }
 
-    return [words[0], words.slice(1).join(' ')];
+    let bestSplitIndex = 1;
+    let smallestDifference = Number.POSITIVE_INFINITY;
+
+    for (let index = 1; index < words.length; index++) {
+      const left = words.slice(0, index).join(' ');
+      const right = words.slice(index).join(' ');
+      const difference = Math.abs(left.length - right.length);
+
+      if (difference < smallestDifference) {
+        smallestDifference = difference;
+        bestSplitIndex = index;
+      }
+    }
+
+    return [words.slice(0, bestSplitIndex).join(' '), words.slice(bestSplitIndex).join(' ')];
   }
 
   private destroyChart(): void {
