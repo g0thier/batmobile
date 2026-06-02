@@ -248,12 +248,12 @@ const buildQuestionMilestoneCards = (answeredCount: number): SuccessAchievementC
   QUESTIONS_MILESTONES.map((threshold, index) => {
     const unlocked = answeredCount >= threshold;
     const progressPercent = clampValue((answeredCount / threshold) * 100, 0, 100);
-    const titles = ['Élan', 'Cadence', 'Masse critique', 'Maîtrise'];
+    const titles = ['Explorateur', 'Aventurier', 'Héros', 'Légendaire'];
 
     return {
       id: `questions-${threshold}`,
       title: titles[index] ?? 'Progression',
-      subtitle: `${formatCompactValue(threshold)} réponses à accumuler`,
+      subtitle: `${formatCompactValue(threshold)} réponses accumulées`,
       progressLabel: `${formatCompactValue(Math.min(answeredCount, threshold))}`,
       progressPercent,
       isUnlocked: unlocked,
@@ -278,7 +278,7 @@ const buildAssiduityCards = (answerTimeline: string[]): SuccessAchievementCard[]
   }
 
   const bestGapHours = gapsHours.length > 0 ? Math.min(...gapsHours) : Number.POSITIVE_INFINITY;
-  const titles = ['Rappel', 'Cadence', 'Présence', 'Rythme', 'Instinct'];
+  const titles = ['Tortue', 'Lièvre', 'Gazelle', 'Faucon', 'Guépard'];
 
   return ASSIDUITY_THRESHOLDS_HOURS.map((threshold, index) => {
     const unlocked = bestGapHours <= threshold;
@@ -290,7 +290,7 @@ const buildAssiduityCards = (answerTimeline: string[]): SuccessAchievementCard[]
     return {
       id: `assiduite-${threshold}`,
       title: titles[index] ?? 'Rythme',
-      subtitle: 'Réponse rapprochée',
+      subtitle: `Quiz répondu en moins de ${threshold} h`,
       progressLabel: unlocked ? 'Validé' : 'En cours',
       progressPercent,
       isUnlocked: unlocked,
@@ -373,7 +373,7 @@ const buildImprovementCards = (
         quizId === 'pyramide-besoins' ? 'Se sentir complet' :
         quizId === 'theorie-x-y' ? 'Plus de leadership' :
         'Quiz inconnu',
-      progressLabel: unlocked ? 'Nouveau sommet' : 'À construire',
+      progressLabel: unlocked ? 'Nouveau sommet' : 'Record à battre',
       progressPercent: unlocked ? 100 : 0,
       isUnlocked: unlocked,
       coverUrl: QUIZ_SUCCESS_IMAGE_PATH(quizId),
