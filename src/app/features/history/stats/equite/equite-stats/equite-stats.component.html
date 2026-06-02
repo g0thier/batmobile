@@ -1,1 +1,55 @@
-<p>equite-stats works!</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Équité</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="stats-page">
+    @if (isLoading) {
+      <div class="state-row">
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>Chargement des statistiques...</span>
+      </div>
+    } @else {
+      @if (errorMessage) {
+        <ion-text color="danger" class="state-error">{{ errorMessage }}</ion-text>
+      }
+
+      @if (stats && !errorMessage) {
+        <p class="progress-label">
+          Réponses enregistrées: {{ stats.answeredCount }} / {{ stats.totalCount }}
+        </p>
+
+        <section class="chart-card" aria-label="Statistiques du quiz équité">
+          <div class="chart-wrapper" [style.height.px]="chartCanvasHeightPx">
+            <canvas #equiteCanvas></canvas>
+          </div>
+        </section>
+
+        <div class="chart-legend" aria-label="Légende du graphique">
+          <div class="legend-item">
+            <span class="legend-swatch legend-swatch--negative"></span>
+            <span>Contributions</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch legend-swatch--positive"></span>
+            <span>Rétributions</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch legend-swatch--neutral"></span>
+            <span>Équilibre à 0</span>
+          </div>
+        </div>
+
+        <div class="chart-help">
+          <p>
+            La ligne pointillée marque l'équilibre à 0.
+            La bougie montre la moyenne des réponses autour de ce centre, et le trait horizontal
+            représente les extrêmes min/max du thème.
+          </p>
+        </div>
+      }
+    }
+  </div>
+</ion-content>

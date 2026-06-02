@@ -135,6 +135,77 @@ export class EquiteSession {
     };
   }
 
+  async getSessionStats(sessionId: string, userId: string): Promise<EquiteSessionStats> {
+    const normalizedSessionId = readString(sessionId);
+    const normalizedUserId = readString(userId);
+
+    if (!normalizedSessionId || !normalizedUserId) {
+      throw new Error('Session ou utilisateur introuvable.');
+    }
+
+    const [atlas, userNode] = await Promise.all([
+      this.loadAtlas(),
+      this.readUserResponsesNode(normalizedSessionId, normalizedUserId),
+    ]);
+
+    const responseById = new Map(atlas.reponses.map((response) => [response.id, response]));
+    const themeById = new Map(atlas.themes.map((theme) => [theme.id, theme]));
+    const oppositionById = new Map(atlas.oppositions.map((opposition) => [opposition.id, opposition]));
+
+    const responsesByThemeId = new Map<number, number[]>();
+    const answeredOppositionIds = new Set<number>();
+
+    dedupeResponses(userNode.responses)
+      .filter((response) => response.quizId === EQUITE_QUIZ_ID)
+      .forEach((responseEntry) => {
+        const matchedOpposition = oppositionById.get(responseEntry.oppositionId);
+        const matchedResponse = responseById.get(responseEntry.responseId);
+        const matchedTheme = themeById.get(responseEntry.themeId);
+
+        if (!matchedOpposition || !matchedResponse || !matchedTheme) {
+          return;
+        }
+
+        if (matchedOpposition.theme !== responseEntry.themeId) {
+          return;
+        }
+
+        answeredOppositionIds.add(matchedOpposition.id);
+
+        const currentValues = responsesByThemeId.get(matchedTheme.id) ?? [];
+        currentValues.push(matchedResponse.valeur);
+        responsesByThemeId.set(matchedTheme.id, currentValues);
+      });
+
+    return {
+      title: atlas.titre || atlas.nom || 'Équité',
+      totalCount: atlas.oppositions.length,
+      answeredCount: answeredOppositionIds.size,
+      themes: atlas.themes.map((theme) => {
+        const values = responsesByThemeId.get(theme.id) ?? [];
+        const responseCount = values.length;
+        const minValue = responseCount > 0 ? Math.min(...values) : 0;
+        const maxValue = responseCount > 0 ? Math.max(...values) : 0;
+        const averageValue =
+          responseCount > 0
+            ? values.reduce((sum, value) => sum + value, 0) / responseCount
+            : 0;
+
+        return {
+          themeId: theme.id,
+          label: theme.label,
+          responseCount,
+          minValue,
+          maxValue,
+          averageValue,
+          minPct: responseValueToPercent(minValue),
+          maxPct: responseValueToPercent(maxValue),
+          averagePct: responseValueToPercent(averageValue),
+        };
+      }),
+    };
+  }
+
   async pickRandomNextEligibleSession(
     userId: string,
     currentSessionId: string,
@@ -249,9 +320,30 @@ export interface EquiteOpposition {
 }
 
 export interface EquiteAtlas {
+  nom: string;
+  titre: string;
   themes: EquiteTheme[];
   reponses: EquiteResponse[];
   oppositions: EquiteOpposition[];
+}
+
+export interface EquiteThemeStats {
+  themeId: number;
+  label: string;
+  responseCount: number;
+  minValue: number;
+  maxValue: number;
+  averageValue: number;
+  minPct: number;
+  maxPct: number;
+  averagePct: number;
+}
+
+export interface EquiteSessionStats {
+  title: string;
+  totalCount: number;
+  answeredCount: number;
+  themes: EquiteThemeStats[];
 }
 
 export interface EquiteAnswerInput {
@@ -381,6 +473,8 @@ const normalizeAtlas = (payload: unknown): EquiteAtlas => {
     : [];
 
   return {
+    nom: readString(record['nom']),
+    titre: readString(record['titre']),
     themes,
     reponses,
     oppositions,
@@ -468,4 +562,11 @@ const isExpired = (deadlineIso: string): boolean => {
     return false;
   }
   return timestamp < Date.now();
+};
+
+const clamp = (value: number, min: number, max: number): number => Math.min(Math.max(value, min), max);
+
+const responseValueToPercent = (value: number): number => {
+  const normalizedValue = clamp(value, -5, 5);
+  return clamp(((normalizedValue + 5) / 10) * 100, 0, 100);
 };
