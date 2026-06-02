@@ -260,6 +260,7 @@ export class EquiteStatsComponent implements AfterViewInit, OnDestroy {
                   size: 12,
                   weight: 600,
                 },
+                callback: (value, index) => this.formatThemeLabel(themeStats[index]?.label ?? String(value)),
               },
               grid: {
                 display: false,
@@ -276,6 +277,16 @@ export class EquiteStatsComponent implements AfterViewInit, OnDestroy {
   private destroyChart(): void {
     this.chart?.destroy();
     this.chart = null;
+  }
+
+  private formatThemeLabel(label: string): string | string[] {
+    const words = label.trim().split(/\s+/).filter(Boolean);
+
+    if (words.length <= 1) {
+      return label;
+    }
+
+    return [words[0], words.slice(1).join(' ')];
   }
 }
 
