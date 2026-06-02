@@ -71,9 +71,8 @@ export class IdentiteProStatsComponent implements AfterViewInit, OnDestroy {
   stats: IdentiteProSessionStats | null = null;
   chartCanvasHeightPx = 360;
   readonly themeLegendItems = [
-    { color: '#2563eb', label: 'Je suis...' },
-    { color: '#14b8a6', label: 'Au travail, je suis perçu comme...' },
-    { color: '#94a3b8', label: 'Données partielles pour un thème' },
+    { color: '#2563eb', label: 'Identité de soi' },
+    { color: '#14b8a6', label: 'Identité perçue' },
   ];
 
   constructor() {
@@ -141,6 +140,7 @@ export class IdentiteProStatsComponent implements AfterViewInit, OnDestroy {
 
     const chartLabels = themeStats.map((theme) => theme.label);
     const chartValues = themeStats.map((theme) => this.buildCandlestickValue(theme));
+    const barColors = themeStats.map((theme) => this.getBarColors(theme));
     const selfAverageValues = themeStats.map((theme) => theme.identiteDeSoi.averageValue);
     const perceivedAverageValues = themeStats.map((theme) => theme.identitePercue.averageValue);
     const selfResponseCounts = themeStats.map((theme) => theme.identiteDeSoi.responseCount);
@@ -160,16 +160,8 @@ export class IdentiteProStatsComponent implements AfterViewInit, OnDestroy {
       perceivedResponseCounts,
       hasSelfResponses,
       hasPerceivedResponses,
-      backgroundColor: themeStats.map((theme, index) =>
-        hasSelfResponses[index] && hasPerceivedResponses[index]
-          ? COMPLETE_BAR_BACKGROUND_COLOR
-          : INCOMPLETE_BAR_BACKGROUND_COLOR,
-      ),
-      borderColor: themeStats.map((theme, index) =>
-        hasSelfResponses[index] && hasPerceivedResponses[index]
-          ? COMPLETE_BAR_BORDER_COLOR
-          : INCOMPLETE_BAR_BORDER_COLOR,
-      ),
+      backgroundColor: barColors.map((colors) => colors.backgroundColor),
+      borderColor: barColors.map((colors) => colors.borderColor),
       borderWidth: 1,
       borderRadius: 10,
       borderSkipped: false,
@@ -186,6 +178,7 @@ export class IdentiteProStatsComponent implements AfterViewInit, OnDestroy {
           labels: chartLabels,
           datasets: [dataset],
         },
+        plugins: [identiteProCapsPlugin],
         options: {
           animation: false,
           maintainAspectRatio: false,
@@ -273,6 +266,46 @@ export class IdentiteProStatsComponent implements AfterViewInit, OnDestroy {
     return [value, value];
   }
 
+  private getBarColors(
+    theme: IdentiteProThemeStats | null,
+  ): { backgroundColor: string; borderColor: string } {
+    if (!theme) {
+      return {
+        backgroundColor: NEUTRAL_BAR_BACKGROUND_COLOR,
+        borderColor: NEUTRAL_BAR_BORDER_COLOR,
+      };
+    }
+
+    const selfHasResponses = theme.identiteDeSoi.responseCount > 0;
+    const perceivedHasResponses = theme.identitePercue.responseCount > 0;
+
+    if (!selfHasResponses || !perceivedHasResponses) {
+      return {
+        backgroundColor: NEUTRAL_BAR_BACKGROUND_COLOR,
+        borderColor: NEUTRAL_BAR_BORDER_COLOR,
+      };
+    }
+
+    if (theme.identiteDeSoi.averageValue > theme.identitePercue.averageValue) {
+      return {
+        backgroundColor: BLUE_BAR_BACKGROUND_COLOR,
+        borderColor: BLUE_BAR_BORDER_COLOR,
+      };
+    }
+
+    if (theme.identiteDeSoi.averageValue < theme.identitePercue.averageValue) {
+      return {
+        backgroundColor: GREEN_BAR_BACKGROUND_COLOR,
+        borderColor: GREEN_BAR_BORDER_COLOR,
+      };
+    }
+
+    return {
+      backgroundColor: NEUTRAL_BAR_BACKGROUND_COLOR,
+      borderColor: NEUTRAL_BAR_BORDER_COLOR,
+    };
+  }
+
   private buildTooltipLines(theme: IdentiteProThemeStats | null): string | string[] {
     if (!theme) {
       return '';
@@ -314,9 +347,67 @@ export class IdentiteProStatsComponent implements AfterViewInit, OnDestroy {
 
 const BAR_THICKNESS = 28;
 const CHART_VERTICAL_PADDING = 96;
-const COMPLETE_BAR_BACKGROUND_COLOR = 'rgba(59, 130, 246, 0.16)';
-const COMPLETE_BAR_BORDER_COLOR = 'rgba(37, 99, 235, 0.4)';
-const INCOMPLETE_BAR_BACKGROUND_COLOR = 'rgba(148, 163, 184, 0.18)';
-const INCOMPLETE_BAR_BORDER_COLOR = 'rgba(148, 163, 184, 0.45)';
+const BLUE_BAR_BACKGROUND_COLOR = 'rgba(59, 130, 246, 0.16)';
+const BLUE_BAR_BORDER_COLOR = 'rgba(37, 99, 235, 0.4)';
+const GREEN_BAR_BACKGROUND_COLOR = 'rgba(34, 197, 94, 0.16)';
+const GREEN_BAR_BORDER_COLOR = 'rgba(22, 163, 74, 0.45)';
+const NEUTRAL_BAR_BACKGROUND_COLOR = 'rgba(148, 163, 184, 0.18)';
+const NEUTRAL_BAR_BORDER_COLOR = 'rgba(148, 163, 184, 0.45)';
+const IDENTITE_DE_SOI_CAP_COLOR = '#2563eb';
+const IDENTITE_PERCUE_CAP_COLOR = '#14b8a6';
+const CAP_HALF_WIDTH = 12;
+const CAP_STROKE_WIDTH = 3;
+
+const identiteProCapsPlugin = {
+  id: 'identiteProCaps',
+  afterDatasetsDraw: (chart: Chart<'bar', IdentiteProCandlestickPoint[], string>) => {
+    const dataset = chart.data.datasets[0] as IdentiteProChartDataset | undefined;
+    const yScale = chart.scales['y'];
+    const meta = chart.getDatasetMeta(0);
+
+    if (!dataset || !yScale || meta.type !== 'bar') {
+      return;
+    }
+
+    const ctx = chart.ctx;
+
+    meta.data.forEach((element, index) => {
+      const selfValue = dataset.selfAverageValues[index];
+      const perceivedValue = dataset.perceivedAverageValues[index];
+      const selfHasResponses = dataset.selfResponseCounts[index] > 0;
+      const perceivedHasResponses = dataset.perceivedResponseCounts[index] > 0;
+
+      if (!selfHasResponses && !perceivedHasResponses) {
+        return;
+      }
+
+      const barElement = element as { x?: number; width?: number };
+      const centerX = barElement.x ?? 0;
+      const capHalfWidth = Math.min(CAP_HALF_WIDTH, Math.max(8, (barElement.width ?? 0) * 0.22));
+
+      ctx.save();
+      ctx.lineWidth = CAP_STROKE_WIDTH;
+      ctx.lineCap = 'round';
+
+      if (selfHasResponses) {
+        ctx.strokeStyle = IDENTITE_DE_SOI_CAP_COLOR;
+        ctx.beginPath();
+        ctx.moveTo(centerX - capHalfWidth, yScale.getPixelForValue(selfValue));
+        ctx.lineTo(centerX + capHalfWidth, yScale.getPixelForValue(selfValue));
+        ctx.stroke();
+      }
+
+      if (perceivedHasResponses) {
+        ctx.strokeStyle = IDENTITE_PERCUE_CAP_COLOR;
+        ctx.beginPath();
+        ctx.moveTo(centerX - capHalfWidth, yScale.getPixelForValue(perceivedValue));
+        ctx.lineTo(centerX + capHalfWidth, yScale.getPixelForValue(perceivedValue));
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    });
+  },
+};
 
 Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip, Title);
