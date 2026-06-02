@@ -99,7 +99,6 @@ const ASSIDUITY_THRESHOLDS_HOURS = [72, 48, 24, 12, 6];
 const IMPROVEMENT_QUIZ_IDS: QuizId[] = [
   'attentes',
   'autodetermination',
-  'besoins-acquis',
   'equite',
   'identite-pro',
   'pyramide-besoins',
