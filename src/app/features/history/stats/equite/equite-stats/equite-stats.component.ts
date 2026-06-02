@@ -328,23 +328,63 @@ const EQUITE_WICK_PLUGIN = {
 
       if (minValue < 0) {
         ctx.strokeStyle = NEGATIVE_BAR_BORDER_COLOR;
-        ctx.beginPath();
-        ctx.moveTo(xScale.getPixelForValue(minValue), y);
-        ctx.lineTo(xScale.getPixelForValue(Math.min(maxValue, 0)), y);
-        ctx.stroke();
+        drawHorizontalSegmentWithCaps(
+          ctx,
+          xScale.getPixelForValue(minValue),
+          xScale.getPixelForValue(Math.min(maxValue, 0)),
+          y,
+          true,
+          maxValue < 0,
+        );
       }
 
       if (maxValue > 0) {
         ctx.strokeStyle = POSITIVE_BAR_BORDER_COLOR;
-        ctx.beginPath();
-        ctx.moveTo(xScale.getPixelForValue(Math.max(minValue, 0)), y);
-        ctx.lineTo(xScale.getPixelForValue(maxValue), y);
-        ctx.stroke();
+        drawHorizontalSegmentWithCaps(
+          ctx,
+          xScale.getPixelForValue(Math.max(minValue, 0)),
+          xScale.getPixelForValue(maxValue),
+          y,
+          minValue > 0,
+          true,
+        );
       }
     });
 
     ctx.restore();
   },
+};
+
+const drawHorizontalSegmentWithCaps = (
+  ctx: CanvasRenderingContext2D,
+  xStart: number,
+  xEnd: number,
+  y: number,
+  drawStartCap: boolean,
+  drawEndCap: boolean,
+): void => {
+  const startX = Math.min(xStart, xEnd);
+  const endX = Math.max(xStart, xEnd);
+
+  ctx.beginPath();
+  ctx.moveTo(startX, y);
+  ctx.lineTo(endX, y);
+  ctx.stroke();
+
+  if (drawStartCap) {
+    drawCap(ctx, startX, y);
+  }
+
+  if (drawEndCap) {
+    drawCap(ctx, endX, y);
+  }
+};
+
+const drawCap = (ctx: CanvasRenderingContext2D, x: number, y: number): void => {
+  ctx.beginPath();
+  ctx.moveTo(x, y - CAP_HALF_HEIGHT_PX);
+  ctx.lineTo(x, y + CAP_HALF_HEIGHT_PX);
+  ctx.stroke();
 };
 
 Chart.register(
@@ -357,3 +397,5 @@ Chart.register(
   EQUITE_ZERO_REFERENCE_PLUGIN,
   EQUITE_WICK_PLUGIN,
 );
+
+const CAP_HALF_HEIGHT_PX = 4;
