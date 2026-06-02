@@ -179,7 +179,11 @@ export class IdentiteProStatsComponent implements AfterViewInit, OnDestroy {
           labels: chartLabels,
           datasets: [dataset],
         },
-        plugins: [identiteProCapsPlugin, identiteProSingleLineLabelShiftPlugin],
+        plugins: [
+          identiteProCapsPlugin,
+          identiteProSingleLineLabelShiftPlugin,
+          identiteProThemeLabelTicksPlugin,
+        ],
         options: {
           animation: false,
           maintainAspectRatio: false,
@@ -497,6 +501,42 @@ const identiteProSingleLineLabelShiftPlugin = {
     scale.getLabelItems = scale.__identiteProSingleLineShiftOriginalGetLabelItems;
     delete scale.__identiteProSingleLineShiftOriginalGetLabelItems;
     scale.__identiteProSingleLineShiftApplied = false;
+  },
+};
+
+const identiteProThemeLabelTicksPlugin = {
+  id: 'identiteProThemeLabelTicks',
+  afterDraw: (chart: Chart<'bar', IdentiteProCandlestickPoint[], string>) => {
+    const xScale = chart.scales['x'] as any;
+    const chartArea = chart.chartArea;
+
+    if (!xScale || !chartArea || typeof xScale.getPixelForTick !== 'function') {
+      return;
+    }
+
+    const ctx = chart.ctx;
+
+    ctx.save();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineCap = 'round';
+
+    const labels = chart.data.labels ?? [];
+
+    labels.forEach((_, index) => {
+      const x = xScale.getPixelForTick(index);
+
+      if (!Number.isFinite(x)) {
+        return;
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(x, chartArea.bottom + 1);
+      ctx.lineTo(x, chartArea.bottom + 7);
+      ctx.stroke();
+    });
+
+    ctx.restore();
   },
 };
 
