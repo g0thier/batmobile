@@ -179,7 +179,7 @@ export class IdentiteProStatsComponent implements AfterViewInit, OnDestroy {
           labels: chartLabels,
           datasets: [dataset],
         },
-        plugins: [identiteProCapsPlugin],
+        plugins: [identiteProCapsPlugin, identiteProSingleLineLabelShiftPlugin],
         options: {
           animation: false,
           maintainAspectRatio: false,
@@ -345,7 +345,7 @@ export class IdentiteProStatsComponent implements AfterViewInit, OnDestroy {
     const words = label.trim().split(/\s+/).filter(Boolean);
 
     if (words.length <= 1) {
-      return label;
+      return `${label}    `;
     }
 
     let bestSplitIndex = 1;
@@ -362,7 +362,10 @@ export class IdentiteProStatsComponent implements AfterViewInit, OnDestroy {
       }
     }
 
-    return [words.slice(0, bestSplitIndex).join(' '), words.slice(bestSplitIndex).join(' ')];
+    return [
+      `${words.slice(0, bestSplitIndex).join(' ')}    `,
+      `  ${words.slice(bestSplitIndex).join(' ')}`,
+    ];
   }
 
   private destroyChart(): void {
@@ -449,6 +452,51 @@ const identiteProCapsPlugin = {
 
       ctx.restore();
     });
+  },
+};
+
+const identiteProSingleLineLabelShiftPlugin = {
+  id: 'identiteProSingleLineLabelShift',
+  beforeDraw: (chart: Chart<'bar', IdentiteProCandlestickPoint[], string>) => {
+    const scale = chart.scales['x'] as any;
+
+    if (!scale || scale.__identiteProSingleLineShiftApplied || typeof scale.getLabelItems !== 'function') {
+      return;
+    }
+
+    scale.__identiteProSingleLineShiftOriginalGetLabelItems = scale.getLabelItems.bind(scale);
+    scale.getLabelItems = (chartArea: { left: number; right: number; top: number; bottom: number }) => {
+      const items = scale.__identiteProSingleLineShiftOriginalGetLabelItems(chartArea) as any[];
+
+      return items.map((item) => {
+        if (!item || Array.isArray(item.label) || typeof item.label !== 'string') {
+          return item;
+        }
+
+        const translation = item.options?.translation ?? [0, 0];
+
+        return {
+          ...item,
+          options: {
+            ...item.options,
+            translation: [translation[0] + 8.5, translation[1]],
+          },
+        };
+      });
+    };
+
+    scale.__identiteProSingleLineShiftApplied = true;
+  },
+  afterDraw: (chart: Chart<'bar', IdentiteProCandlestickPoint[], string>) => {
+    const scale = chart.scales['x'] as any;
+
+    if (!scale?.__identiteProSingleLineShiftApplied || typeof scale.__identiteProSingleLineShiftOriginalGetLabelItems !== 'function') {
+      return;
+    }
+
+    scale.getLabelItems = scale.__identiteProSingleLineShiftOriginalGetLabelItems;
+    delete scale.__identiteProSingleLineShiftOriginalGetLabelItems;
+    scale.__identiteProSingleLineShiftApplied = false;
   },
 };
 
