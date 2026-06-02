@@ -29,6 +29,7 @@ interface EquiteChartDataset extends ChartDataset<'bar', EquiteFloatingBar[]> {
   minValues: number[];
   maxValues: number[];
   hasResponses: boolean[];
+  zeroThemeFlags: boolean[];
 }
 
 @Component({
@@ -125,7 +126,18 @@ export class EquiteStatsComponent implements AfterViewInit, OnDestroy {
     }
 
     const chartLabels = themeStats.map((theme) => theme.label);
-    const values = themeStats.map((theme) => [0, theme.averageValue] as EquiteFloatingBar);
+    const zeroThemeFlags = themeStats.map(
+      (theme) =>
+        theme.responseCount > 0 &&
+        theme.minValue === 0 &&
+        theme.maxValue === 0 &&
+        theme.averageValue === 0,
+    );
+    const values = themeStats.map((theme, index) =>
+      zeroThemeFlags[index]
+        ? ([-0.2, 0.2] as EquiteFloatingBar)
+        : ([0, theme.averageValue] as EquiteFloatingBar),
+    );
     const averageValues = themeStats.map((theme) => theme.averageValue);
     const minValues = themeStats.map((theme) => theme.minValue);
     const maxValues = themeStats.map((theme) => theme.maxValue);
@@ -135,6 +147,10 @@ export class EquiteStatsComponent implements AfterViewInit, OnDestroy {
         return EMPTY_BAR_BACKGROUND_COLOR;
       }
 
+      if (zeroThemeFlags[index]) {
+        return ZERO_BAR_BACKGROUND_COLOR;
+      }
+
       return theme.averageValue < 0
         ? NEGATIVE_BAR_BACKGROUND_COLOR
         : POSITIVE_BAR_BACKGROUND_COLOR;
@@ -142,6 +158,10 @@ export class EquiteStatsComponent implements AfterViewInit, OnDestroy {
     const borderColors = themeStats.map((theme, index) => {
       if (!hasResponses[index]) {
         return EMPTY_BAR_BORDER_COLOR;
+      }
+
+      if (zeroThemeFlags[index]) {
+        return ZERO_BAR_BORDER_COLOR;
       }
 
       return theme.averageValue < 0 ? NEGATIVE_BAR_BORDER_COLOR : POSITIVE_BAR_BORDER_COLOR;
@@ -161,6 +181,7 @@ export class EquiteStatsComponent implements AfterViewInit, OnDestroy {
       minValues,
       maxValues,
       hasResponses,
+      zeroThemeFlags,
       backgroundColor: backgroundColors,
       borderColor: borderColors,
       borderWidth: 1.5,
@@ -260,6 +281,8 @@ export class EquiteStatsComponent implements AfterViewInit, OnDestroy {
 
 const BAR_THICKNESS = 28;
 const CHART_VERTICAL_PADDING = 88;
+const ZERO_BAR_BACKGROUND_COLOR = 'rgba(45, 212, 191, 0.28)';
+const ZERO_BAR_BORDER_COLOR = '#14b8a6';
 const POSITIVE_BAR_BACKGROUND_COLOR = 'rgba(59, 130, 246, 0.26)';
 const POSITIVE_BAR_BORDER_COLOR = '#2563eb';
 const NEGATIVE_BAR_BACKGROUND_COLOR = 'rgba(34, 197, 94, 0.26)';
@@ -326,6 +349,12 @@ const EQUITE_WICK_PLUGIN = {
 
       const y = barElement.y;
 
+      if (dataset.zeroThemeFlags[index]) {
+        ctx.strokeStyle = ZERO_BAR_BORDER_COLOR;
+        drawVerticalCap(ctx, xScale.getPixelForValue(0), y);
+        return;
+      }
+
       if (minValue < 0) {
         ctx.strokeStyle = NEGATIVE_BAR_BORDER_COLOR;
         drawHorizontalSegmentWithCaps(
@@ -381,6 +410,13 @@ const drawHorizontalSegmentWithCaps = (
 };
 
 const drawCap = (ctx: CanvasRenderingContext2D, x: number, y: number): void => {
+  ctx.beginPath();
+  ctx.moveTo(x, y - CAP_HALF_HEIGHT_PX);
+  ctx.lineTo(x, y + CAP_HALF_HEIGHT_PX);
+  ctx.stroke();
+};
+
+const drawVerticalCap = (ctx: CanvasRenderingContext2D, x: number, y: number): void => {
   ctx.beginPath();
   ctx.moveTo(x, y - CAP_HALF_HEIGHT_PX);
   ctx.lineTo(x, y + CAP_HALF_HEIGHT_PX);
