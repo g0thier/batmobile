@@ -246,7 +246,7 @@ export class EquiteStatsComponent implements AfterViewInit, OnDestroy {
               max: 5,
               ticks: {
                 color: '#475569',
-                callback: (value) => this.formatSignedValue(Number(value)),
+                callback: (value) => `${Math.abs(Number(value))}`,
                 stepSize: 1,
               },
               grid: {
@@ -289,31 +289,6 @@ const NEGATIVE_BAR_BACKGROUND_COLOR = 'rgba(34, 197, 94, 0.26)';
 const NEGATIVE_BAR_BORDER_COLOR = '#16a34a';
 const EMPTY_BAR_BACKGROUND_COLOR = 'rgba(148, 163, 184, 0.18)';
 const EMPTY_BAR_BORDER_COLOR = '#94a3b8';
-const REFERENCE_LINE_COLOR = '#94a3b8';
-
-const EQUITE_ZERO_REFERENCE_PLUGIN = {
-  id: 'equiteZeroReference',
-  afterDatasetsDraw(chart: Chart<'bar'>): void {
-    const xScale = chart.scales['x'];
-    const chartArea = chart.chartArea;
-    if (!xScale || !chartArea) {
-      return;
-    }
-
-    const x = xScale.getPixelForValue(0);
-    const ctx = chart.ctx;
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(x, chartArea.top);
-    ctx.lineTo(x, chartArea.bottom);
-    ctx.strokeStyle = REFERENCE_LINE_COLOR;
-    ctx.setLineDash([6, 6]);
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-    ctx.restore();
-  },
-};
 
 const EQUITE_WICK_PLUGIN = {
   id: 'equiteWick',
@@ -430,7 +405,6 @@ Chart.register(
   LinearScale,
   Tooltip,
   Title,
-  EQUITE_ZERO_REFERENCE_PLUGIN,
   EQUITE_WICK_PLUGIN,
 );
 
