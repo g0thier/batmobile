@@ -163,6 +163,128 @@ export class IdentiteProSession {
     };
   }
 
+  async getSessionStats(sessionId: string, userId: string): Promise<IdentiteProSessionStats> {
+    const normalizedSessionId = readString(sessionId);
+    const normalizedUserId = readString(userId);
+
+    if (!normalizedSessionId || !normalizedUserId) {
+      throw new Error('Session ou utilisateur introuvable.');
+    }
+
+    const [atlas, userNode] = await Promise.all([
+      this.loadAtlas(),
+      this.readUserResponsesNode(normalizedSessionId, normalizedUserId),
+    ]);
+
+    const traitById = atlas.traitById;
+    const responseById = atlas.responseById;
+    const themeById = atlas.themeById;
+    const dimensionByKey = atlas.dimensionByKey;
+
+    const valuesByThemeAndDimensionId = new Map<number, Map<number, number[]>>();
+    const answeredQuestionKeysByTheme = new Map<number, Set<string>>();
+
+    dedupeResponses(userNode.responses)
+      .filter((response) => response.quizId === IDENTITE_PRO_QUIZ_ID)
+      .forEach((responseEntry) => {
+        const matchedTheme = themeById.get(responseEntry.themeId);
+        const matchedTrait = traitById.get(responseEntry.traitId);
+        const matchedResponse = responseById.get(responseEntry.responseId);
+        const matchedDimension = atlas.dimensionById.get(responseEntry.dimensionId);
+
+        if (!matchedTheme || !matchedTrait || !matchedResponse || !matchedDimension) {
+          return;
+        }
+
+        if (matchedTrait.theme !== responseEntry.themeId) {
+          return;
+        }
+
+        const normalizedDimensionKey = getDimensionKey(matchedDimension);
+        if (!isIdentiteProDimensionKey(normalizedDimensionKey)) {
+          return;
+        }
+
+        const themeValues =
+          valuesByThemeAndDimensionId.get(matchedTheme.id) ?? new Map<number, number[]>();
+        const currentValues = themeValues.get(matchedDimension.id) ?? [];
+        currentValues.push(matchedResponse.valeur);
+        themeValues.set(matchedDimension.id, currentValues);
+        valuesByThemeAndDimensionId.set(matchedTheme.id, themeValues);
+
+        const answeredKeys = answeredQuestionKeysByTheme.get(matchedTheme.id) ?? new Set<string>();
+        answeredKeys.add(buildQuestionKey(responseEntry.dimensionId, responseEntry.traitId));
+        answeredQuestionKeysByTheme.set(matchedTheme.id, answeredKeys);
+      });
+
+    const totalCount = atlas.dimensionsIdentite.length * atlas.traits.length;
+    const answeredCount = new Set(
+      dedupeResponses(userNode.responses)
+        .filter((response) => response.quizId === IDENTITE_PRO_QUIZ_ID)
+        .map((response) => buildQuestionKey(response.dimensionId, response.traitId)),
+    ).size;
+
+    const themes = atlas.themes.map((theme) => {
+      const themeValues = valuesByThemeAndDimensionId.get(theme.id) ?? new Map<number, number[]>();
+
+      const identiteDeSoiDimension =
+        dimensionByKey.get('identite_de_soi') ?? atlas.dimensionsIdentite[0] ?? null;
+      const identitePercueDimension =
+        dimensionByKey.get('identite_percue') ?? atlas.dimensionsIdentite[1] ?? null;
+
+      const identiteDeSoiValues =
+        identiteDeSoiDimension !== null ? themeValues.get(identiteDeSoiDimension.id) ?? [] : [];
+      const identitePercueValues =
+        identitePercueDimension !== null ? themeValues.get(identitePercueDimension.id) ?? [] : [];
+
+      const identiteDeSoiStats = identiteDeSoiDimension
+        ? {
+            dimensionId: identiteDeSoiDimension.id,
+            key: identiteDeSoiDimension.key,
+            label: identiteDeSoiDimension.label,
+            responseCount: identiteDeSoiValues.length,
+            averageValue: Number(averageValues(identiteDeSoiValues).toFixed(2)),
+          }
+        : buildEmptyDimensionStats({
+            id: 0,
+            key: 'identite_de_soi',
+            label: 'Je suis...',
+          });
+
+      const identitePercueStats = identitePercueDimension
+        ? {
+            dimensionId: identitePercueDimension.id,
+            key: identitePercueDimension.key,
+            label: identitePercueDimension.label,
+            responseCount: identitePercueValues.length,
+            averageValue: Number(averageValues(identitePercueValues).toFixed(2)),
+          }
+        : buildEmptyDimensionStats({
+            id: 0,
+            key: 'identite_percue',
+            label: 'Au travail, je suis perçu comme...',
+          });
+
+      return {
+        themeId: theme.id,
+        label: theme.label,
+        traitCount: atlas.traits.filter((trait) => trait.theme === theme.id).length,
+        answeredCount: answeredQuestionKeysByTheme.get(theme.id)?.size ?? 0,
+        identiteDeSoi: identiteDeSoiStats,
+        identitePercue: identitePercueStats,
+      } satisfies IdentiteProThemeStats;
+    });
+
+    return {
+      title: atlas.titre || atlas.nom || 'Identité Pro',
+      totalCount,
+      answeredCount,
+      remainingCount: Math.max(totalCount - answeredCount, 0),
+      themes,
+      updatedAt: userNode.updatedAt,
+    };
+  }
+
   async pickRandomNextEligibleSession(
     userId: string,
     currentSessionId: string,
@@ -283,11 +405,14 @@ export interface IdentiteProPromptQuestion {
 }
 
 export interface IdentiteProAtlas {
+  nom: string;
+  titre: string;
   dimensionsIdentite: IdentiteProDimension[];
   themes: IdentiteProTheme[];
   reponses: IdentiteProResponse[];
   traits: IdentiteProTrait[];
   dimensionById: Map<number, IdentiteProDimension>;
+  dimensionByKey: Map<string, IdentiteProDimension>;
   themeById: Map<number, IdentiteProTheme>;
   responseById: Map<number, IdentiteProResponse>;
   traitById: Map<number, IdentiteProTrait>;
@@ -327,6 +452,32 @@ export interface IdentiteProSubmitAnswerResult {
   answeredCount: number;
   remainingCount: number;
   isCompleted: boolean;
+}
+
+export interface IdentiteProDimensionStats {
+  dimensionId: number;
+  key: string;
+  label: string;
+  responseCount: number;
+  averageValue: number;
+}
+
+export interface IdentiteProThemeStats {
+  themeId: number;
+  label: string;
+  traitCount: number;
+  answeredCount: number;
+  identiteDeSoi: IdentiteProDimensionStats;
+  identitePercue: IdentiteProDimensionStats;
+}
+
+export interface IdentiteProSessionStats {
+  title: string;
+  totalCount: number;
+  answeredCount: number;
+  remainingCount: number;
+  themes: IdentiteProThemeStats[];
+  updatedAt: string;
 }
 
 interface IdentiteProEligibleSession {
@@ -432,11 +583,16 @@ const normalizeAtlas = (payload: unknown): IdentiteProAtlas => {
     : [];
 
   return {
+    nom: readString(record['nom']),
+    titre: readString(record['titre']),
     dimensionsIdentite,
     themes,
     reponses,
     traits,
     dimensionById: new Map(dimensionsIdentite.map((dimension) => [dimension.id, dimension])),
+    dimensionByKey: new Map(
+      dimensionsIdentite.map((dimension) => [dimension.key.trim().toLowerCase(), dimension]),
+    ),
     themeById: new Map(themes.map((theme) => [theme.id, theme])),
     responseById: new Map(reponses.map((response) => [response.id, response])),
     traitById: new Map(traits.map((trait) => [trait.id, trait])),
@@ -539,6 +695,28 @@ const getAnsweredQuestionKeys = (responses: IdentiteProAnswerEntry[]): Set<strin
 
   return keys;
 };
+
+const averageValues = (values: number[]): number => {
+  if (values.length === 0) {
+    return 0;
+  }
+
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+};
+
+const getDimensionKey = (dimension: IdentiteProDimension): string =>
+  dimension.key.trim().toLowerCase();
+
+const isIdentiteProDimensionKey = (dimensionKey: string): boolean =>
+  dimensionKey === 'identite_de_soi' || dimensionKey === 'identite_percue';
+
+const buildEmptyDimensionStats = (dimension: IdentiteProDimension): IdentiteProDimensionStats => ({
+  dimensionId: dimension.id,
+  key: dimension.key,
+  label: dimension.label,
+  responseCount: 0,
+  averageValue: 0,
+});
 
 const normalizeUserSession = (sessionKey: string, payload: unknown): UserSessionSummary => {
   const record = asRecord(payload);

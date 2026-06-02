@@ -1,1 +1,39 @@
-<p>identite-pro-stats works!</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Identité Pro</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="stats-page">
+    @if (isLoading) {
+      <div class="state-row">
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>Chargement des statistiques...</span>
+      </div>
+    } @else {
+      @if (errorMessage) {
+        <ion-text color="danger" class="state-error">{{ errorMessage }}</ion-text>
+      }
+
+      @if (stats && !errorMessage) {
+        <p class="progress-label">Questions répondues: {{ stats.answeredCount }} / {{ stats.totalCount }}</p>
+
+        <div class="chart-card" aria-label="Statistiques du quiz Identité Pro">
+          <div class="chart-wrapper" [style.height.px]="chartCanvasHeightPx">
+            <canvas #identiteProCanvas></canvas>
+          </div>
+        </div>
+
+        <div class="dimension-help" aria-label="Explications du graphique">
+          @for (item of themeLegendItems; track item.label) {
+            <p>
+              <span class="legend-color" [style.background-color]="item.color" aria-hidden="true"></span>
+              <strong>{{ item.label }}</strong>
+            </p>
+          }
+        </div>
+      }
+    }
+  </div>
+</ion-content>
