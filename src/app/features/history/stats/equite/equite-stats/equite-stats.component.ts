@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   BarController,
@@ -32,6 +32,8 @@ interface EquiteChartDataset extends ChartDataset<'bar', EquiteFloatingBar[]> {
   zeroThemeFlags: boolean[];
 }
 
+Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip, Title);
+
 @Component({
   selector: 'app-equite-stats',
   standalone: true,
@@ -39,7 +41,7 @@ interface EquiteChartDataset extends ChartDataset<'bar', EquiteFloatingBar[]> {
   templateUrl: './equite-stats.component.html',
   styleUrl: './equite-stats.component.css',
 })
-export class EquiteStatsComponent implements AfterViewInit, OnDestroy {
+export class EquiteStatsComponent implements OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -53,12 +55,13 @@ export class EquiteStatsComponent implements AfterViewInit, OnDestroy {
     this.equiteCanvas = value?.nativeElement ?? null;
 
     if (this.stats && this.equiteCanvas) {
-      queueMicrotask(() => this.renderChart());
+      this.scheduleChartRender();
     }
   }
 
   private chart: Chart<'bar'> | null = null;
   private equiteCanvas: HTMLCanvasElement | null = null;
+  private chartRenderRafId: number | null = null;
 
   isLoading = true;
   errorMessage = '';
@@ -70,12 +73,24 @@ export class EquiteStatsComponent implements AfterViewInit, OnDestroy {
     void this.initialize();
   }
 
-  ngAfterViewInit(): void {
-    this.renderChart();
+  ionViewDidEnter(): void {
+    this.scheduleChartRender();
+  }
+
+  ionViewDidLeave(): void {
+    this.cleanupChartState();
   }
 
   ngOnDestroy(): void {
-    this.destroyChart();
+    this.cleanupChartState();
+  }
+
+  private scheduleChartRender(): void {
+    this.cancelScheduledChartRender();
+    this.chartRenderRafId = requestAnimationFrame(() => {
+      this.chartRenderRafId = null;
+      this.renderChart();
+    });
   }
 
   formatSignedValue(value: number, digits = 0): string {
@@ -107,7 +122,7 @@ export class EquiteStatsComponent implements AfterViewInit, OnDestroy {
     } finally {
       this.isLoading = false;
       if (this.stats) {
-        queueMicrotask(() => this.renderChart());
+        this.scheduleChartRender();
       }
     }
   }
@@ -116,7 +131,17 @@ export class EquiteStatsComponent implements AfterViewInit, OnDestroy {
     const sessionStats = this.stats;
     const canvas = this.equiteCanvas;
 
-    if (!sessionStats || !canvas) {
+    if (!sessionStats) {
+      return;
+    }
+
+    if (!canvas) {
+      this.scheduleChartRender();
+      return;
+    }
+
+    if (!this.isCanvasReady(canvas)) {
+      this.scheduleChartRender();
       return;
     }
 
@@ -198,6 +223,7 @@ export class EquiteStatsComponent implements AfterViewInit, OnDestroy {
           labels: chartLabels,
           datasets: [dataset],
         },
+        plugins: [EQUITE_WICK_PLUGIN],
         options: {
           animation: false,
           indexAxis: 'y',
@@ -277,6 +303,24 @@ export class EquiteStatsComponent implements AfterViewInit, OnDestroy {
   private destroyChart(): void {
     this.chart?.destroy();
     this.chart = null;
+  }
+
+  private cleanupChartState(): void {
+    this.cancelScheduledChartRender();
+    this.destroyChart();
+  }
+
+  private cancelScheduledChartRender(): void {
+    if (this.chartRenderRafId === null) {
+      return;
+    }
+
+    cancelAnimationFrame(this.chartRenderRafId);
+    this.chartRenderRafId = null;
+  }
+
+  private isCanvasReady(canvas: HTMLCanvasElement): boolean {
+    return canvas.clientWidth > 0 && canvas.clientHeight > 0;
   }
 
   private formatThemeLabel(label: string): string | string[] {
@@ -408,15 +452,5 @@ const drawVerticalCap = (ctx: CanvasRenderingContext2D, x: number, y: number): v
   ctx.lineTo(x, y + CAP_HALF_HEIGHT_PX);
   ctx.stroke();
 };
-
-Chart.register(
-  BarController,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Title,
-  EQUITE_WICK_PLUGIN,
-);
 
 const CAP_HALF_HEIGHT_PX = 4;

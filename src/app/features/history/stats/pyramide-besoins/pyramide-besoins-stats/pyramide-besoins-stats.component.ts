@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   BarController,
@@ -35,7 +35,7 @@ Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip, L
   templateUrl: './pyramide-besoins-stats.component.html',
   styleUrl: './pyramide-besoins-stats.component.css',
 })
-export class PyramideBesoinsStatsComponent implements AfterViewInit, OnDestroy {
+export class PyramideBesoinsStatsComponent implements OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -49,12 +49,13 @@ export class PyramideBesoinsStatsComponent implements AfterViewInit, OnDestroy {
     this.stackedCanvas = value?.nativeElement ?? null;
 
     if (this.stats && this.stackedCanvas) {
-      queueMicrotask(() => this.renderChart());
+      this.scheduleChartRender();
     }
   }
 
   private chart: Chart<'bar'> | null = null;
   private stackedCanvas: HTMLCanvasElement | null = null;
+  private chartRenderRafId: number | null = null;
 
   isLoading = true;
   errorMessage = '';
@@ -64,12 +65,24 @@ export class PyramideBesoinsStatsComponent implements AfterViewInit, OnDestroy {
     void this.initialize();
   }
 
-  ngAfterViewInit(): void {
-    this.renderChart();
+  ionViewDidEnter(): void {
+    this.scheduleChartRender();
+  }
+
+  ionViewDidLeave(): void {
+    this.cleanupChartState();
   }
 
   ngOnDestroy(): void {
-    this.destroyChart();
+    this.cleanupChartState();
+  }
+
+  private scheduleChartRender(): void {
+    this.cancelScheduledChartRender();
+    this.chartRenderRafId = requestAnimationFrame(() => {
+      this.chartRenderRafId = null;
+      this.renderChart();
+    });
   }
 
   formatPercentage(value: number): string {
@@ -110,7 +123,7 @@ export class PyramideBesoinsStatsComponent implements AfterViewInit, OnDestroy {
     } finally {
       this.isLoading = false;
       if (this.stats) {
-        queueMicrotask(() => this.renderChart());
+        this.scheduleChartRender();
       }
     }
   }
@@ -119,7 +132,17 @@ export class PyramideBesoinsStatsComponent implements AfterViewInit, OnDestroy {
     const sessionStats = this.stats;
     const canvas = this.stackedCanvas;
 
-    if (!sessionStats || !canvas) {
+    if (!sessionStats) {
+      return;
+    }
+
+    if (!canvas) {
+      this.scheduleChartRender();
+      return;
+    }
+
+    if (!this.isCanvasReady(canvas)) {
+      this.scheduleChartRender();
       return;
     }
 
@@ -145,6 +168,11 @@ export class PyramideBesoinsStatsComponent implements AfterViewInit, OnDestroy {
           labels: ['Répartition'],
           datasets,
         },
+        plugins: [
+          EQUILATERAL_TRIANGLE_MASK_PLUGIN,
+          STACK_PERCENT_LABELS_PLUGIN,
+          TOTAL_ACCOMPLISHED_MARKER_PLUGIN,
+        ],
         options: {
           animation: false,
           maintainAspectRatio: true,
@@ -209,6 +237,24 @@ export class PyramideBesoinsStatsComponent implements AfterViewInit, OnDestroy {
   private destroyChart(): void {
     this.chart?.destroy();
     this.chart = null;
+  }
+
+  private cleanupChartState(): void {
+    this.cancelScheduledChartRender();
+    this.destroyChart();
+  }
+
+  private cancelScheduledChartRender(): void {
+    if (this.chartRenderRafId === null) {
+      return;
+    }
+
+    cancelAnimationFrame(this.chartRenderRafId);
+    this.chartRenderRafId = null;
+  }
+
+  private isCanvasReady(canvas: HTMLCanvasElement): boolean {
+    return canvas.clientWidth > 0 && canvas.clientHeight > 0;
   }
 }
 
@@ -299,9 +345,6 @@ const STACK_PERCENT_LABELS_PLUGIN = {
   },
 };
 
-Chart.register(EQUILATERAL_TRIANGLE_MASK_PLUGIN);
-Chart.register(STACK_PERCENT_LABELS_PLUGIN);
-
 const TOTAL_ACCOMPLISHED_MARKER_PLUGIN = {
   id: 'totalAccomplishedMarker',
   afterDraw(chart: Chart<'bar'>): void {
@@ -358,8 +401,6 @@ const TOTAL_ACCOMPLISHED_MARKER_PLUGIN = {
     ctx.restore();
   },
 };
-
-Chart.register(TOTAL_ACCOMPLISHED_MARKER_PLUGIN);
 
 const getEquilateralTriangle = (
   chart: Chart<'bar'>,

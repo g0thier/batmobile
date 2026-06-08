@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   BarController,
@@ -29,7 +29,7 @@ import { TheorieXYSession, TheorieXYSessionStats } from '../../../../../core/qui
   templateUrl: './theorie-x-y-stats.component.html',
   styleUrl: './theorie-x-y-stats.component.css',
 })
-export class TheorieXYStatsComponent implements AfterViewInit, OnDestroy {
+export class TheorieXYStatsComponent implements OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -43,12 +43,13 @@ export class TheorieXYStatsComponent implements AfterViewInit, OnDestroy {
     this.stackedCanvas = value?.nativeElement ?? null;
 
     if (this.stats && this.stackedCanvas) {
-      queueMicrotask(() => this.renderChart());
+      this.scheduleChartRender();
     }
   }
 
   private chart: Chart<'bar'> | null = null;
   private stackedCanvas: HTMLCanvasElement | null = null;
+  private chartRenderRafId: number | null = null;
 
   isLoading = true;
   errorMessage = '';
@@ -59,12 +60,24 @@ export class TheorieXYStatsComponent implements AfterViewInit, OnDestroy {
     void this.initialize();
   }
 
-  ngAfterViewInit(): void {
-    this.renderChart();
+  ionViewDidEnter(): void {
+    this.scheduleChartRender();
+  }
+
+  ionViewDidLeave(): void {
+    this.cleanupChartState();
   }
 
   ngOnDestroy(): void {
-    this.destroyChart();
+    this.cleanupChartState();
+  }
+
+  private scheduleChartRender(): void {
+    this.cancelScheduledChartRender();
+    this.chartRenderRafId = requestAnimationFrame(() => {
+      this.chartRenderRafId = null;
+      this.renderChart();
+    });
   }
 
   formatPercentage(value: number): string {
@@ -95,7 +108,7 @@ export class TheorieXYStatsComponent implements AfterViewInit, OnDestroy {
     } finally {
       this.isLoading = false;
       if (this.stats) {
-        queueMicrotask(() => this.renderChart());
+        this.scheduleChartRender();
       }
     }
   }
@@ -104,7 +117,17 @@ export class TheorieXYStatsComponent implements AfterViewInit, OnDestroy {
     const sessionStats = this.stats;
     const canvas = this.stackedCanvas;
 
-    if (!sessionStats || !canvas) {
+    if (!sessionStats) {
+      return;
+    }
+
+    if (!canvas) {
+      this.scheduleChartRender();
+      return;
+    }
+
+    if (!this.isCanvasReady(canvas)) {
+      this.scheduleChartRender();
       return;
     }
 
@@ -162,6 +185,11 @@ export class TheorieXYStatsComponent implements AfterViewInit, OnDestroy {
             },
           ],
         },
+        plugins: [
+          FIFTY_PERCENT_REFERENCE_PLUGIN,
+          STACK_CENTER_LABELS_PLUGIN,
+          MINORITY_PERCENT_LABELS_PLUGIN,
+        ],
         options: {
           animation: false,
           indexAxis: 'y',
@@ -237,7 +265,27 @@ export class TheorieXYStatsComponent implements AfterViewInit, OnDestroy {
     this.chart?.destroy();
     this.chart = null;
   }
+
+  private cleanupChartState(): void {
+    this.cancelScheduledChartRender();
+    this.destroyChart();
+  }
+
+  private cancelScheduledChartRender(): void {
+    if (this.chartRenderRafId === null) {
+      return;
+    }
+
+    cancelAnimationFrame(this.chartRenderRafId);
+    this.chartRenderRafId = null;
+  }
+
+  private isCanvasReady(canvas: HTMLCanvasElement): boolean {
+    return canvas.clientWidth > 0 && canvas.clientHeight > 0;
+  }
 }
+
+Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip, Legend, Title);
 
 const FIFTY_PERCENT_REFERENCE_PLUGIN = {
   id: 'fiftyPercentReference',
@@ -363,16 +411,3 @@ const MINORITY_PERCENT_LABELS_PLUGIN = {
 
 const BAR_THICKNESS = 44;
 const CHART_VERTICAL_PADDING = 160;
-
-Chart.register(
-  BarController,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Legend,
-  Title,
-  FIFTY_PERCENT_REFERENCE_PLUGIN,
-  STACK_CENTER_LABELS_PLUGIN,
-  MINORITY_PERCENT_LABELS_PLUGIN,
-);

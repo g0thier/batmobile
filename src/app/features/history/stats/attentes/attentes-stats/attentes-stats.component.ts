@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   Component,
   ElementRef,
   OnDestroy,
@@ -40,7 +39,7 @@ Chart.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Le
   templateUrl: './attentes-stats.component.html',
   styleUrl: './attentes-stats.component.css',
 })
-export class AttentesStatsComponent implements AfterViewInit, OnDestroy {
+export class AttentesStatsComponent implements OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -53,6 +52,7 @@ export class AttentesStatsComponent implements AfterViewInit, OnDestroy {
 
   private chartInstances: Chart<'radar'>[] = [];
   private canvasesSubscription: Subscription | null = null;
+  private chartRenderRafId: number | null = null;
 
   isLoading = true;
   errorMessage = '';
@@ -62,16 +62,36 @@ export class AttentesStatsComponent implements AfterViewInit, OnDestroy {
     void this.initialize();
   }
 
-  ngAfterViewInit(): void {
-    this.canvasesSubscription = this.radarCanvases.changes.subscribe(() => {
-      queueMicrotask(() => this.renderCharts());
-    });
-    this.renderCharts();
+  ionViewDidEnter(): void {
+    this.ensureCanvasesSubscription();
+    this.scheduleRenderCharts();
+  }
+
+  ionViewDidLeave(): void {
+    this.cleanupChartState();
   }
 
   ngOnDestroy(): void {
     this.canvasesSubscription?.unsubscribe();
-    this.destroyCharts();
+    this.cleanupChartState();
+  }
+
+  private scheduleRenderCharts(): void {
+    this.cancelScheduledChartRender();
+    this.chartRenderRafId = requestAnimationFrame(() => {
+      this.chartRenderRafId = null;
+      this.renderCharts();
+    });
+  }
+
+  private ensureCanvasesSubscription(): void {
+    if (this.canvasesSubscription) {
+      return;
+    }
+
+    this.canvasesSubscription = this.radarCanvases.changes.subscribe(() => {
+      this.scheduleRenderCharts();
+    });
   }
 
   private async initialize(): Promise<void> {
@@ -98,19 +118,34 @@ export class AttentesStatsComponent implements AfterViewInit, OnDestroy {
     } finally {
       this.isLoading = false;
       if (this.stats) {
-        queueMicrotask(() => this.renderCharts());
+        this.scheduleRenderCharts();
       }
     }
   }
 
   private renderCharts(): void {
     const sessionStats = this.stats;
-    if (!sessionStats || !this.radarCanvases) {
+    if (!sessionStats) {
+      return;
+    }
+
+    if (!this.radarCanvases) {
+      this.scheduleRenderCharts();
+      return;
+    }
+
+    if (sessionStats.attentes.length === 0) {
       return;
     }
 
     const canvases = this.radarCanvases.toArray().map((canvasRef) => canvasRef.nativeElement);
-    if (canvases.length === 0 || canvases.length < sessionStats.attentes.length) {
+    const expectedCanvases = sessionStats.attentes.length;
+    const areCanvasesReady =
+      canvases.length >= expectedCanvases &&
+      canvases.slice(0, expectedCanvases).every((canvas) => this.isCanvasReady(canvas));
+
+    if (!areCanvasesReady) {
+      this.scheduleRenderCharts();
       return;
     }
 
@@ -232,5 +267,23 @@ export class AttentesStatsComponent implements AfterViewInit, OnDestroy {
   private destroyCharts(): void {
     this.chartInstances.forEach((chart) => chart.destroy());
     this.chartInstances = [];
+  }
+
+  private cleanupChartState(): void {
+    this.cancelScheduledChartRender();
+    this.destroyCharts();
+  }
+
+  private cancelScheduledChartRender(): void {
+    if (this.chartRenderRafId === null) {
+      return;
+    }
+
+    cancelAnimationFrame(this.chartRenderRafId);
+    this.chartRenderRafId = null;
+  }
+
+  private isCanvasReady(canvas: HTMLCanvasElement): boolean {
+    return canvas.clientWidth > 0 && canvas.clientHeight > 0;
   }
 }

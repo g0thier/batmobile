@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   BarController,
@@ -45,7 +45,7 @@ interface IdentiteProChartDataset extends ChartDataset<'bar', IdentiteProCandles
   templateUrl: './identite-pro-stats.component.html',
   styleUrl: './identite-pro-stats.component.css',
 })
-export class IdentiteProStatsComponent implements AfterViewInit, OnDestroy {
+export class IdentiteProStatsComponent implements OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -59,12 +59,13 @@ export class IdentiteProStatsComponent implements AfterViewInit, OnDestroy {
     this.identiteProCanvas = value?.nativeElement ?? null;
 
     if (this.stats && this.identiteProCanvas) {
-      queueMicrotask(() => this.renderChart());
+      this.scheduleChartRender();
     }
   }
 
   private chart: Chart<'bar', IdentiteProCandlestickPoint[], string> | null = null;
   private identiteProCanvas: HTMLCanvasElement | null = null;
+  private chartRenderRafId: number | null = null;
 
   isLoading = true;
   errorMessage = '';
@@ -80,12 +81,24 @@ export class IdentiteProStatsComponent implements AfterViewInit, OnDestroy {
     void this.initialize();
   }
 
-  ngAfterViewInit(): void {
-    this.renderChart();
+  ionViewDidEnter(): void {
+    this.scheduleChartRender();
+  }
+
+  ionViewDidLeave(): void {
+    this.cleanupChartState();
   }
 
   ngOnDestroy(): void {
-    this.destroyChart();
+    this.cleanupChartState();
+  }
+
+  private scheduleChartRender(): void {
+    this.cancelScheduledChartRender();
+    this.chartRenderRafId = requestAnimationFrame(() => {
+      this.chartRenderRafId = null;
+      this.renderChart();
+    });
   }
 
   formatAverage(value: number): string {
@@ -121,7 +134,7 @@ export class IdentiteProStatsComponent implements AfterViewInit, OnDestroy {
     } finally {
       this.isLoading = false;
       if (this.stats) {
-        queueMicrotask(() => this.renderChart());
+        this.scheduleChartRender();
       }
     }
   }
@@ -130,7 +143,17 @@ export class IdentiteProStatsComponent implements AfterViewInit, OnDestroy {
     const sessionStats = this.stats;
     const canvas = this.identiteProCanvas;
 
-    if (!sessionStats || !canvas) {
+    if (!sessionStats) {
+      return;
+    }
+
+    if (!canvas) {
+      this.scheduleChartRender();
+      return;
+    }
+
+    if (!this.isCanvasReady(canvas)) {
+      this.scheduleChartRender();
       return;
     }
 
@@ -375,6 +398,24 @@ export class IdentiteProStatsComponent implements AfterViewInit, OnDestroy {
   private destroyChart(): void {
     this.chart?.destroy();
     this.chart = null;
+  }
+
+  private cleanupChartState(): void {
+    this.cancelScheduledChartRender();
+    this.destroyChart();
+  }
+
+  private cancelScheduledChartRender(): void {
+    if (this.chartRenderRafId === null) {
+      return;
+    }
+
+    cancelAnimationFrame(this.chartRenderRafId);
+    this.chartRenderRafId = null;
+  }
+
+  private isCanvasReady(canvas: HTMLCanvasElement): boolean {
+    return canvas.clientWidth > 0 && canvas.clientHeight > 0;
   }
 }
 
