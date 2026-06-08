@@ -90,6 +90,23 @@ const sortByDeadlineAsc = (left: UserQuizSessionViewModel, right: UserQuizSessio
 
 const isFinishedStatus = (status: string): boolean => FINISHED_STATUSES.has(normalizeStatus(status));
 
+const isDeadlineExpired = (deadline: string, nowMs: number): boolean => {
+  const timestamp = toTimestamp(deadline);
+  if (timestamp === null) {
+    return false;
+  }
+
+  return timestamp < nowMs;
+};
+
+const isLaunchableMixedSession = (session: UserQuizSessionViewModel, nowMs: number): boolean => {
+  if (isFinishedStatus(session.status)) {
+    return false;
+  }
+
+  return !isDeadlineExpired(session.responseDeadline, nowMs);
+};
+
 const hasAnsweredToday = (sessions: UserQuizSessionViewModel[]): boolean => {
   const today = new Date();
 
@@ -150,14 +167,9 @@ const toLauncherState = (state: UserQuizSessionsState): QuizLauncherState => {
   };
 };
 
-const isOpenQuizSession = (session: UserQuizSessionViewModel): boolean => {
-  const normalizedStatus = session.status.trim().toLowerCase();
-  return normalizedStatus !== 'completed' && normalizedStatus !== 'archived';
-};
-
-const buildMixedPool = (state: UserQuizSessionsState): UserQuizSessionViewModel[] => {
+const buildMixedPool = (state: UserQuizSessionsState, nowMs: number): UserQuizSessionViewModel[] => {
   const sessionsById = new Map<string, UserQuizSessionViewModel>();
-  [...state.upcomingQuiz, ...state.pastQuiz].filter(isOpenQuizSession).forEach((session) => {
+  state.upcomingQuiz.filter((session) => isLaunchableMixedSession(session, nowMs)).forEach((session) => {
     const normalizedSessionId = session.sessionId.trim();
     if (!normalizedSessionId) {
       return;
@@ -197,7 +209,7 @@ export class QuizComponent {
       this.userQuizSessionsService.state$.pipe(filter((value) => !value.isLoading), take(1)),
     );
 
-    const mixedPool = buildMixedPool(sessionsState);
+    const mixedPool = buildMixedPool(sessionsState, Date.now());
     if (mixedPool.length === 0) {
       await this.router.navigateByUrl('/tabs/history');
       return;
