@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Database } from '@angular/fire/database';
 import { get, onValue, ref } from 'firebase/database';
-import { Observable, of, shareReplay, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, of, shareReplay, switchMap } from 'rxjs';
 import { AuthService } from '../auth/auth';
 
 export interface UserQuizSessionViewModel {
@@ -162,6 +162,7 @@ const splitSessionsByDeadline = (
 export class UserQuizSessionsService {
   private readonly authService = inject(AuthService);
   private readonly database = inject(Database);
+  private readonly refreshTrigger$ = new BehaviorSubject<number>(0);
 
   private async resolveVisibleSessions(
     sessions: NormalizedUserQuizSession[],
@@ -208,8 +209,8 @@ export class UserQuizSessionsService {
     return visibleSessions.filter((session): session is UserQuizSessionViewModel => session !== null);
   }
 
-  readonly state$ = this.authService.authUser$.pipe(
-    switchMap((currentUser) => {
+  readonly state$ = combineLatest([this.authService.authUser$, this.refreshTrigger$]).pipe(
+    switchMap(([currentUser]) => {
       if (!currentUser) {
         return of({
           upcomingQuiz: [],
@@ -284,4 +285,8 @@ export class UserQuizSessionsService {
       refCount: true,
     }),
   );
+
+  refresh(): void {
+    this.refreshTrigger$.next(this.refreshTrigger$.value + 1);
+  }
 }

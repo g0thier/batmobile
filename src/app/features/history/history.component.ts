@@ -44,6 +44,10 @@ export class HistoryComponent {
 
   readonly state$ = this.userQuizSessionsService.state$;
 
+  ionViewWillEnter(): void {
+    this.userQuizSessionsService.refresh();
+  }
+
   getQuizTitle(quizId: string): string {
     return this.quizCatalogService.getQuizTitle(quizId);
   }
