@@ -1,6 +1,7 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { firstValueFrom, filter, take } from 'rxjs';
 import {
   IonButton,
   IonContent,
@@ -149,6 +150,25 @@ const toLauncherState = (state: UserQuizSessionsState): QuizLauncherState => {
   };
 };
 
+const isOpenQuizSession = (session: UserQuizSessionViewModel): boolean => {
+  const normalizedStatus = session.status.trim().toLowerCase();
+  return normalizedStatus !== 'completed' && normalizedStatus !== 'archived';
+};
+
+const buildMixedPool = (state: UserQuizSessionsState): UserQuizSessionViewModel[] => {
+  const sessionsById = new Map<string, UserQuizSessionViewModel>();
+  [...state.upcomingQuiz, ...state.pastQuiz].filter(isOpenQuizSession).forEach((session) => {
+    const normalizedSessionId = session.sessionId.trim();
+    if (!normalizedSessionId) {
+      return;
+    }
+
+    sessionsById.set(normalizedSessionId, session);
+  });
+
+  return [...sessionsById.values()];
+};
+
 @Component({
   selector: 'app-quiz',
   templateUrl: './quiz.component.html',
@@ -173,12 +193,17 @@ export class QuizComponent {
   readonly launcherState$ = this.userQuizSessionsService.state$.pipe(map(toLauncherState));
 
   async onLauncherTap(state: QuizLauncherState): Promise<void> {
-    if (state.action === 'session' && state.selectedSession) {
-      this.quizSessionContextService.setCurrentSession(state.selectedSession);
-      await this.router.navigateByUrl('/tabs/quiz-session');
+    const sessionsState = await firstValueFrom(
+      this.userQuizSessionsService.state$.pipe(filter((value) => !value.isLoading), take(1)),
+    );
+
+    const mixedPool = buildMixedPool(sessionsState);
+    if (mixedPool.length === 0) {
+      await this.router.navigateByUrl('/tabs/history');
       return;
     }
 
-    await this.router.navigateByUrl('/tabs/history');
+    this.quizSessionContextService.setMixedPool(mixedPool);
+    await this.router.navigateByUrl('/tabs/quiz-session');
   }
 }

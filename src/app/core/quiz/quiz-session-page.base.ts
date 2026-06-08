@@ -48,6 +48,14 @@ export abstract class QuizSessionPageBase<TPromptState extends QuizPromptState, 
       this.answeredCount = this.getAnsweredCountFromSubmitResult(submitResult);
       await this.afterSuccessfulSubmission(submitResult);
 
+      if (this.quizSessionContextService.isMixedMode()) {
+        const nextSession = this.quizSessionContextService.advance(submitResult.isCompleted);
+        if (!nextSession) {
+          await this.goToHistory();
+        }
+        return;
+      }
+
       if (submitResult.isCompleted) {
         this.quizSessionContextService.clearCurrentSession();
         await this.goToHistory();
@@ -167,6 +175,14 @@ export abstract class QuizSessionPageBase<TPromptState extends QuizPromptState, 
     await this.afterPromptLoaded(prompt);
 
     if (prompt.isCompleted) {
+      if (this.quizSessionContextService.isMixedMode()) {
+        const nextSession = this.quizSessionContextService.advance(true);
+        if (!nextSession) {
+          await this.goToHistory();
+        }
+        return;
+      }
+
       this.quizSessionContextService.clearCurrentSession();
       await this.goToHistory();
     }

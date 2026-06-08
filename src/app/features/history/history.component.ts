@@ -133,7 +133,7 @@ export class HistoryComponent {
   }
 
   async onUpcomingQuizCardTap(quiz: UserQuizSessionViewModel): Promise<void> {
-    this.quizSessionContextService.setCurrentSession(quiz);
+    this.quizSessionContextService.setSingleSession(quiz);
     await this.router.navigateByUrl('/tabs/quiz-session');
   }
 

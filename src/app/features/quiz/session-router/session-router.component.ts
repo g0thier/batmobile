@@ -1,6 +1,7 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, OnInit, Type, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, Type, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { QuizSessionContextService } from '../../../core/quiz/quiz-session-context.service';
 import { QUIZ_SESSION_PAGE_LOADERS, isQuizId } from '../../../core/quiz/quiz-page-registry';
 
@@ -12,27 +13,46 @@ import { QUIZ_SESSION_PAGE_LOADERS, isQuizId } from '../../../core/quiz/quiz-pag
   styleUrl: './session-router.component.css',
 })
 export class SessionRouterComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
   private readonly quizSessionContextService = inject(QuizSessionContextService);
 
   componentType: Type<unknown> | null = null;
 
   ngOnInit(): void {
-    const session = this.quizSessionContextService.getCurrentSession();
-    const rawQuizId = session?.quizId.trim().toLowerCase() ?? '';
-    if (!session || !isQuizId(rawQuizId)) {
+    this.quizSessionContextService.state$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((state) => {
+      void this.loadCurrentSessionComponent(state.currentSession);
+    });
+  }
+
+  private async loadCurrentSessionComponent(
+    currentSession: ReturnType<QuizSessionContextService['getCurrentSession']>,
+  ): Promise<void> {
+    this.componentType = null;
+
+    if (!currentSession) {
+      void this.router.navigateByUrl('/tabs/history', { replaceUrl: true });
+      return;
+    }
+
+    const rawQuizId = currentSession.quizId.trim().toLowerCase();
+    if (!isQuizId(rawQuizId)) {
       this.quizSessionContextService.clearCurrentSession();
       void this.router.navigateByUrl('/tabs/history', { replaceUrl: true });
       return;
     }
 
-    void QUIZ_SESSION_PAGE_LOADERS[rawQuizId]()
-      .then((componentType) => {
-        this.componentType = componentType;
-      })
-      .catch(() => {
-        this.quizSessionContextService.clearCurrentSession();
-        void this.router.navigateByUrl('/tabs/history', { replaceUrl: true });
-      });
+    try {
+      const componentType = await QUIZ_SESSION_PAGE_LOADERS[rawQuizId]();
+
+      if (this.quizSessionContextService.getCurrentSession()?.sessionId !== currentSession.sessionId) {
+        return;
+      }
+
+      this.componentType = componentType;
+    } catch {
+      this.quizSessionContextService.clearCurrentSession();
+      void this.router.navigateByUrl('/tabs/history', { replaceUrl: true });
+    }
   }
 }
