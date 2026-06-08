@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import {
   IonCard,
   IonCardContent,
@@ -10,11 +9,12 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { firstValueFrom } from 'rxjs';
-import { AuthService } from '../../../../../core/auth/auth';
+import { QuizSessionPageBase } from '../../../../../core/quiz/quiz-session-page.base';
 import {
   TheorieXYAffirmation,
   TheorieXYSession,
+  TheorieXYPromptState,
+  TheorieXYSubmitAnswerResult,
 } from '../../../../../core/quiz/theorie-x-y-session';
 
 @Component({
@@ -33,57 +33,56 @@ import {
   templateUrl: './theorie-x-y-quiz.component.html',
   styleUrl: './theorie-x-y-quiz.component.css',
 })
-export class TheorieXYQuizComponent {
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
-  private readonly authService = inject(AuthService);
+export class TheorieXYQuizComponent extends QuizSessionPageBase<
+  TheorieXYPromptState,
+  TheorieXYSubmitAnswerResult
+> {
+  protected override readonly expectedQuizId = 'theorie-x-y';
   private readonly theorieXYSession = inject(TheorieXYSession);
 
-  private readonly sessionId = this.route.snapshot.paramMap.get('sessionId')?.trim() ?? '';
-  private readonly quizId = this.route.snapshot.paramMap.get('quizId')?.trim().toLowerCase() ?? '';
-
-  private currentUserId = '';
-
-  isLoading = true;
-  isSubmitting = false;
-  errorMessage = '';
   affirmation: TheorieXYAffirmation | null = null;
-  answeredCount = 0;
-  totalCount = 0;
+  selectedResponseId: 1 | 2 | null = null;
 
-  constructor() {
-    void this.initialize();
+  protected override canSubmit(): boolean {
+    return !!this.affirmation && this.selectedResponseId !== null;
+  }
+
+  protected override async readPromptState(): Promise<TheorieXYPromptState> {
+    return this.theorieXYSession.getPromptForSession(this.sessionId, this.currentUserId);
+  }
+
+  protected override applyPromptState(prompt: TheorieXYPromptState): void {
+    this.affirmation = prompt.affirmation;
+    this.selectedResponseId = null;
+  }
+
+  protected override getAnsweredCount(prompt: TheorieXYPromptState): number {
+    return prompt.answeredCount;
+  }
+
+  protected override getAnsweredCountFromSubmitResult(result: TheorieXYSubmitAnswerResult): number {
+    return result.answeredCount;
+  }
+
+  protected override async submitCurrentAnswer(): Promise<TheorieXYSubmitAnswerResult> {
+    if (!this.affirmation || this.selectedResponseId === null) {
+      throw new Error('Affirmation ou réponse introuvable.');
+    }
+
+    return this.theorieXYSession.submitAnswer(this.sessionId, this.currentUserId, {
+      affirmationId: this.affirmation.id,
+      themeId: this.affirmation.theme,
+      responseId: this.selectedResponseId,
+    });
   }
 
   async onChoiceTap(responseId: 1 | 2): Promise<void> {
-    if (!this.currentUserId || !this.affirmation || this.isSubmitting) {
+    if (!this.affirmation) {
       return;
     }
 
-    this.isSubmitting = true;
-    this.errorMessage = '';
-
-    try {
-      const submitResult = await this.theorieXYSession.submitAnswer(this.sessionId, this.currentUserId, {
-        affirmationId: this.affirmation.id,
-        themeId: this.affirmation.theme,
-        responseId,
-      });
-
-      this.answeredCount = submitResult.answeredCount;
-
-      if (submitResult.isCompleted) {
-        await this.goToHistory();
-        return;
-      }
-
-      await this.loadPrompt();
-    } catch (error: unknown) {
-      console.error('Impossible de sauvegarder la réponse theorie-x-y :', error);
-      this.errorMessage = "Impossible d'enregistrer ta réponse pour le moment.";
-    } finally {
-      this.isSubmitting = false;
-    }
+    this.selectedResponseId = responseId;
+    await this.onValidateTap();
   }
 
   async onChoiceKeyDown(event: KeyboardEvent, responseId: 1 | 2): Promise<void> {
@@ -93,47 +92,5 @@ export class TheorieXYQuizComponent {
 
     event.preventDefault();
     await this.onChoiceTap(responseId);
-  }
-
-  private async initialize(): Promise<void> {
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    try {
-      if (this.quizId !== 'theorie-x-y' || !this.sessionId) {
-        await this.router.navigateByUrl('/tabs/history', { replaceUrl: true });
-        return;
-      }
-
-      const currentUser = await firstValueFrom(this.authService.authUser$);
-      const userId = currentUser?.uid?.trim() ?? '';
-      if (!userId) {
-        await this.router.navigateByUrl('/login', { replaceUrl: true });
-        return;
-      }
-
-      this.currentUserId = userId;
-      await this.loadPrompt();
-    } catch (error: unknown) {
-      console.error('Impossible de charger le quiz theorie-x-y :', error);
-      this.errorMessage = 'Impossible de charger le quiz pour le moment.';
-    } finally {
-      this.isLoading = false;
-    }
-  }
-
-  private async loadPrompt(): Promise<void> {
-    const prompt = await this.theorieXYSession.getPromptForSession(this.sessionId, this.currentUserId);
-    this.affirmation = prompt.affirmation;
-    this.totalCount = prompt.totalCount;
-    this.answeredCount = prompt.answeredCount;
-
-    if (prompt.isCompleted) {
-      await this.goToHistory();
-    }
-  }
-
-  private async goToHistory(): Promise<void> {
-    await this.router.navigateByUrl('/tabs/history', { replaceUrl: true });
   }
 }

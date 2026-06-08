@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import {
   IonCard,
   IonCardContent,
@@ -10,9 +9,15 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { firstValueFrom } from 'rxjs';
-import { AuthService } from '../../../../../core/auth/auth';
-import { MimetismeModele, MimetismePromptPair, MimetismeSession } from '../../../../../core/quiz/mimetisme-session';
+import { QuizSessionPageBase } from '../../../../../core/quiz/quiz-session-page.base';
+import {
+  MimetismeChoiceInput,
+  MimetismeModele,
+  MimetismePromptPair,
+  MimetismeSession,
+  MimetismePromptState,
+  MimetismeSubmitChoiceResult,
+} from '../../../../../core/quiz/mimetisme-session';
 
 @Component({
   selector: 'app-mimetisme-quiz',
@@ -30,59 +35,60 @@ import { MimetismeModele, MimetismePromptPair, MimetismeSession } from '../../..
   templateUrl: './mimetisme-quiz.component.html',
   styleUrl: './mimetisme-quiz.component.css',
 })
-export class MimetismeQuizComponent {
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
-  private readonly authService = inject(AuthService);
+export class MimetismeQuizComponent extends QuizSessionPageBase<
+  MimetismePromptState,
+  MimetismeSubmitChoiceResult
+> {
+  protected override readonly expectedQuizId = 'mimetisme';
   private readonly mimetismeSession = inject(MimetismeSession);
-
-  private readonly sessionId = this.route.snapshot.paramMap.get('sessionId')?.trim() ?? '';
-  private readonly quizId = this.route.snapshot.paramMap.get('quizId')?.trim().toLowerCase() ?? '';
-
-  private currentUserId = '';
   private readonly brokenPortraitIds = new Set<number>();
+  private pendingChoice: MimetismeChoiceInput | null = null;
 
-  isLoading = true;
-  isSubmitting = false;
-  errorMessage = '';
   pair: MimetismePromptPair | null = null;
   rankedCount = 0;
-  totalCount = 0;
   comparisonsCount = 0;
 
-  constructor() {
-    void this.initialize();
+  protected override canSubmit(): boolean {
+    return !!this.pair && !!this.pendingChoice;
+  }
+
+  protected override async readPromptState(): Promise<MimetismePromptState> {
+    return this.mimetismeSession.getPromptForSession(this.sessionId, this.currentUserId);
+  }
+
+  protected override applyPromptState(prompt: MimetismePromptState): void {
+    this.pair = prompt.pair;
+    this.rankedCount = prompt.rankedCount;
+    this.comparisonsCount = prompt.comparisonsCount;
+    this.pendingChoice = null;
+  }
+
+  protected override getAnsweredCount(prompt: MimetismePromptState): number {
+    return prompt.rankedCount;
+  }
+
+  protected override getAnsweredCountFromSubmitResult(result: MimetismeSubmitChoiceResult): number {
+    return result.rankedCount;
+  }
+
+  protected override async submitCurrentAnswer(): Promise<MimetismeSubmitChoiceResult> {
+    if (!this.pendingChoice) {
+      throw new Error('Comparaison introuvable.');
+    }
+
+    return this.mimetismeSession.submitChoice(this.sessionId, this.currentUserId, this.pendingChoice);
   }
 
   async onChoiceTap(preferred: MimetismeModele, other: MimetismeModele): Promise<void> {
-    if (!this.currentUserId || !this.pair || this.isSubmitting) {
+    if (!this.pair) {
       return;
     }
 
-    this.isSubmitting = true;
-    this.errorMessage = '';
-
-    try {
-      const submitResult = await this.mimetismeSession.submitChoice(this.sessionId, this.currentUserId, {
-        preferredModelId: preferred.id,
-        otherModelId: other.id,
-      });
-
-      this.rankedCount = submitResult.rankedCount;
-      this.comparisonsCount = submitResult.comparisonsCount;
-
-      if (submitResult.isCompleted) {
-        await this.goToHistory();
-        return;
-      }
-
-      await this.loadPrompt();
-    } catch (error: unknown) {
-      console.error('Impossible de sauvegarder la préférence mimetisme :', error);
-      this.errorMessage = "Impossible d'enregistrer ta préférence pour le moment.";
-    } finally {
-      this.isSubmitting = false;
-    }
+    this.pendingChoice = {
+      preferredModelId: preferred.id,
+      otherModelId: other.id,
+    };
+    await this.onValidateTap();
   }
 
   async onChoiceKeyDown(event: KeyboardEvent, preferred: MimetismeModele, other: MimetismeModele): Promise<void> {
@@ -117,49 +123,6 @@ export class MimetismeQuizComponent {
     }
 
     return `/${normalized.replace(/^\.?\//, '')}`;
-  }
-
-  private async initialize(): Promise<void> {
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    try {
-      if (this.quizId !== 'mimetisme' || !this.sessionId) {
-        await this.router.navigateByUrl('/tabs/history', { replaceUrl: true });
-        return;
-      }
-
-      const currentUser = await firstValueFrom(this.authService.authUser$);
-      const userId = currentUser?.uid?.trim() ?? '';
-      if (!userId) {
-        await this.router.navigateByUrl('/login', { replaceUrl: true });
-        return;
-      }
-
-      this.currentUserId = userId;
-      await this.loadPrompt();
-    } catch (error: unknown) {
-      console.error('Impossible de charger le quiz mimetisme :', error);
-      this.errorMessage = 'Impossible de charger le quiz pour le moment.';
-    } finally {
-      this.isLoading = false;
-    }
-  }
-
-  private async loadPrompt(): Promise<void> {
-    const prompt = await this.mimetismeSession.getPromptForSession(this.sessionId, this.currentUserId);
-    this.pair = prompt.pair;
-    this.totalCount = prompt.totalCount;
-    this.rankedCount = prompt.rankedCount;
-    this.comparisonsCount = prompt.comparisonsCount;
-
-    if (prompt.isCompleted) {
-      await this.goToHistory();
-    }
-  }
-
-  private async goToHistory(): Promise<void> {
-    await this.router.navigateByUrl('/tabs/history', { replaceUrl: true });
   }
 
 }
