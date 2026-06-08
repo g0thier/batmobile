@@ -49,8 +49,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/quiz/quiz.component').then((m) => m.QuizComponent),
       },
       {
-        path: 'quiz-session/:quizId/:sessionId',
-        canActivate: [quizIdRouteGuard],
+        path: 'quiz-session',
         loadComponent: () =>
           import('./features/quiz/session-router/session-router.component').then(
             (m) => m.SessionRouterComponent,

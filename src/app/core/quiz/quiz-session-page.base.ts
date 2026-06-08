@@ -1,7 +1,9 @@
 import { Directive, OnInit, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../auth/auth';
+import { QuizSessionContextService } from './quiz-session-context.service';
+import type { UserQuizSessionViewModel } from './user-quiz-sessions.service';
 
 export interface QuizPromptState {
   totalCount: number;
@@ -16,14 +18,12 @@ export interface QuizSubmitResult {
 export abstract class QuizSessionPageBase<TPromptState extends QuizPromptState, TSubmitResult extends QuizSubmitResult>
   implements OnInit
 {
-  protected readonly route = inject(ActivatedRoute);
   protected readonly router = inject(Router);
   protected readonly authService = inject(AuthService);
-
-  protected readonly sessionId = this.route.snapshot.paramMap.get('sessionId')?.trim() ?? '';
-  protected readonly quizId = this.route.snapshot.paramMap.get('quizId')?.trim().toLowerCase() ?? '';
+  protected readonly quizSessionContextService = inject(QuizSessionContextService);
 
   protected currentUserId = '';
+  protected currentSession: UserQuizSessionViewModel | null = null;
 
   isLoading = true;
   isSubmitting = false;
@@ -49,6 +49,7 @@ export abstract class QuizSessionPageBase<TPromptState extends QuizPromptState, 
       await this.afterSuccessfulSubmission(submitResult);
 
       if (submitResult.isCompleted) {
+        this.quizSessionContextService.clearCurrentSession();
         await this.goToHistory();
         return;
       }
@@ -120,7 +121,15 @@ export abstract class QuizSessionPageBase<TPromptState extends QuizPromptState, 
     this.errorMessage = '';
 
     try {
+      const currentSession = this.quizSessionContextService.getCurrentSession();
+      if (!currentSession) {
+        await this.goToHistory();
+        return;
+      }
+
+      this.currentSession = currentSession;
       if (this.quizId !== this.expectedQuizId || !this.sessionId) {
+        this.quizSessionContextService.clearCurrentSession();
         await this.goToHistory();
         return;
       }
@@ -142,6 +151,14 @@ export abstract class QuizSessionPageBase<TPromptState extends QuizPromptState, 
     }
   }
 
+  protected get sessionId(): string {
+    return this.currentSession?.sessionId.trim() ?? '';
+  }
+
+  protected get quizId(): string {
+    return this.currentSession?.quizId.trim().toLowerCase() ?? '';
+  }
+
   private async loadPrompt(): Promise<void> {
     const prompt = await this.readPromptState();
     this.applyPromptState(prompt);
@@ -150,6 +167,7 @@ export abstract class QuizSessionPageBase<TPromptState extends QuizPromptState, 
     await this.afterPromptLoaded(prompt);
 
     if (prompt.isCompleted) {
+      this.quizSessionContextService.clearCurrentSession();
       await this.goToHistory();
     }
   }

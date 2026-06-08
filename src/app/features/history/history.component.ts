@@ -17,6 +17,7 @@ import {
   UserQuizSessionViewModel,
   UserQuizSessionsService,
 } from '../../core/quiz/user-quiz-sessions.service';
+import { QuizSessionContextService } from '../../core/quiz/quiz-session-context.service';
 import { MaterialIconComponent } from '../../shared/material-icon/material-icon.component';
 
 @Component({
@@ -39,6 +40,7 @@ import { MaterialIconComponent } from '../../shared/material-icon/material-icon.
 })
 export class HistoryComponent {
   private readonly userQuizSessionsService = inject(UserQuizSessionsService);
+  private readonly quizSessionContextService = inject(QuizSessionContextService);
   private readonly quizCatalogService = inject(QuizCatalogService);
   private readonly router = inject(Router);
 
@@ -131,7 +133,8 @@ export class HistoryComponent {
   }
 
   async onUpcomingQuizCardTap(quiz: UserQuizSessionViewModel): Promise<void> {
-    await this.router.navigateByUrl(`/tabs/quiz-session/${quiz.quizId.trim().toLowerCase()}/${quiz.sessionId}`);
+    this.quizSessionContextService.setCurrentSession(quiz);
+    await this.router.navigateByUrl('/tabs/quiz-session');
   }
 
   async onPastQuizCardTap(quiz: UserQuizSessionViewModel): Promise<void> {

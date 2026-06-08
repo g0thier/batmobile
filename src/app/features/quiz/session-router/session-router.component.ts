@@ -1,6 +1,7 @@
 import { NgComponentOutlet } from '@angular/common';
 import { Component, OnInit, Type, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
+import { QuizSessionContextService } from '../../../core/quiz/quiz-session-context.service';
 import { QUIZ_SESSION_PAGE_LOADERS, isQuizId } from '../../../core/quiz/quiz-page-registry';
 
 @Component({
@@ -11,14 +12,16 @@ import { QUIZ_SESSION_PAGE_LOADERS, isQuizId } from '../../../core/quiz/quiz-pag
   styleUrl: './session-router.component.css',
 })
 export class SessionRouterComponent implements OnInit {
-  private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly quizSessionContextService = inject(QuizSessionContextService);
 
   componentType: Type<unknown> | null = null;
 
   ngOnInit(): void {
-    const rawQuizId = this.route.snapshot.paramMap.get('quizId')?.trim().toLowerCase() ?? '';
-    if (!isQuizId(rawQuizId)) {
+    const session = this.quizSessionContextService.getCurrentSession();
+    const rawQuizId = session?.quizId.trim().toLowerCase() ?? '';
+    if (!session || !isQuizId(rawQuizId)) {
+      this.quizSessionContextService.clearCurrentSession();
       void this.router.navigateByUrl('/tabs/history', { replaceUrl: true });
       return;
     }
@@ -28,6 +31,7 @@ export class SessionRouterComponent implements OnInit {
         this.componentType = componentType;
       })
       .catch(() => {
+        this.quizSessionContextService.clearCurrentSession();
         void this.router.navigateByUrl('/tabs/history', { replaceUrl: true });
       });
   }

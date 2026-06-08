@@ -15,6 +15,7 @@ import {
   UserQuizSessionsService,
   UserQuizSessionsState,
 } from '../../core/quiz/user-quiz-sessions.service';
+import { QuizSessionContextService } from '../../core/quiz/quiz-session-context.service';
 import { map } from 'rxjs';
 
 type LauncherAction = 'history' | 'session';
@@ -166,21 +167,15 @@ const toLauncherState = (state: UserQuizSessionsState): QuizLauncherState => {
 })
 export class QuizComponent {
   private readonly userQuizSessionsService = inject(UserQuizSessionsService);
+  private readonly quizSessionContextService = inject(QuizSessionContextService);
   private readonly router = inject(Router);
 
   readonly launcherState$ = this.userQuizSessionsService.state$.pipe(map(toLauncherState));
 
   async onLauncherTap(state: QuizLauncherState): Promise<void> {
     if (state.action === 'session' && state.selectedSession) {
-      const quizId = state.selectedSession.quizId.trim().toLowerCase();
-      if (!quizId) {
-        await this.router.navigateByUrl('/tabs/history');
-        return;
-      }
-
-      await this.router.navigateByUrl(
-        `/tabs/quiz-session/${quizId}/${state.selectedSession.sessionId}`,
-      );
+      this.quizSessionContextService.setCurrentSession(state.selectedSession);
+      await this.router.navigateByUrl('/tabs/quiz-session');
       return;
     }
 
