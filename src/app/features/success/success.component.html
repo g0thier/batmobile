@@ -57,18 +57,14 @@
                 >
                   <ion-card-content>
                     <div class="achievement-row">
-                      <div class="achievement-cover" [class.is-fallback]="hasBrokenCover(achievement.id)">
-                        @if (!hasBrokenCover(achievement.id) && achievement.coverUrl) {
+                      <div class="achievement-cover" [class.is-broken]="hasBrokenCover(achievement.id)">
+                        @if (achievement.coverUrl) {
                           <img
                             [src]="achievement.coverUrl"
                             [alt]="achievement.title"
                             [class.is-locked]="!achievement.isUnlocked"
                             (error)="onCoverError(achievement.id)"
                           />
-                        } @else {
-                          <div class="achievement-cover-fallback">
-                            <app-material-icon [name]="achievement.fallbackIcon" [size]="28"></app-material-icon>
-                          </div>
                         }
                       </div>
 

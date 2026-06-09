@@ -11,14 +11,13 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { SuccessAchievementCard, SuccessPageState, SuccessProgressService } from '../../core/success/success-progress';
-import { MaterialIconComponent } from '../../shared/material-icon/material-icon.component';
 
 @Component({
   selector: 'app-success',
   templateUrl: './success.component.html',
   styleUrls: ['./success.component.css'],
   standalone: true,
-  imports: [AsyncPipe, IonCard, IonCardContent, IonContent, IonHeader, IonSpinner, IonText, IonTitle, IonToolbar, MaterialIconComponent],
+  imports: [AsyncPipe, IonCard, IonCardContent, IonContent, IonHeader, IonSpinner, IonText, IonTitle, IonToolbar],
 })
 export class SuccessComponent {
   private readonly successProgressService = inject(SuccessProgressService);

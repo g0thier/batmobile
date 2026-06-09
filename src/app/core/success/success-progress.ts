@@ -48,7 +48,6 @@ export interface SuccessAchievementCard {
   progressPercent: number;
   isUnlocked: boolean;
   coverUrl: string;
-  fallbackIcon: string;
 }
 
 export interface SuccessSection {
@@ -146,8 +145,6 @@ const IMPROVEMENT_RULES: Record<QuizId, SuccessMetricRule[]> = {
   mimetisme: [],
 };
 
-const QUIZ_SUCCESS_IMAGE_PATH = (quizId: string): string => `/quiz/success/1x1/${quizId}.webp`;
-
 const readString = (value: unknown): string => String(value ?? '').trim();
 
 const parseTimestamp = (value: string): number | null => {
@@ -236,7 +233,6 @@ const buildQuizCards = (
         progressPercent: unlocked ? 100 : 0,
         isUnlocked: unlocked,
         coverUrl: quiz.coverUrl,
-        fallbackIcon: 'quiz',
       } satisfies SuccessAchievementCard;
     });
 };
@@ -253,7 +249,6 @@ const buildAllQuizUnlockedCard = (quizCards: SuccessAchievementCard[]): SuccessA
     progressPercent: quizCards.length > 0 ? Math.round((unlockedCount / quizCards.length) * 100) : 0,
     isUnlocked: allUnlocked,
     coverUrl: '/quiz/covers/quiz-cards.webp',
-    fallbackIcon: 'emoji_events',
   };
 };
 
@@ -272,7 +267,6 @@ const buildQuestionMilestoneCards = (answeredCount: number): SuccessAchievementC
       progressPercent,
       isUnlocked: unlocked,
       coverUrl: visual.coverUrl,
-      fallbackIcon: 'trending_up',
     };
   });
 
@@ -309,7 +303,6 @@ const buildAssiduityCards = (answerTimeline: string[]): SuccessAchievementCard[]
       progressPercent,
       isUnlocked: unlocked,
       coverUrl: visual.coverUrl,
-      fallbackIcon: 'schedule',
     };
   });
 };
@@ -391,7 +384,6 @@ const buildImprovementCards = (
       progressPercent: unlocked ? 100 : 0,
       isUnlocked: unlocked,
       coverUrl: quiz.coverUrl,
-      fallbackIcon: 'emoji_events',
     } satisfies SuccessAchievementCard;
   });
 };
