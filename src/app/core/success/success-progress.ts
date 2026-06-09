@@ -133,7 +133,7 @@ const IMPROVEMENT_RULES: Record<QuizId, SuccessMetricRule[]> = {
   mimetisme: [],
 };
 
-const QUIZ_SUCCESS_IMAGE_PATH = (quizId: string): string => `/quiz/success/1x1/${quizId}.png`;
+const QUIZ_SUCCESS_IMAGE_PATH = (quizId: string): string => `/quiz/success/1x1/${quizId}.webp`;
 
 const readString = (value: unknown): string => String(value ?? '').trim();
 
@@ -239,7 +239,7 @@ const buildAllQuizUnlockedCard = (quizCards: SuccessAchievementCard[]): SuccessA
     progressLabel: `${unlockedCount}/${quizCards.length}`,
     progressPercent: quizCards.length > 0 ? Math.round((unlockedCount / quizCards.length) * 100) : 0,
     isUnlocked: allUnlocked,
-    coverUrl: '/quiz/covers/quiz-cards.png',
+    coverUrl: '/quiz/covers/quiz-cards.webp',
     fallbackIcon: 'emoji_events',
   };
 };
