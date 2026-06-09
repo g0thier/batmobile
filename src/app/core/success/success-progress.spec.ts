@@ -158,6 +158,9 @@ describe('success progress', () => {
     const recordsSection = state.sections.find((section) => section.id === 'records');
 
     expect(recordsSection?.cards.every((card) => card.isUnlocked)).toBeTrue();
+    expect(recordsSection?.cards.map((card) => card.coverUrl)).toEqual(
+      quizCatalog.getKnownQuizIds().map((quizId) => quizCatalog.getQuiz(quizId).coverUrl),
+    );
   });
 
   it('unlocks assiduity milestones when responses become close enough', () => {

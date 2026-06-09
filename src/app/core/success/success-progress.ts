@@ -390,7 +390,7 @@ const buildImprovementCards = (
       progressLabel: unlocked ? 'Nouveau sommet' : 'Record à battre',
       progressPercent: unlocked ? 100 : 0,
       isUnlocked: unlocked,
-      coverUrl: QUIZ_SUCCESS_IMAGE_PATH(quizId),
+      coverUrl: quiz.coverUrl,
       fallbackIcon: 'emoji_events',
     } satisfies SuccessAchievementCard;
   });
