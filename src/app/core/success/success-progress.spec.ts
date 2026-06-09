@@ -37,6 +37,18 @@ describe('success progress', () => {
     const questionSection = state.sections.find((section) => section.id === 'questions');
 
     expect(questionSection?.cards.map((card) => card.isUnlocked)).toEqual([true, true, true, false]);
+    expect(questionSection?.cards.map((card) => card.title)).toEqual([
+      'Explorateur',
+      'Aventurier',
+      'Héros',
+      'Légendaire',
+    ]);
+    expect(questionSection?.cards.map((card) => card.coverUrl)).toEqual([
+      '/success/milestone/explorateur.webp',
+      '/success/milestone/aventurier.webp',
+      '/success/milestone/heros.webp',
+      '/success/milestone/legendaire.webp',
+    ]);
   });
 
   it('unlocks the catalog card only when every quiz is completed at least once', () => {
@@ -157,6 +169,20 @@ describe('success progress', () => {
     const rhythmSection = state.sections.find((section) => section.id === 'rhythm');
 
     expect(rhythmSection?.cards.map((card) => card.isUnlocked)).toEqual([true, true, true, false, false]);
+    expect(rhythmSection?.cards.map((card) => card.title)).toEqual([
+      'Tortue',
+      'Lièvre',
+      'Gazelle',
+      'Faucon',
+      'Guépard',
+    ]);
+    expect(rhythmSection?.cards.map((card) => card.coverUrl)).toEqual([
+      '/success/assiduite/tortue.webp',
+      '/success/assiduite/lievre.webp',
+      '/success/assiduite/gazelle.webp',
+      '/success/assiduite/faucon.webp',
+      '/success/assiduite/guepard.webp',
+    ]);
   });
 
   it('keeps a stable live cache structure when the RTDB cache is absent', () => {

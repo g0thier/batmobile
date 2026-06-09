@@ -8,10 +8,10 @@ import { mkdir, readdir } from 'node:fs/promises';
 import path from 'node:path';
 
 // Dossier source contenant les images originales
-const inputRoot = 'raw-assets/quiz';
+const inputRoot = 'raw-assets';
 
 // Dossier de sortie utilisé par Angular
-const outputRoot = 'public/quiz';
+const outputRoot = 'public';
 
 // Fonction récursive qui parcourt un dossier et tous ses sous-dossiers
 async function processDir(dir) {

@@ -107,6 +107,19 @@ const IMPROVEMENT_QUIZ_IDS: QuizId[] = [
 
 const SUCCESS_CACHE_VERSION = 1 as const;
 const SUCCESS_CACHE_PATH = (userId: string): string => `users/${userId}/successProgress`;
+const QUESTION_MILESTONE_VISUALS = [
+  { title: 'Explorateur', coverUrl: '/success/milestone/explorateur.webp' },
+  { title: 'Aventurier', coverUrl: '/success/milestone/aventurier.webp' },
+  { title: 'Héros', coverUrl: '/success/milestone/heros.webp' },
+  { title: 'Légendaire', coverUrl: '/success/milestone/legendaire.webp' },
+] as const;
+const ASSIDUITY_VISUALS = [
+  { title: 'Tortue', coverUrl: '/success/assiduite/tortue.webp' },
+  { title: 'Lièvre', coverUrl: '/success/assiduite/lievre.webp' },
+  { title: 'Gazelle', coverUrl: '/success/assiduite/gazelle.webp' },
+  { title: 'Faucon', coverUrl: '/success/assiduite/faucon.webp' },
+  { title: 'Guépard', coverUrl: '/success/assiduite/guepard.webp' },
+] as const;
 
 const EMPTY_PAGE_STATE: SuccessPageState = {
   isLoading: true,
@@ -248,16 +261,17 @@ const buildQuestionMilestoneCards = (answeredCount: number): SuccessAchievementC
   QUESTIONS_MILESTONES.map((threshold, index) => {
     const unlocked = answeredCount >= threshold;
     const progressPercent = clampValue((answeredCount / threshold) * 100, 0, 100);
-    const titles = ['Explorateur', 'Aventurier', 'Héros', 'Légendaire'];
+    const visual =
+      QUESTION_MILESTONE_VISUALS[index] ?? QUESTION_MILESTONE_VISUALS[QUESTION_MILESTONE_VISUALS.length - 1];
 
     return {
       id: `questions-${threshold}`,
-      title: titles[index] ?? 'Progression',
+      title: visual.title,
       subtitle: `${formatCompactValue(threshold)} réponses accumulées`,
       progressLabel: `${formatCompactValue(Math.min(answeredCount, threshold))}`,
       progressPercent,
       isUnlocked: unlocked,
-      coverUrl: QUIZ_SUCCESS_IMAGE_PATH('questions'),
+      coverUrl: visual.coverUrl,
       fallbackIcon: 'trending_up',
     };
   });
@@ -278,7 +292,6 @@ const buildAssiduityCards = (answerTimeline: string[]): SuccessAchievementCard[]
   }
 
   const bestGapHours = gapsHours.length > 0 ? Math.min(...gapsHours) : Number.POSITIVE_INFINITY;
-  const titles = ['Tortue', 'Lièvre', 'Gazelle', 'Faucon', 'Guépard'];
 
   return ASSIDUITY_THRESHOLDS_HOURS.map((threshold, index) => {
     const unlocked = bestGapHours <= threshold;
@@ -286,15 +299,16 @@ const buildAssiduityCards = (answerTimeline: string[]): SuccessAchievementCard[]
       bestGapHours === Number.POSITIVE_INFINITY
         ? 0
         : clampValue(((threshold - bestGapHours) / threshold) * 100, 0, 100);
+    const visual = ASSIDUITY_VISUALS[index] ?? ASSIDUITY_VISUALS[ASSIDUITY_VISUALS.length - 1];
 
     return {
       id: `assiduite-${threshold}`,
-      title: titles[index] ?? 'Rythme',
+      title: visual.title,
       subtitle: `Quiz répondu en moins de ${threshold} h`,
       progressLabel: unlocked ? 'Validé' : 'En cours',
       progressPercent,
       isUnlocked: unlocked,
-      coverUrl: QUIZ_SUCCESS_IMAGE_PATH('assiduite'),
+      coverUrl: visual.coverUrl,
       fallbackIcon: 'schedule',
     };
   });
