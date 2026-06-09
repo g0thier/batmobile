@@ -123,73 +123,73 @@
         {
             "id": 1,
             "label": "Obtenir une augmentation de salaire",
-            "image": "quiz/graphics/attentes/pieces.png",
+            "image": "quiz/graphics/attentes/pieces.webp",
             "attente": 1
         },
         {
             "id": 2,
             "label": "Recevoir un bonus de performance",
-            "image": "quiz/graphics/attentes/pieces.png",
+            "image": "quiz/graphics/attentes/pieces.webp",
             "attente": 1
         },
         {
             "id": 3,
             "label": "Évoluer vers un poste avec plus de responsabilités",
-            "image": "quiz/graphics/attentes/evolution.png",
+            "image": "quiz/graphics/attentes/evolution.webp",
             "attente": 2
         },
         {
             "id": 4,
             "label": "Obtenir promotion interne",
-            "image": "quiz/graphics/attentes/evolution.png",
+            "image": "quiz/graphics/attentes/evolution.webp",
             "attente": 2
         },
         {
             "id": 5,
             "label": "Recevoir des retours positifs réguliers",
-            "image": "quiz/graphics/attentes/reconnaissance.png",
+            "image": "quiz/graphics/attentes/reconnaissance.webp",
             "attente": 3
         },
         {
             "id": 6,
             "label": "Voir vos résultats reconnus publiquement",
-            "image": "quiz/graphics/attentes/reconnaissance.png",
+            "image": "quiz/graphics/attentes/reconnaissance.webp",
             "attente": 3
         },
         {
             "id": 7,
             "label": "Avoir des horaires compatibles avec votre vie personnelle",
-            "image": "quiz/graphics/attentes/vie-pro-vie-privee.png",
+            "image": "quiz/graphics/attentes/vie-pro-vie-privee.webp",
             "attente": 4
         },
         {
             "id": 8,
             "label": "Pouvoir déconnecter sereinement en dehors du travail",
-            "image": "quiz/graphics/attentes/vie-pro-vie-privee.png",
+            "image": "quiz/graphics/attentes/vie-pro-vie-privee.webp",
             "attente": 4
         },
         {
             "id": 9,
             "label": "Contribuer à des projets utiles et alignés avec vos valeurs",
-            "image": "quiz/graphics/attentes/sens.png",
+            "image": "quiz/graphics/attentes/sens.webp",
             "attente": 5
         },
         {
             "id": 10,
             "label": "Comprendre l’impact concret de votre travail",
-            "image": "quiz/graphics/attentes/sens.png",
+            "image": "quiz/graphics/attentes/sens.webp",
             "attente": 5
         },
         {
             "id": 11,
             "label": "Développer de nouvelles compétences chaque année",
-            "image": "quiz/graphics/attentes/developpement.png",
+            "image": "quiz/graphics/attentes/developpement.webp",
             "attente": 6
         },
         {
             "id": 12,
             "label": "Suivre des formations qui font progresser votre carrière",
-            "image": "quiz/graphics/attentes/developpement.png",
+            "image": "quiz/graphics/attentes/developpement.webp",
             "attente": 6
         }
     ]

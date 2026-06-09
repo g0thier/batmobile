@@ -103,361 +103,361 @@
         {
             "id": 1,
             "label": "Intelligent",
-            "image": "quiz/graphics/identite-pro/intelligent.png",
+            "image": "quiz/graphics/identite-pro/intelligent.webp",
             "theme": 1
         },
         {
             "id": 2,
             "label": "Réfléchi",
-            "image": "quiz/graphics/identite-pro/reflechi.png",
+            "image": "quiz/graphics/identite-pro/reflechi.webp",
             "theme": 1
         },
         {
             "id": 3,
             "label": "Analytique",
-            "image": "quiz/graphics/identite-pro/analytique.png",
+            "image": "quiz/graphics/identite-pro/analytique.webp",
             "theme": 1
         },
         {
             "id": 4,
             "label": "Curieux",
-            "image": "quiz/graphics/identite-pro/curieux.png",
+            "image": "quiz/graphics/identite-pro/curieux.webp",
             "theme": 1
         },
         {
             "id": 5,
             "label": "Créatif",
-            "image": "quiz/graphics/identite-pro/creatif.png",
+            "image": "quiz/graphics/identite-pro/creatif.webp",
             "theme": 1
         },
         {
             "id": 6,
             "label": "Logique",
-            "image": "quiz/graphics/identite-pro/logique.png",
+            "image": "quiz/graphics/identite-pro/logique.webp",
             "theme": 1
         },
         {
             "id": 7,
             "label": "Ingénieux",
-            "image": "quiz/graphics/identite-pro/ingenieux.png",
+            "image": "quiz/graphics/identite-pro/ingenieux.webp",
             "theme": 1
         },
         {
             "id": 8,
             "label": "Observateur",
-            "image": "quiz/graphics/identite-pro/observateur.png",
+            "image": "quiz/graphics/identite-pro/observateur.webp",
             "theme": 1
         },
         {
             "id": 9,
             "label": "Cultivé",
-            "image": "quiz/graphics/identite-pro/cultive.png",
+            "image": "quiz/graphics/identite-pro/cultive.webp",
             "theme": 1
         },
         {
             "id": 10,
             "label": "Visionnaire",
-            "image": "quiz/graphics/identite-pro/visionnaire.png",
+            "image": "quiz/graphics/identite-pro/visionnaire.webp",
             "theme": 1
         },
         {
             "id": 11,
             "label": "Confiant",
-            "image": "quiz/graphics/identite-pro/confiant.png",
+            "image": "quiz/graphics/identite-pro/confiant.webp",
             "theme": 2
         },
         {
             "id": 12,
             "label": "Assuré",
-            "image": "quiz/graphics/identite-pro/assure.png",
+            "image": "quiz/graphics/identite-pro/assure.webp",
             "theme": 2
         },
         {
             "id": 13,
             "label": "Déterminé",
-            "image": "quiz/graphics/identite-pro/determine.png",
+            "image": "quiz/graphics/identite-pro/determine.webp",
             "theme": 2
         },
         {
             "id": 14,
             "label": "Courageux",
-            "image": "quiz/graphics/identite-pro/courageux.png",
+            "image": "quiz/graphics/identite-pro/courageux.webp",
             "theme": 2
         },
         {
             "id": 15,
             "label": "Résilient",
-            "image": "quiz/graphics/identite-pro/resilient.png",
+            "image": "quiz/graphics/identite-pro/resilient.webp",
             "theme": 2
         },
         {
             "id": 16,
             "label": "Ambitieux",
-            "image": "quiz/graphics/identite-pro/ambitieux.png",
+            "image": "quiz/graphics/identite-pro/ambitieux.webp",
             "theme": 2
         },
         {
             "id": 17,
             "label": "Audacieux",
-            "image": "quiz/graphics/identite-pro/audacieux.png",
+            "image": "quiz/graphics/identite-pro/audacieux.webp",
             "theme": 2
         },
         {
             "id": 18,
             "label": "Indépendant",
-            "image": "quiz/graphics/identite-pro/independant.png",
+            "image": "quiz/graphics/identite-pro/independant.webp",
             "theme": 2
         },
         {
             "id": 19,
             "label": "Persévérant",
-            "image": "quiz/graphics/identite-pro/perseverant.png",
+            "image": "quiz/graphics/identite-pro/perseverant.webp",
             "theme": 2
         },
         {
             "id": 20,
             "label": "Fier",
-            "image": "quiz/graphics/identite-pro/fier.png",
+            "image": "quiz/graphics/identite-pro/fier.webp",
             "theme": 2
         },
         {
             "id": 21,
             "label": "Sociable",
-            "image": "quiz/graphics/identite-pro/sociable.png",
+            "image": "quiz/graphics/identite-pro/sociable.webp",
             "theme": 3
         },
         {
             "id": 22,
             "label": "Empathique",
-            "image": "quiz/graphics/identite-pro/empathique.png",
+            "image": "quiz/graphics/identite-pro/empathique.webp",
             "theme": 3
         },
         {
             "id": 23,
             "label": "Chaleureux",
-            "image": "quiz/graphics/identite-pro/chaleureux.png",
+            "image": "quiz/graphics/identite-pro/chaleureux.webp",
             "theme": 3
         },
         {
             "id": 24,
             "label": "Bienveillant",
-            "image": "quiz/graphics/identite-pro/bienveillant.png",
+            "image": "quiz/graphics/identite-pro/bienveillant.webp",
             "theme": 3
         },
         {
             "id": 25,
             "label": "Ouvert",
-            "image": "quiz/graphics/identite-pro/ouvert.png",
+            "image": "quiz/graphics/identite-pro/ouvert.webp",
             "theme": 3
         },
         {
             "id": 26,
             "label": "Amical",
-            "image": "quiz/graphics/identite-pro/amical.png",
+            "image": "quiz/graphics/identite-pro/amical.webp",
             "theme": 3
         },
         {
             "id": 27,
             "label": "À l’écoute",
-            "image": "quiz/graphics/identite-pro/a-l-ecoute.png",
+            "image": "quiz/graphics/identite-pro/a-l-ecoute.webp",
             "theme": 3
         },
         {
             "id": 28,
             "label": "Diplomate",
-            "image": "quiz/graphics/identite-pro/diplomate.png",
+            "image": "quiz/graphics/identite-pro/diplomate.webp",
             "theme": 3
         },
         {
             "id": 29,
             "label": "Charismatique",
-            "image": "quiz/graphics/identite-pro/charismatique.png",
+            "image": "quiz/graphics/identite-pro/charismatique.webp",
             "theme": 3
         },
         {
             "id": 30,
             "label": "Généreux",
-            "image": "quiz/graphics/identite-pro/genereux.png",
+            "image": "quiz/graphics/identite-pro/genereux.webp",
             "theme": 3
         },
         {
             "id": 31,
             "label": "Sensible",
-            "image": "quiz/graphics/identite-pro/sensible.png",
+            "image": "quiz/graphics/identite-pro/sensible.webp",
             "theme": 4
         },
         {
             "id": 32,
             "label": "Émotif",
-            "image": "quiz/graphics/identite-pro/emotif.png",
+            "image": "quiz/graphics/identite-pro/emotif.webp",
             "theme": 4
         },
         {
             "id": 33,
             "label": "Calme",
-            "image": "quiz/graphics/identite-pro/calme.png",
+            "image": "quiz/graphics/identite-pro/calme.webp",
             "theme": 4
         },
         {
             "id": 34,
             "label": "Posé",
-            "image": "quiz/graphics/identite-pro/pose.png",
+            "image": "quiz/graphics/identite-pro/pose.webp",
             "theme": 4
         },
         {
             "id": 35,
             "label": "Introspectif",
-            "image": "quiz/graphics/identite-pro/introspectif.png",
+            "image": "quiz/graphics/identite-pro/introspectif.webp",
             "theme": 4
         },
         {
             "id": 36,
             "label": "Passionné",
-            "image": "quiz/graphics/identite-pro/passionne.png",
+            "image": "quiz/graphics/identite-pro/passionne.webp",
             "theme": 4
         },
         {
             "id": 37,
             "label": "Authentique",
-            "image": "quiz/graphics/identite-pro/authentique.png",
+            "image": "quiz/graphics/identite-pro/authentique.webp",
             "theme": 4
         },
         {
             "id": 38,
             "label": "Vulnérable",
-            "image": "quiz/graphics/identite-pro/vulnerable.png",
+            "image": "quiz/graphics/identite-pro/vulnerable.webp",
             "theme": 4
         },
         {
             "id": 39,
             "label": "Serein",
-            "image": "quiz/graphics/identite-pro/serein.png",
+            "image": "quiz/graphics/identite-pro/serein.webp",
             "theme": 4
         },
         {
             "id": 40,
             "label": "Profond",
-            "image": "quiz/graphics/identite-pro/profond.png",
+            "image": "quiz/graphics/identite-pro/profond.webp",
             "theme": 4
         },
         {
             "id": 41,
             "label": "Dynamique",
-            "image": "quiz/graphics/identite-pro/dynamique.png",
+            "image": "quiz/graphics/identite-pro/dynamique.webp",
             "theme": 5
         },
         {
             "id": 42,
             "label": "Énergique",
-            "image": "quiz/graphics/identite-pro/energique.png",
+            "image": "quiz/graphics/identite-pro/energique.webp",
             "theme": 5
         },
         {
             "id": 43,
             "label": "Motivé",
-            "image": "quiz/graphics/identite-pro/motive.png",
+            "image": "quiz/graphics/identite-pro/motive.webp",
             "theme": 5
         },
         {
             "id": 44,
             "label": "Actif",
-            "image": "quiz/graphics/identite-pro/actif.png",
+            "image": "quiz/graphics/identite-pro/actif.webp",
             "theme": 5
         },
         {
             "id": 45,
             "label": "Enthousiaste",
-            "image": "quiz/graphics/identite-pro/enthousiaste.png",
+            "image": "quiz/graphics/identite-pro/enthousiaste.webp",
             "theme": 5
         },
         {
             "id": 46,
             "label": "Proactif",
-            "image": "quiz/graphics/identite-pro/proactif.png",
+            "image": "quiz/graphics/identite-pro/proactif.webp",
             "theme": 5
         },
         {
             "id": 47,
             "label": "Rapide",
-            "image": "quiz/graphics/identite-pro/rapide.png",
+            "image": "quiz/graphics/identite-pro/rapide.webp",
             "theme": 5
         },
         {
             "id": 48,
             "label": "Efficace",
-            "image": "quiz/graphics/identite-pro/efficace.png",
+            "image": "quiz/graphics/identite-pro/efficace.webp",
             "theme": 5
         },
         {
             "id": 49,
             "label": "Entreprenant",
-            "image": "quiz/graphics/identite-pro/entreprenant.png",
+            "image": "quiz/graphics/identite-pro/entreprenant.webp",
             "theme": 5
         },
         {
             "id": 50,
             "label": "Productif",
-            "image": "quiz/graphics/identite-pro/productif.png",
+            "image": "quiz/graphics/identite-pro/productif.webp",
             "theme": 5
         },
         {
             "id": 51,
             "label": "Unique",
-            "image": "quiz/graphics/identite-pro/unique.png",
+            "image": "quiz/graphics/identite-pro/unique.webp",
             "theme": 6
         },
         {
             "id": 52,
             "label": "Original",
-            "image": "quiz/graphics/identite-pro/original.png",
+            "image": "quiz/graphics/identite-pro/original.webp",
             "theme": 6
         },
         {
             "id": 53,
             "label": "Authentique",
-            "image": "quiz/graphics/identite-pro/authentique.png",
+            "image": "quiz/graphics/identite-pro/authentique.webp",
             "theme": 6
         },
         {
             "id": 54,
             "label": "Excentrique",
-            "image": "quiz/graphics/identite-pro/excentrique.png",
+            "image": "quiz/graphics/identite-pro/excentrique.webp",
             "theme": 6
         },
         {
             "id": 55,
             "label": "Complexe",
-            "image": "quiz/graphics/identite-pro/complexe.png",
+            "image": "quiz/graphics/identite-pro/complexe.webp",
             "theme": 6
         },
         {
             "id": 56,
             "label": "Mystérieux",
-            "image": "quiz/graphics/identite-pro/mysterieux.png",
+            "image": "quiz/graphics/identite-pro/mysterieux.webp",
             "theme": 6
         },
         {
             "id": 57,
             "label": "Libre",
-            "image": "quiz/graphics/identite-pro/libre.png",
+            "image": "quiz/graphics/identite-pro/libre.webp",
             "theme": 6
         },
         {
             "id": 58,
             "label": "Rebelle",
-            "image": "quiz/graphics/identite-pro/rebelle.png",
+            "image": "quiz/graphics/identite-pro/rebelle.webp",
             "theme": 6
         },
         {
             "id": 59,
             "label": "Évolutif",
-            "image": "quiz/graphics/identite-pro/evolutif.png",
+            "image": "quiz/graphics/identite-pro/evolutif.webp",
             "theme": 6
         },
         {
             "id": 60,
             "label": "Inclassable",
-            "image": "quiz/graphics/identite-pro/inclassable.png",
+            "image": "quiz/graphics/identite-pro/inclassable.webp",
             "theme": 6
         }
     ]

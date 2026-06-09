@@ -8,145 +8,145 @@
         {
             "id": 1,
             "personnage": "Jeff Besos",
-            "portrait": "quiz/graphics/mimetisme/jeff-besos.png",
+            "portrait": "quiz/graphics/mimetisme/jeff-besos.webp",
             "inspiration": 1
         },
         {
             "id": 2,
             "personnage": "Warren Buffett",
-            "portrait": "quiz/graphics/mimetisme/warren-buffett.png",
+            "portrait": "quiz/graphics/mimetisme/warren-buffett.webp",
             "inspiration": 1
         },
         {
             "id": 3,
             "personnage": "Oprah Winfrey",
-            "portrait": "quiz/graphics/mimetisme/oprah-winfrey.png",
+            "portrait": "quiz/graphics/mimetisme/oprah-winfrey.webp",
             "inspiration": 1
         },
         {
             "id": 4,
             "personnage": "Meryl Streep",
-            "portrait": "quiz/graphics/mimetisme/meryl-streep.png",
+            "portrait": "quiz/graphics/mimetisme/meryl-streep.webp",
             "inspiration": 2
         },
         {
             "id": 5,
             "personnage": "Cristiano Ronaldo",
-            "portrait": "quiz/graphics/mimetisme/cristiano-ronaldo.png",
+            "portrait": "quiz/graphics/mimetisme/cristiano-ronaldo.webp",
             "inspiration": 2
         },
         {
             "id": 6,
             "personnage": "Rihanna",
-            "portrait": "quiz/graphics/mimetisme/rihanna.png",
+            "portrait": "quiz/graphics/mimetisme/rihanna.webp",
             "inspiration": 2
         },
         {
             "id": 7,
             "personnage": "Angela Merkel",
-            "portrait": "quiz/graphics/mimetisme/angela-merkel.png",
+            "portrait": "quiz/graphics/mimetisme/angela-merkel.webp",
             "inspiration": 3
         },
         {
             "id": 8,
             "personnage": "Nelson Mandela",
-            "portrait": "quiz/graphics/mimetisme/nelson-mandela.png",
+            "portrait": "quiz/graphics/mimetisme/nelson-mandela.webp",
             "inspiration": 3
         },
         {
             "id": 9,
             "personnage": "Kamala Harris",
-            "portrait": "quiz/graphics/mimetisme/kamala-harris.png",
+            "portrait": "quiz/graphics/mimetisme/kamala-harris.webp",
             "inspiration": 3
         },
         {
             "id": 10,
             "personnage": "Ryan Gosling",
-            "portrait": "quiz/graphics/mimetisme/ryan-gosling.png",
+            "portrait": "quiz/graphics/mimetisme/ryan-gosling.webp",
             "inspiration": 4
         },
         {
             "id": 11,
             "personnage": "Emma Stone",
-            "portrait": "quiz/graphics/mimetisme/emma-stone.png",
+            "portrait": "quiz/graphics/mimetisme/emma-stone.webp",
             "inspiration": 4
         },
         {
             "id": 12,
             "personnage": "Keanu Reeves",
-            "portrait": "quiz/graphics/mimetisme/keanu-reeves.png",
+            "portrait": "quiz/graphics/mimetisme/keanu-reeves.webp",
             "inspiration": 4
         },
         {
             "id": 13,
             "personnage": "Marie Curie",
-            "portrait": "quiz/graphics/mimetisme/marie-curie.png",
+            "portrait": "quiz/graphics/mimetisme/marie-curie.webp",
             "inspiration": 5
         },
         {
             "id": 14,
             "personnage": "Yann LeCun",
-            "portrait": "quiz/graphics/mimetisme/yann-lecun.png",
+            "portrait": "quiz/graphics/mimetisme/yann-lecun.webp",
             "inspiration": 5
         },
         {
             "id": 15,
             "personnage": "Emmanuelle Charpentier",
-            "portrait": "quiz/graphics/mimetisme/emmanuelle-charpentier.png",
+            "portrait": "quiz/graphics/mimetisme/emmanuelle-charpentier.webp",
             "inspiration": 5
         },
         {
             "id": 16,
             "personnage": "Rosa Parks",
-            "portrait": "quiz/graphics/mimetisme/rosa-parks.png",
+            "portrait": "quiz/graphics/mimetisme/rosa-parks.webp",
             "inspiration": 6
         },
         {
             "id": 17,
             "personnage": "Edward Snowden",
-            "portrait": "quiz/graphics/mimetisme/edward-snowden.png",
+            "portrait": "quiz/graphics/mimetisme/edward-snowden.webp",
             "inspiration": 6
         },
         {
             "id": 18,
             "personnage": "Dalai Lama",
-            "portrait": "quiz/graphics/mimetisme/dalai-lama.png",
+            "portrait": "quiz/graphics/mimetisme/dalai-lama.webp",
             "inspiration": 6
         },
         {
             "id": 19,
             "personnage": "Nadia Murad",
-            "portrait": "quiz/graphics/mimetisme/nadia-murad.png",
+            "portrait": "quiz/graphics/mimetisme/nadia-murad.webp",
             "inspiration": 7
         },
         {
             "id": 20,
             "personnage": "Denis Mukwege",
-            "portrait": "quiz/graphics/mimetisme/denis-mukwege.png",
+            "portrait": "quiz/graphics/mimetisme/denis-mukwege.webp",
             "inspiration": 7
         },
         {
             "id": 21,
             "personnage": "Greta Thunberg",
-            "portrait": "quiz/graphics/mimetisme/greta-thunberg.png",
+            "portrait": "quiz/graphics/mimetisme/greta-thunberg.webp",
             "inspiration": 7
         },
         {
             "id": 22,
             "personnage": "Hayao Miyazaki",
-            "portrait": "quiz/graphics/mimetisme/hayao-miyazaki.png",
+            "portrait": "quiz/graphics/mimetisme/hayao-miyazaki.webp",
             "inspiration": 8
         },
         {
             "id": 23,
             "personnage": "Zaha Hadid",
-            "portrait": "quiz/graphics/mimetisme/zaha-hadid.png",
+            "portrait": "quiz/graphics/mimetisme/zaha-hadid.webp",
             "inspiration": 8
         },
         {
             "id": 24,
             "personnage": "David Bowie",
-            "portrait": "quiz/graphics/mimetisme/david-bowie.png",
+            "portrait": "quiz/graphics/mimetisme/david-bowie.webp",
             "inspiration": 8
         }
     ],
