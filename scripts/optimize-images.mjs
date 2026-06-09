@@ -59,12 +59,12 @@ async function processDir(dir) {
 
     // Convertit l'image en WebP
     await sharp(inputPath)
-      // Redimensionne à 1600px max de largeur
+      // Redimensionne à 640px max de largeur
       // withoutEnlargement évite d'agrandir une image plus petite
-      .resize({ width: 1600, withoutEnlargement: true })
+      .resize({ width: 640, withoutEnlargement: true })
 
-      // Convertit en WebP avec une qualité de 75
-      .webp({ quality: 75 })
+      // Convertit en WebP avec une qualité de 80
+      .webp({ quality: 80 })
 
       // Écrit le fichier généré
       .toFile(outputPath);
