@@ -1,19 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { Database } from '@angular/fire/database';
 import { get, ref, set } from 'firebase/database';
-import { QuizCatalogService } from '../quiz/quiz-catalog.service';
-import {
-  buildSessionSummaryFromPyramideBesoins,
-  SuccessProgressService,
-} from '../success/success-progress';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PyramideBesoinsSession {
   private readonly database = inject(Database);
-  private readonly quizCatalogService = inject(QuizCatalogService);
-  private readonly successProgressService = inject(SuccessProgressService);
 
   private atlasPromise: Promise<PyramideBesoinsAtlas> | null = null;
 
@@ -147,21 +140,6 @@ export class PyramideBesoinsSession {
       `quizSessions/${normalizedSessionId}/responsesByUser/${normalizedUserId}`,
     );
     await set(userResponsesRef, nodeToWrite);
-
-    if (!alreadyAnswered) {
-      const sessionStats = await this.getSessionStats(normalizedSessionId, normalizedUserId);
-      await this.successProgressService.recordSessionSummary(
-        buildSessionSummaryFromPyramideBesoins(
-          {
-            sessionId: normalizedSessionId,
-            quizId: PYRAMIDE_BESOINS_QUIZ_ID,
-          },
-          sessionStats,
-          nowIso,
-          this.quizCatalogService,
-        ),
-      );
-    }
 
     return {
       answeredCount: answeredIds.size,

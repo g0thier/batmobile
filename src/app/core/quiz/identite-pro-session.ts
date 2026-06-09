@@ -1,19 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { Database } from '@angular/fire/database';
 import { get, ref, set } from 'firebase/database';
-import { QuizCatalogService } from '../quiz/quiz-catalog.service';
-import {
-  buildSessionSummaryFromIdentitePro,
-  SuccessProgressService,
-} from '../success/success-progress';
 
 @Injectable({
   providedIn: 'root',
 })
 export class IdentiteProSession {
   private readonly database = inject(Database);
-  private readonly quizCatalogService = inject(QuizCatalogService);
-  private readonly successProgressService = inject(SuccessProgressService);
 
   private atlasPromise: Promise<IdentiteProAtlas> | null = null;
 
@@ -162,21 +155,6 @@ export class IdentiteProSession {
       `quizSessions/${normalizedSessionId}/responsesByUser/${normalizedUserId}`,
     );
     await set(userResponsesRef, nodeToWrite);
-
-    if (!alreadyAnswered) {
-      const sessionStats = await this.getSessionStats(normalizedSessionId, normalizedUserId);
-      await this.successProgressService.recordSessionSummary(
-        buildSessionSummaryFromIdentitePro(
-          {
-            sessionId: normalizedSessionId,
-            quizId: IDENTITE_PRO_QUIZ_ID,
-          },
-          sessionStats,
-          nowIso,
-          this.quizCatalogService,
-        ),
-      );
-    }
 
     return {
       answeredCount,

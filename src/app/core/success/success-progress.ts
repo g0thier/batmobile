@@ -1,7 +1,7 @@
 import { inject, Injectable, Injector } from '@angular/core';
 import { Database } from '@angular/fire/database';
-import { get, onValue, ref, set, update } from 'firebase/database';
-import { combineLatest, firstValueFrom, from, map, Observable, of, shareReplay, switchMap } from 'rxjs';
+import { get, ref } from 'firebase/database';
+import { from, map, of, shareReplay, switchMap } from 'rxjs';
 import { AuthService } from '../auth/auth';
 import { QuizCatalogService, type QuizId } from '../quiz/quiz-catalog.service';
 import {
@@ -31,13 +31,6 @@ export interface SuccessSessionSummary {
   updatedAt: string;
   lastAnsweredAt: string;
   metrics: Record<string, number>;
-}
-
-export interface SuccessProgressCache {
-  version: 1;
-  updatedAt: string;
-  answerTimeline: string[];
-  sessionsById: Record<string, SuccessSessionSummary>;
 }
 
 export interface SuccessAchievementCard {
@@ -104,8 +97,6 @@ const IMPROVEMENT_QUIZ_IDS: QuizId[] = [
   'theorie-x-y',
 ];
 
-const SUCCESS_CACHE_VERSION = 1 as const;
-const SUCCESS_CACHE_PATH = (userId: string): string => `users/${userId}/successProgress`;
 const QUESTION_MILESTONE_VISUALS = [
   { title: 'Explorateur', coverUrl: '/success/milestone/explorateur.webp' },
   { title: 'Aventurier', coverUrl: '/success/milestone/aventurier.webp' },
@@ -427,14 +418,14 @@ const buildQuestionOverview = (answeredCount: number): SuccessOverviewCard => ({
 
 const buildSections = (
   snapshots: SuccessLiveSessionSnapshot[],
-  cache: SuccessProgressCache,
+  answerTimeline: string[],
   quizCatalog: QuizCatalogService,
 ): SuccessSection[] => {
-  const questionCards = buildQuestionMilestoneCards(totalAnsweredCount(cache));
+  const questionCards = buildQuestionMilestoneCards(totalAnsweredCount(answerTimeline));
   const quizCards = buildQuizCards(snapshots, quizCatalog);
   const completionCard = buildAllQuizUnlockedCard(quizCards);
   const improvementCards = buildImprovementCards(snapshots, quizCatalog);
-  const assiduityCards = buildAssiduityCards(cache.answerTimeline);
+  const assiduityCards = buildAssiduityCards(answerTimeline);
 
   return [
     {
@@ -472,15 +463,15 @@ const buildSections = (
   ];
 };
 
-const totalAnsweredCount = (cache: SuccessProgressCache): number => normalizeTimestampList(cache.answerTimeline).length;
+const totalAnsweredCount = (answerTimeline: string[]): number => normalizeTimestampList(answerTimeline).length;
 
 export function buildSuccessPageState(
-  cache: SuccessProgressCache,
   snapshots: SuccessLiveSessionSnapshot[],
+  answerTimeline: string[],
   quizCatalog: QuizCatalogService,
 ): SuccessPageState {
-  const sections = buildSections(snapshots, cache, quizCatalog);
-  const answeredCount = totalAnsweredCount(cache);
+  const sections = buildSections(snapshots, answerTimeline, quizCatalog);
+  const answeredCount = totalAnsweredCount(answerTimeline);
   const completedQuizCards = sections.find((section) => section.id === 'catalog')?.cards ?? [];
   const improvementCards = sections.find((section) => section.id === 'records')?.cards ?? [];
   const rhythmCards = sections.find((section) => section.id === 'rhythm')?.cards ?? [];
@@ -497,19 +488,6 @@ export function buildSuccessPageState(
       ...section,
       unlockedCount: section.cards.filter((card) => card.isUnlocked).length,
     })),
-  };
-}
-
-export function buildSuccessProgressCache(
-  snapshots: SuccessLiveSessionSnapshot[],
-  answerTimeline: string[],
-): SuccessProgressCache {
-  const normalizedTimeline = normalizeTimestampList(answerTimeline);
-  return {
-    version: SUCCESS_CACHE_VERSION,
-    updatedAt: normalizedTimeline[normalizedTimeline.length - 1] ?? '',
-    answerTimeline: normalizedTimeline,
-    sessionsById: Object.fromEntries(snapshots.map((snapshot) => [snapshot.sessionId, snapshot])),
   };
 }
 
@@ -726,73 +704,6 @@ function buildSuccessSessionSummary(input: {
     metrics: { ...input.metrics },
   };
 }
-
-const normalizeSessionSummary = (payload: unknown): SuccessSessionSummary | null => {
-  const record = asRecord(payload);
-  const sessionId = readString(record['sessionId']);
-  const quizId = readString(record['quizId']).toLowerCase() as QuizId;
-  if (!sessionId || !quizId) {
-    return null;
-  }
-
-  const metrics = asRecord(record['metrics']);
-  const metricValues: Record<string, number> = {};
-  Object.entries(metrics).forEach(([key, value]) => {
-    const numericValue = Number(value);
-    if (Number.isFinite(numericValue)) {
-      metricValues[key] = numericValue;
-    }
-  });
-
-  return {
-    sessionId,
-    quizId,
-    quizTitle: readString(record['quizTitle']),
-    coverUrl: readString(record['coverUrl']),
-    status: readString(record['status']),
-    answeredCount: Number(record['answeredCount'] ?? 0) || 0,
-    totalCount: Number(record['totalCount'] ?? 0) || 0,
-    updatedAt: readString(record['updatedAt']),
-    lastAnsweredAt: readString(record['lastAnsweredAt']),
-    metrics: metricValues,
-  };
-};
-
-const normalizeSuccessCache = (payload: unknown): SuccessProgressCache | null => {
-  const record = asRecord(payload);
-  if (Number(record['version'] ?? 0) !== SUCCESS_CACHE_VERSION) {
-    return null;
-  }
-
-  const sessionsByIdRecord = asRecord(record['sessionsById']);
-  const sessionsById: Record<string, SuccessSessionSummary> = {};
-
-  Object.entries(sessionsByIdRecord).forEach(([sessionId, rawSummary]) => {
-    const summary = normalizeSessionSummary(rawSummary);
-    if (summary) {
-      sessionsById[sessionId] = summary;
-    }
-  });
-
-  return {
-    version: SUCCESS_CACHE_VERSION,
-    updatedAt: readString(record['updatedAt']),
-    answerTimeline: normalizeTimestampList(
-      Array.isArray(record['answerTimeline'])
-        ? record['answerTimeline'].map((value) => readString(value))
-        : [],
-    ),
-    sessionsById,
-  };
-};
-
-const buildEmptyCache = (): SuccessProgressCache => ({
-  version: SUCCESS_CACHE_VERSION,
-  updatedAt: '',
-  answerTimeline: [],
-  sessionsById: {},
-});
-
 const asRecord = (value: unknown): Record<string, unknown> =>
   value !== null && typeof value === 'object' ? (value as Record<string, unknown>) : {};
 
@@ -840,7 +751,6 @@ export class SuccessProgressService {
   private readonly injector = inject(Injector);
   private readonly userQuizSessionsService = inject(UserQuizSessionsService);
   private readonly quizCatalogService = inject(QuizCatalogService);
-  private readonly liveCacheBuildPromises = new Map<string, Promise<SuccessProgressCache>>();
 
   readonly state$ = this.authService.authUser$.pipe(
     switchMap((currentUser) => {
@@ -851,8 +761,8 @@ export class SuccessProgressService {
         });
       }
 
-      return combineLatest([this.userQuizSessionsService.state$, this.watchCache(currentUser.uid)]).pipe(
-        switchMap(([sessionsState, cache]) => {
+      return this.userQuizSessionsService.state$.pipe(
+        switchMap((sessionsState) => {
           if (sessionsState.isLoading) {
             return of<SuccessPageState>({
               ...EMPTY_PAGE_STATE,
@@ -860,7 +770,7 @@ export class SuccessProgressService {
             });
           }
 
-          if (sessionsState.loadError && !cache) {
+          if (sessionsState.loadError) {
             return of<SuccessPageState>({
               ...EMPTY_PAGE_STATE,
               isLoading: false,
@@ -868,17 +778,9 @@ export class SuccessProgressService {
             });
           }
 
-          const cacheResolution = cache
-            ? Promise.resolve(cache)
-            : this.loadOrBuildCache(currentUser.uid, sessionsState);
-
-          return from(cacheResolution).pipe(
-            map((resolvedCache) =>
-              buildSuccessPageState(
-                resolvedCache,
-                this.buildLiveSnapshotsFromCacheOrSessions(resolvedCache, sessionsState),
-                this.quizCatalogService,
-              ),
+          return from(this.buildLiveState(currentUser.uid, sessionsState)).pipe(
+            map(({ snapshots, answerTimeline }) =>
+              buildSuccessPageState(snapshots, answerTimeline, this.quizCatalogService),
             ),
           );
         }),
@@ -890,115 +792,15 @@ export class SuccessProgressService {
     }),
   );
 
-  async recordSessionSummary(summary: SuccessSessionSummary): Promise<void> {
-    const normalizedSessionId = readString(summary.sessionId);
-    const currentUser = await firstValueFrom(this.authService.authUser$);
-    const normalizedUserId = currentUser?.uid?.trim() ?? '';
-    if (!normalizedSessionId || !normalizedUserId) {
-      return;
-    }
-
-    const cacheRef = ref(this.database, SUCCESS_CACHE_PATH(normalizedUserId));
-    const snapshot = await get(cacheRef);
-    const cache = snapshot.exists() ? normalizeSuccessCache(snapshot.val()) ?? buildEmptyCache() : buildEmptyCache();
-    const answerTimeline = normalizeTimestampList([...cache.answerTimeline, summary.lastAnsweredAt]);
-    const sessionsById = {
-      ...cache.sessionsById,
-      [normalizedSessionId]: summary,
-    };
-
-    await update(cacheRef, {
-      version: SUCCESS_CACHE_VERSION,
-      updatedAt: summary.updatedAt || summary.lastAnsweredAt,
-      answerTimeline,
-      sessionsById,
-    } satisfies SuccessProgressCache);
-  }
-
-  async recordRawAnswerTimestamp(answerTimestamp: string): Promise<void> {
-    const currentUser = await firstValueFrom(this.authService.authUser$);
-    const normalizedUserId = currentUser?.uid?.trim() ?? '';
-    if (!normalizedUserId) {
-      return;
-    }
-
-    const cacheRef = ref(this.database, SUCCESS_CACHE_PATH(normalizedUserId));
-    const snapshot = await get(cacheRef);
-    const cache = snapshot.exists() ? normalizeSuccessCache(snapshot.val()) ?? buildEmptyCache() : buildEmptyCache();
-
-    await update(cacheRef, {
-      version: SUCCESS_CACHE_VERSION,
-      updatedAt: answerTimestamp,
-      answerTimeline: normalizeTimestampList([...cache.answerTimeline, answerTimestamp]),
-      sessionsById: cache.sessionsById,
-    } satisfies SuccessProgressCache);
-  }
-
-  private watchCache(userId: string): Observable<SuccessProgressCache | null> {
-    return new Observable<SuccessProgressCache | null>((subscriber) => {
-      const cacheRef = ref(this.database, SUCCESS_CACHE_PATH(userId));
-      const unsubscribe = onValue(
-        cacheRef,
-        (snapshot) => {
-          if (!snapshot.exists()) {
-            subscriber.next(null);
-            return;
-          }
-
-          subscriber.next(normalizeSuccessCache(snapshot.val()));
-        },
-        (error: unknown) => {
-          console.error('Impossible de lire le cache des succès :', error);
-          subscriber.next(null);
-        },
-      );
-
-      return () => unsubscribe();
-    }).pipe(shareReplay({ bufferSize: 1, refCount: true }));
-  }
-
-  private async loadOrBuildCache(userId: string, sessionsState: UserQuizSessionsState): Promise<SuccessProgressCache> {
-    const cacheKey = `${userId}:${[...sessionsState.upcomingQuiz, ...sessionsState.pastQuiz]
-      .map((session) => `${session.sessionId}:${session.status}:${session.updatedAt}`)
-      .join('|')}`;
-    const currentBuild = this.liveCacheBuildPromises.get(cacheKey);
-    if (currentBuild) {
-      return currentBuild;
-    }
-
-    const buildPromise = this.buildCacheFromLiveSessions(userId, sessionsState).finally(() => {
-      this.liveCacheBuildPromises.delete(cacheKey);
-    });
-
-    this.liveCacheBuildPromises.set(cacheKey, buildPromise);
-    return buildPromise;
-  }
-
-  private async buildCacheFromLiveSessions(
+  private async buildLiveState(
     userId: string,
     sessionsState: UserQuizSessionsState,
-  ): Promise<SuccessProgressCache> {
-    const allSessions = [...sessionsState.upcomingQuiz, ...sessionsState.pastQuiz];
-    const snapshots: SuccessLiveSessionSnapshot[] = [];
-
-    for (const session of allSessions) {
-      try {
-        const snapshot = await this.buildLiveSnapshot(userId, session);
-        if (snapshot) {
-          snapshots.push(snapshot);
-        }
-      } catch (error: unknown) {
-        console.error('Impossible de construire un succès depuis les sessions live :', error);
-      }
-    }
-
-    const answerTimeline = snapshots.flatMap((snapshot) => snapshot.answerTimestamps);
-    const cache = buildSuccessProgressCache(snapshots, answerTimeline);
-
-    const cacheRef = ref(this.database, SUCCESS_CACHE_PATH(userId));
-    await set(cacheRef, cache);
-
-    return cache;
+  ): Promise<{ snapshots: SuccessLiveSessionSnapshot[]; answerTimeline: string[] }> {
+    const snapshots = await this.buildLiveSnapshotsFromSessions(userId, sessionsState);
+    return {
+      snapshots,
+      answerTimeline: snapshots.flatMap((snapshot) => snapshot.answerTimestamps),
+    };
   }
 
   private async buildLiveSnapshot(
@@ -1122,37 +924,24 @@ export class SuccessProgressService {
     }
   }
 
-  private buildLiveSnapshotsFromCacheOrSessions(
-    cache: SuccessProgressCache,
+  private async buildLiveSnapshotsFromSessions(
+    userId: string,
     sessionsState: UserQuizSessionsState,
-  ): SuccessLiveSessionSnapshot[] {
-    const cachedSnapshotsById = new Map(
-      Object.values(cache.sessionsById).map((snapshot) => [snapshot.sessionId, snapshot] as const),
-    );
+  ): Promise<SuccessLiveSessionSnapshot[]> {
+    const allSessions = [...sessionsState.upcomingQuiz, ...sessionsState.pastQuiz];
+    const snapshots: SuccessLiveSessionSnapshot[] = [];
 
-    return [...sessionsState.upcomingQuiz, ...sessionsState.pastQuiz].map((session) => {
-      const cachedSnapshot = cachedSnapshotsById.get(session.sessionId);
-      if (cachedSnapshot) {
-        return {
-          ...cachedSnapshot,
-          answerTimestamps: cachedSnapshot.lastAnsweredAt ? [cachedSnapshot.lastAnsweredAt] : [],
-        };
+    for (const session of allSessions) {
+      try {
+        const snapshot = await this.buildLiveSnapshot(userId, session);
+        if (snapshot) {
+          snapshots.push(snapshot);
+        }
+      } catch (error: unknown) {
+        console.error('Impossible de construire un succès depuis les sessions live :', error);
       }
+    }
 
-      return {
-        sessionId: session.sessionId,
-        quizId: session.quizId.trim().toLowerCase() as QuizId,
-        quizTitle: this.quizCatalogService.getQuizTitle(session.quizId),
-        coverUrl: this.quizCatalogService.getQuiz(session.quizId).coverUrl,
-        status: session.status,
-        answeredCount: 0,
-        totalCount: 0,
-        updatedAt: session.updatedAt || session.createdAt,
-        lastAnsweredAt: '',
-        metrics: {},
-        answerTimestamps: [],
-      };
-    });
+    return snapshots;
   }
-
 }

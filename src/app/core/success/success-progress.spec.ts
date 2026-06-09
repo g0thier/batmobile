@@ -1,7 +1,6 @@
 import { QuizCatalogService } from '../quiz/quiz-catalog.service';
 import {
   buildSuccessPageState,
-  buildSuccessProgressCache,
   type SuccessLiveSessionSnapshot,
 } from './success-progress';
 
@@ -30,10 +29,10 @@ const createSnapshot = (
 
 describe('success progress', () => {
   it('unlocks the hidden question milestones progressively', () => {
-    const cache = buildSuccessProgressCache([], Array.from({ length: 500 }, (_, index) => toIso(index)));
+    const answerTimeline = Array.from({ length: 500 }, (_, index) => toIso(index));
     const snapshots = [createSnapshot('attentes')];
 
-    const state = buildSuccessPageState(cache, snapshots, quizCatalog);
+    const state = buildSuccessPageState(snapshots, answerTimeline, quizCatalog);
     const questionSection = state.sections.find((section) => section.id === 'questions');
 
     expect(questionSection?.cards.map((card) => card.isUnlocked)).toEqual([true, true, true, false]);
@@ -59,9 +58,9 @@ describe('success progress', () => {
         lastAnsweredAt: toIso(index + 1),
       }),
     );
-    const cache = buildSuccessProgressCache(snapshots, [toIso(1)]);
+    const answerTimeline = [toIso(1)];
 
-    const state = buildSuccessPageState(cache, snapshots, quizCatalog);
+    const state = buildSuccessPageState(snapshots, answerTimeline, quizCatalog);
     const catalogSection = state.sections.find((section) => section.id === 'catalog');
 
     expect(catalogSection?.cards.filter((card) => card.id !== 'all-quizzes').every((card) => card.isUnlocked)).toBeTrue();
@@ -149,12 +148,9 @@ describe('success progress', () => {
         metrics: { engagementRate: 92 },
       }),
     ];
-    const cache = buildSuccessProgressCache(
-      snapshots,
-      [toIso(1), toIso(6), toIso(15), toIso(30), toIso(45), toIso(48)],
-    );
+    const answerTimeline = [toIso(1), toIso(6), toIso(15), toIso(30), toIso(45), toIso(48)];
 
-    const state = buildSuccessPageState(cache, snapshots, quizCatalog);
+    const state = buildSuccessPageState(snapshots, answerTimeline, quizCatalog);
     const recordsSection = state.sections.find((section) => section.id === 'records');
 
     expect(recordsSection?.cards.every((card) => card.isUnlocked)).toBeTrue();
@@ -164,11 +160,8 @@ describe('success progress', () => {
   });
 
   it('unlocks assiduity milestones when responses become close enough', () => {
-    const cache = buildSuccessProgressCache(
-      [createSnapshot('attentes')],
-      [toIso(0), toIso(15), toIso(30), toIso(45)],
-    );
-    const state = buildSuccessPageState(cache, [createSnapshot('attentes')], quizCatalog);
+    const answerTimeline = [toIso(0), toIso(15), toIso(30), toIso(45)];
+    const state = buildSuccessPageState([createSnapshot('attentes')], answerTimeline, quizCatalog);
     const rhythmSection = state.sections.find((section) => section.id === 'rhythm');
 
     expect(rhythmSection?.cards.map((card) => card.isUnlocked)).toEqual([true, true, true, false, false]);
@@ -188,7 +181,7 @@ describe('success progress', () => {
     ]);
   });
 
-  it('keeps a stable live cache structure when the RTDB cache is absent', () => {
+  it('keeps a stable state when duplicate timestamps are present', () => {
     const snapshots = [
       createSnapshot('attentes', {
         sessionId: 'attentes-live',
@@ -201,11 +194,9 @@ describe('success progress', () => {
         lastAnsweredAt: toIso(2),
       }),
     ];
+    const state = buildSuccessPageState(snapshots, [toIso(1), toIso(2), toIso(2)], quizCatalog);
 
-    const cache = buildSuccessProgressCache(snapshots, [toIso(1), toIso(2), toIso(2)]);
-
-    expect(cache.version).toBe(1);
-    expect(cache.sessionsById['attentes-live']?.quizId).toBe('attentes');
-    expect(cache.answerTimeline).toEqual([toIso(1), toIso(2)]);
+    expect(state.overviewCards[0]?.value).toBe('2');
+    expect(state.sections.find((section) => section.id === 'questions')?.cards[0]?.isUnlocked).toBeFalse();
   });
 });
