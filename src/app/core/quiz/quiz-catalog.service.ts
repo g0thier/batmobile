@@ -20,42 +20,42 @@ const QUIZ_CATALOG_BY_ID: Record<QuizId, QuizCatalogItem> = {
   'theorie-x-y': {
     id: 'theorie-x-y',
     title: 'Théorie X-Y',
-    coverUrl: '/quiz/covers/theorie-x-y.png',
+    coverUrl: '/quiz/covers/theorie-x-y.webp',
   },
   'identite-pro': {
     id: 'identite-pro',
     title: 'Identité Pro',
-    coverUrl: '/quiz/covers/identite-pro.png',
+    coverUrl: '/quiz/covers/identite-pro.webp',
   },
   'pyramide-besoins': {
     id: 'pyramide-besoins',
     title: 'Besoins de Maslow',
-    coverUrl: '/quiz/covers/pyramide-besoins.png',
+    coverUrl: '/quiz/covers/pyramide-besoins.webp',
   },
   autodetermination: {
     id: 'autodetermination',
     title: 'Autodétermination',
-    coverUrl: '/quiz/covers/autodetermination.png',
+    coverUrl: '/quiz/covers/autodetermination.webp',
   },
   attentes: {
     id: 'attentes',
     title: 'Attentes',
-    coverUrl: '/quiz/covers/attentes.png',
+    coverUrl: '/quiz/covers/attentes.webp',
   },
   equite: {
     id: 'equite',
     title: 'Équité',
-    coverUrl: '/quiz/covers/equite.png',
+    coverUrl: '/quiz/covers/equite.webp',
   },
   'besoins-acquis': {
     id: 'besoins-acquis',
     title: 'Besoins acquis',
-    coverUrl: '/quiz/covers/besoins-acquis.png',
+    coverUrl: '/quiz/covers/besoins-acquis.webp',
   },
   mimetisme: {
     id: 'mimetisme',
     title: 'Mimétisme',
-    coverUrl: '/quiz/covers/mimetisme.png',
+    coverUrl: '/quiz/covers/mimetisme.webp',
   },
 };
 
