@@ -4,6 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "images": "node scripts/optimize-images.mjs",
+    "assetsnbuild": "npm run images && ng build",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
