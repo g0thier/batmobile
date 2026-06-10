@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "g0thier-project-datadriven"
+  },
+  "targets": {
+    "g0thier-project-datadriven": {
+      "hosting": {
+        "angular": [
+          "zzzbre-app"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
