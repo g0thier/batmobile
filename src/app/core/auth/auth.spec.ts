@@ -3,7 +3,6 @@ import { Auth } from '@angular/fire/auth';
 import { FirebaseError } from 'firebase/app';
 import { AuthService } from './auth';
 import { firebaseAuth } from '../../testing/firebase-test-modules';
-import { SCREENSHOT_AUTH_EMAIL, SCREENSHOT_AUTH_PASSWORD } from '../../../environments/screenshot.env';
 
 describe('AuthService', () => {
   const authStub = {} as Auth;
@@ -19,10 +18,12 @@ describe('AuthService', () => {
 
   it('signs in with email and password', async () => {
     const signInSpy = spyOn(firebaseAuth, 'signInWithEmailAndPassword').and.resolveTo({} as never);
+    const email = 'test@example.com';
+    const password = 'test-password';
 
-    await service.signInWithEmail(SCREENSHOT_AUTH_EMAIL, SCREENSHOT_AUTH_PASSWORD);
+    await service.signInWithEmail(email, password);
 
-    expect(signInSpy).toHaveBeenCalledWith(authStub, SCREENSHOT_AUTH_EMAIL, SCREENSHOT_AUTH_PASSWORD);
+    expect(signInSpy).toHaveBeenCalledWith(authStub, email, password);
   });
 
   it('maps sign in errors to friendly messages', async () => {

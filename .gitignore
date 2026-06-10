@@ -46,6 +46,3 @@ Thumbs.db
 .firebase
 *-debug.log
 .runtimeconfig.json
-
-# Local screenshot credentials
-src/environments/screenshot.env.ts
