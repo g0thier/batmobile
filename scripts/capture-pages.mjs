@@ -368,8 +368,9 @@ async function captureRoutes() {
   }
 
   let chromium;
+  let devices;
   try {
-    ({ chromium } = await import('playwright'));
+    ({ chromium, devices } = await import('playwright'));
   } catch {
     throw new Error(
       [
@@ -398,7 +399,14 @@ async function captureRoutes() {
     console.log(`Serveur prêt sur ${config.baseUrl}`);
 
     browser = await chromium.launch();
-    const context = await browser.newContext({ viewport: { width: 1600, height: 1000 } });
+    const iphone = {
+      screen: { width: 402, height: 874 },
+      viewport: { width: 402, height: 874 },
+      isMobile: true,
+      hasTouch: true,
+      deviceScaleFactor: 3,
+    };
+    const context = await browser.newContext(iphone);
     const page = await context.newPage();
 
     console.log('Connexion en cours...');
@@ -423,7 +431,8 @@ async function captureRoutes() {
 
         const outputPath = routeToOutputPath(route);
         await ensureDirForFile(outputPath);
-        await page.screenshot({ path: outputPath, fullPage: true });
+        // Capture only the visible iPhone viewport to match the real mobile experience.
+        await page.screenshot({ path: outputPath, fullPage: false });
         captured.push({ route, outputPath });
       } catch (error) {
         skipped.push({ route, reason: error instanceof Error ? error.message : String(error) });
