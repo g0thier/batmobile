@@ -13,6 +13,9 @@ import {
   IonSpinner,
   IonText,
 } from '@ionic/angular/standalone';
+import { firstValueFrom, filter } from 'rxjs';
+import { Auth } from '@angular/fire/auth';
+import { authState } from '@angular/fire/auth';
 import { AuthService } from '../../../core/auth/auth';
 // import { MaterialIconComponent } from '../../../shared/material-icon/material-icon.component';
 
@@ -40,6 +43,8 @@ import { AuthService } from '../../../core/auth/auth';
 export class LoginComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly auth = inject(Auth);
+  private readonly authState$ = authState(this.auth);
 
   step = 1;
   email = '';
@@ -56,9 +61,14 @@ export class LoginComponent {
         this.errorMessage = 'Saisis une adresse email valide.';
         return;
       }
-
       this.email = trimmedEmail;
       this.step = 2;
+      return;
+    }
+
+    // ✅ Validation synchrone ici, avant l'appel async
+    if (!this.password.trim()) {
+      this.errorMessage = 'Saisis ton mot de passe.';
       return;
     }
 
@@ -72,15 +82,13 @@ export class LoginComponent {
   }
 
   private async signIn(): Promise<void> {
-    if (!this.password.trim()) {
-      this.errorMessage = 'Saisis ton mot de passe.';
-      return;
-    }
-
     this.isLoading = true;
-
     try {
       await this.authService.signInWithEmail(this.email, this.password);
+      
+      // Attendre que Firebase propage l'état auth
+      await firstValueFrom(this.authState$.pipe(filter(user => !!user)));
+      
       await this.router.navigateByUrl('/tabs/quiz', { replaceUrl: true });
     } catch (error: unknown) {
       this.errorMessage =
