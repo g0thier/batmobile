@@ -3,6 +3,27 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@angular/fire/auth": [
+        "src/app/testing/mock-angular-fire-auth.ts"
+      ],
+      "@angular/fire/database": [
+        "src/app/testing/mock-angular-fire-database.ts"
+      ],
+      "@firebase/auth": [
+        "src/app/testing/mock-angular-fire-auth.ts"
+      ],
+      "@firebase/database": [
+        "src/app/testing/mock-angular-fire-database.ts"
+      ],
+      "firebase/auth": [
+        "src/app/testing/mock-firebase-auth.ts"
+      ],
+      "firebase/database": [
+        "src/app/testing/mock-firebase-database.ts"
+      ]
+    },
     "outDir": "./out-tsc/spec",
     "types": [
       "jasmine"

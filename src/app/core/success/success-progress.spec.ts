@@ -1,48 +1,32 @@
+import { TestBed } from '@angular/core/testing';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { QuizCatalogService } from '../quiz/quiz-catalog.service';
 import {
+  SuccessProgressService,
   buildSuccessPageState,
   type SuccessLiveSessionSnapshot,
 } from './success-progress';
-
-const quizCatalog = new QuizCatalogService();
-
-const toIso = (hoursFromBase: number): string =>
-  new Date(Date.UTC(2025, 0, 1, hoursFromBase, 0, 0)).toISOString();
-
-const createSnapshot = (
-  quizId: string,
-  overrides: Partial<SuccessLiveSessionSnapshot> = {},
-): SuccessLiveSessionSnapshot => ({
-  sessionId: `session-${quizId}-${overrides.sessionId ?? 'a'}`,
-  quizId: quizId as never,
-  quizTitle: quizCatalog.getQuizTitle(quizId),
-  coverUrl: quizCatalog.getQuiz(quizId).coverUrl,
-  status: 'completed',
-  answeredCount: 10,
-  totalCount: 10,
-  updatedAt: toIso(10),
-  lastAnsweredAt: toIso(10),
-  metrics: {},
-  answerTimestamps: [toIso(10)],
-  ...overrides,
-});
+import { createTestUser } from '../../testing/spec-helpers';
+import {
+  assiduityTimeline,
+  catalogSnapshots,
+  createSuccessProgressProviders,
+  createSuccessSnapshot,
+  duplicateTimelineSnapshots,
+  questionMilestoneTimeline,
+  quizCatalogForSuccessProgressTests as quizCatalog,
+  recordSnapshots,
+  toIso,
+} from '../../testing/success-progress-fixtures';
 
 describe('success progress', () => {
   it('unlocks the hidden question milestones progressively', () => {
-    const answerTimeline = Array.from({ length: 500 }, (_, index) => toIso(index));
-    const snapshots = [createSnapshot('attentes')];
+    const state = buildSuccessPageState([createSuccessSnapshot('attentes')], questionMilestoneTimeline, quizCatalog);
+    const cards = state.sections.find((section) => section.id === 'questions')?.cards;
 
-    const state = buildSuccessPageState(snapshots, answerTimeline, quizCatalog);
-    const questionSection = state.sections.find((section) => section.id === 'questions');
-
-    expect(questionSection?.cards.map((card) => card.isUnlocked)).toEqual([true, true, true, false]);
-    expect(questionSection?.cards.map((card) => card.title)).toEqual([
-      'Explorateur',
-      'Aventurier',
-      'Héros',
-      'Légendaire',
-    ]);
-    expect(questionSection?.cards.map((card) => card.coverUrl)).toEqual([
+    expect(cards?.map((card) => card.isUnlocked)).toEqual([true, true, true, false]);
+    expect(cards?.map((card) => card.title)).toEqual(['Explorateur', 'Aventurier', 'Héros', 'Légendaire']);
+    expect(cards?.map((card) => card.coverUrl)).toEqual([
       '/success/milestone/explorateur.webp',
       '/success/milestone/aventurier.webp',
       '/success/milestone/heros.webp',
@@ -51,128 +35,41 @@ describe('success progress', () => {
   });
 
   it('unlocks the catalog card only when every quiz is completed at least once', () => {
-    const snapshots = quizCatalog.getKnownQuizIds().map((quizId, index) =>
-      createSnapshot(quizId, {
-        sessionId: `session-${quizId}-${index}`,
-        updatedAt: toIso(index + 1),
-        lastAnsweredAt: toIso(index + 1),
-      }),
-    );
-    const answerTimeline = [toIso(1)];
+    const cards = buildSuccessPageState(catalogSnapshots, [toIso(1)], quizCatalog).sections.find(
+      (section) => section.id === 'catalog',
+    )?.cards;
 
-    const state = buildSuccessPageState(snapshots, answerTimeline, quizCatalog);
-    const catalogSection = state.sections.find((section) => section.id === 'catalog');
-
-    expect(catalogSection?.cards.filter((card) => card.id !== 'all-quizzes').every((card) => card.isUnlocked)).toBeTrue();
-    expect(catalogSection?.cards.find((card) => card.id === 'all-quizzes')?.isUnlocked).toBeTrue();
+    expect(cards?.filter((card) => card.id !== 'all-quizzes').every((card) => card.isUnlocked)).toBeTrue();
+    expect(cards?.find((card) => card.id === 'all-quizzes')?.isUnlocked).toBeTrue();
   });
 
   it('unlocks record cards when a later session beats a previous best', () => {
-    const snapshots: SuccessLiveSessionSnapshot[] = [
-      createSnapshot('attentes', {
-        sessionId: 'attentes-1',
-        updatedAt: toIso(1),
-        metrics: { averageScore: 40, balanceScore: 50 },
-      }),
-      createSnapshot('attentes', {
-        sessionId: 'attentes-2',
-        updatedAt: toIso(2),
-        metrics: { averageScore: 72, balanceScore: 81 },
-      }),
-      createSnapshot('autodetermination', {
-        sessionId: 'autodetermination-1',
-        updatedAt: toIso(3),
-        metrics: { intrinsicRate: 35 },
-      }),
-      createSnapshot('autodetermination', {
-        sessionId: 'autodetermination-2',
-        updatedAt: toIso(4),
-        metrics: { intrinsicRate: 80 },
-      }),
-      createSnapshot('besoins-acquis', {
-        sessionId: 'besoins-acquis-1',
-        updatedAt: toIso(5),
-        metrics: { averageScore: 40 },
-      }),
-      createSnapshot('besoins-acquis', {
-        sessionId: 'besoins-acquis-2',
-        updatedAt: toIso(6),
-        metrics: { averageScore: 78 },
-      }),
-      createSnapshot('equite', {
-        sessionId: 'equite-1',
-        updatedAt: toIso(7),
-        metrics: { distanceFromZeroScore: 10 },
-      }),
-      createSnapshot('equite', {
-        sessionId: 'equite-2',
-        updatedAt: toIso(8),
-        metrics: { distanceFromZeroScore: 80 },
-      }),
-      createSnapshot('identite-pro', {
-        sessionId: 'identite-pro-1',
-        updatedAt: toIso(9),
-        metrics: {
-          averageGapScore: 45,
-          overallAverageScore: 42,
-          alignedThemesScore: 1,
-        },
-      }),
-      createSnapshot('identite-pro', {
-        sessionId: 'identite-pro-2',
-        updatedAt: toIso(10),
-        metrics: {
-          averageGapScore: 78,
-          overallAverageScore: 58,
-          alignedThemesScore: 4,
-        },
-      }),
-      createSnapshot('pyramide-besoins', {
-        sessionId: 'pyramide-besoins-1',
-        updatedAt: toIso(11),
-        metrics: { averageScore: 31 },
-      }),
-      createSnapshot('pyramide-besoins', {
-        sessionId: 'pyramide-besoins-2',
-        updatedAt: toIso(12),
-        metrics: { averageScore: 67 },
-      }),
-      createSnapshot('theorie-x-y', {
-        sessionId: 'theorie-x-y-1',
-        updatedAt: toIso(13),
-        metrics: { engagementRate: 28 },
-      }),
-      createSnapshot('theorie-x-y', {
-        sessionId: 'theorie-x-y-2',
-        updatedAt: toIso(14),
-        metrics: { engagementRate: 92 },
-      }),
-    ];
-    const answerTimeline = [toIso(1), toIso(6), toIso(15), toIso(30), toIso(45), toIso(48)];
+    const cards = buildSuccessPageState(
+      recordSnapshots,
+      [toIso(1), toIso(6), toIso(15), toIso(30), toIso(45), toIso(48)],
+      quizCatalog,
+    ).sections.find((section) => section.id === 'records')?.cards;
 
-    const state = buildSuccessPageState(snapshots, answerTimeline, quizCatalog);
-    const recordsSection = state.sections.find((section) => section.id === 'records');
-
-    expect(recordsSection?.cards.every((card) => card.isUnlocked)).toBeTrue();
-    expect(recordsSection?.cards.map((card) => card.coverUrl)).toEqual(
-      quizCatalog.getKnownQuizIds().map((quizId) => quizCatalog.getQuiz(quizId).coverUrl),
-    );
+    expect(cards?.every((card) => card.isUnlocked)).toBeTrue();
+    expect(cards?.length).toBe(6);
+    expect(cards?.map((card) => card.coverUrl)).toEqual([
+      quizCatalog.getQuiz('attentes').coverUrl,
+      quizCatalog.getQuiz('autodetermination').coverUrl,
+      quizCatalog.getQuiz('equite').coverUrl,
+      quizCatalog.getQuiz('identite-pro').coverUrl,
+      quizCatalog.getQuiz('pyramide-besoins').coverUrl,
+      quizCatalog.getQuiz('theorie-x-y').coverUrl,
+    ]);
   });
 
   it('unlocks assiduity milestones when responses become close enough', () => {
-    const answerTimeline = [toIso(0), toIso(15), toIso(30), toIso(45)];
-    const state = buildSuccessPageState([createSnapshot('attentes')], answerTimeline, quizCatalog);
-    const rhythmSection = state.sections.find((section) => section.id === 'rhythm');
+    const cards = buildSuccessPageState([createSuccessSnapshot('attentes')], assiduityTimeline, quizCatalog).sections.find(
+      (section) => section.id === 'rhythm',
+    )?.cards;
 
-    expect(rhythmSection?.cards.map((card) => card.isUnlocked)).toEqual([true, true, true, false, false]);
-    expect(rhythmSection?.cards.map((card) => card.title)).toEqual([
-      'Tortue',
-      'Lièvre',
-      'Gazelle',
-      'Faucon',
-      'Guépard',
-    ]);
-    expect(rhythmSection?.cards.map((card) => card.coverUrl)).toEqual([
+    expect(cards?.map((card) => card.isUnlocked)).toEqual([true, true, true, false, false]);
+    expect(cards?.map((card) => card.title)).toEqual(['Tortue', 'Lièvre', 'Gazelle', 'Faucon', 'Guépard']);
+    expect(cards?.map((card) => card.coverUrl)).toEqual([
       '/success/assiduite/tortue.webp',
       '/success/assiduite/lievre.webp',
       '/success/assiduite/gazelle.webp',
@@ -182,21 +79,48 @@ describe('success progress', () => {
   });
 
   it('keeps a stable state when duplicate timestamps are present', () => {
-    const snapshots = [
-      createSnapshot('attentes', {
-        sessionId: 'attentes-live',
-        updatedAt: toIso(1),
-        lastAnsweredAt: toIso(1),
-      }),
-      createSnapshot('equite', {
-        sessionId: 'equite-live',
-        updatedAt: toIso(2),
-        lastAnsweredAt: toIso(2),
-      }),
-    ];
-    const state = buildSuccessPageState(snapshots, [toIso(1), toIso(2), toIso(2)], quizCatalog);
+    const state = buildSuccessPageState(duplicateTimelineSnapshots, [toIso(1), toIso(2), toIso(2)], quizCatalog);
 
     expect(state.overviewCards[0]?.value).toBe('2');
-    expect(state.sections.find((section) => section.id === 'questions')?.cards[0]?.isUnlocked).toBeFalse();
+    expect(state.sections.find((section) => section.id === 'questions')?.cards?.[0]?.isUnlocked).toBeFalse();
+  });
+
+  it('emits an empty dashboard when nobody is signed in', async () => {
+    const authUser$ = new BehaviorSubject<ReturnType<typeof createTestUser> | null>(null);
+
+    TestBed.configureTestingModule({
+      providers: [SuccessProgressService, QuizCatalogService, ...createSuccessProgressProviders(authUser$)],
+    });
+
+    const state = await firstValueFrom(TestBed.inject(SuccessProgressService).state$);
+
+    expect(state.isLoading).toBeFalse();
+    expect(state.sections).toEqual([]);
+  });
+
+  it('builds a live dashboard from snapshot data', async () => {
+    const authUser$ = new BehaviorSubject<ReturnType<typeof createTestUser> | null>(createTestUser());
+
+    TestBed.configureTestingModule({
+      providers: [SuccessProgressService, QuizCatalogService, ...createSuccessProgressProviders(authUser$)],
+    });
+
+    const service = TestBed.inject(SuccessProgressService);
+    spyOn<any>(service, 'buildLiveState').and.resolveTo({
+      snapshots: [
+        createSuccessSnapshot('attentes', {
+          sessionId: 'session-attentes',
+          updatedAt: toIso(1),
+          lastAnsweredAt: toIso(1),
+          status: 'completed',
+        }) as SuccessLiveSessionSnapshot,
+      ],
+      answerTimeline: [toIso(1), toIso(2)],
+    });
+
+    const state = await firstValueFrom(service.state$);
+
+    expect(state.overviewCards[0]?.value).toBe('2');
+    expect(state.sections.find((section) => section.id === 'catalog')?.cards.some((card) => card.isUnlocked)).toBeTrue();
   });
 });

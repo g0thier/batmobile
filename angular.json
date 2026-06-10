@@ -109,6 +109,32 @@
               "zone.js/testing"
             ],
             "tsConfig": "tsconfig.spec.json",
+            "fileReplacements": [
+              {
+                "replace": "node_modules/@angular/fire/fesm2022/angular-fire-auth.mjs",
+                "with": "src/app/testing/mock-angular-fire-auth.ts"
+              },
+              {
+                "replace": "node_modules/@angular/fire/fesm2022/angular-fire-database.mjs",
+                "with": "src/app/testing/mock-angular-fire-database.ts"
+              },
+              {
+                "replace": "node_modules/firebase/auth/dist/esm/index.esm.js",
+                "with": "src/app/testing/mock-firebase-auth.ts"
+              },
+              {
+                "replace": "node_modules/firebase/auth/dist/index.cjs.js",
+                "with": "src/app/testing/mock-firebase-auth.ts"
+              },
+              {
+                "replace": "node_modules/firebase/database/dist/esm/index.esm.js",
+                "with": "src/app/testing/mock-firebase-database.ts"
+              },
+              {
+                "replace": "node_modules/firebase/database/dist/index.cjs.js",
+                "with": "src/app/testing/mock-firebase-database.ts"
+              }
+            ],
             "assets": [
               {
                 "glob": "**/*",

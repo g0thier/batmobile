@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Database } from '@angular/fire/database';
-import * as firebaseDatabase from 'firebase/database';
 import { AttentesSession, type AttentesAtlas } from './attentes-session';
+import { firebaseDatabase } from '../../testing/firebase-test-modules';
 
 describe('AttentesSession', () => {
   const database = {} as Database;
@@ -59,5 +59,26 @@ describe('AttentesSession', () => {
       remainingCount: 0,
       isCompleted: true,
     });
+  });
+
+  it('caches the atlas payload between calls', async () => {
+    const fetchSpy = spyOn(window, 'fetch').and.returnValue(
+      Promise.resolve(
+        new Response(
+          JSON.stringify({
+            titre: 'Attentes',
+            facteurs: [],
+            attentes: [],
+            affirmations: [],
+          }),
+          { status: 200 },
+        ),
+      ),
+    );
+
+    await service.loadAtlas();
+    await service.loadAtlas();
+
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 });
