@@ -2,6 +2,11 @@
   "hosting": {
     "target": "angular",
     "public": "dist/batmobile/browser",
-    "rewrites": [{ "source": "**", "destination": "/index.html" }]
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
   }
 }
