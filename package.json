@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "startdocs": "cd docs && npm start",
     "images": "node scripts/optimize-images.mjs",
     "icons": "node scripts/generate-icons.mjs",
     "favicon": "node scripts/generate-favicon.mjs",
