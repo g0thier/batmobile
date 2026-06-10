@@ -23,6 +23,9 @@ The current codebase is in an Angular starter phase while the product foundation
   - [Objective](#objective)
   - [Target Audience](#target-audience)
   - [Current Modules](#current-modules)
+  - [Screenshots](#screenshots)
+    - [Navigation and Flow](#navigation-and-flow)
+    - [Quiz Launches](#quiz-launches)
   - [Repository Structure](#repository-structure)
   - [Installation](#installation)
   - [Available Scripts](#available-scripts)
@@ -46,6 +49,58 @@ Provide the companion-app foundation for Data-Driven modules, beginning with HR 
 ## Current Modules
 
 - `Motivation`: first module focused on motivation dynamics as a retention and strategic alignment driver
+
+## Screenshots
+
+Here are a few previews of the application's main flow, from navigation to launching a quiz.
+
+### Navigation and Flow
+
+<table style="width: 100%; table-layout: fixed;">
+  <tr>
+    <th>Quiz</th>
+    <th>Success</th>
+    <th>History</th>
+    <th>Profile</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/images/tabs/quiz.png" alt="Quiz tab" style="width: 100%; max-width: 320px; height: auto;"></td>
+    <td align="center"><img src="docs/images/tabs/success.png" alt="Success screen" style="width: 100%; max-width: 320px; height: auto;"></td>
+    <td align="center"><img src="docs/images/tabs/history.png" alt="History tab" style="width: 100%; max-width: 320px; height: auto;"></td>
+    <td align="center"><img src="docs/images/tabs/profile.png" alt="Profile tab" style="width: 100%; max-width: 320px; height: auto;"></td>
+  </tr>
+</table>
+
+### Quiz Launches
+
+These screenshots show examples of sessions opened from history, with several quizzes related to the Motivation module.
+
+<table style="width: 100%; table-layout: fixed;">
+  <tr>
+    <th>Attentes</th>
+    <th>Autonomy</th>
+    <th>Acquired Needs</th>
+    <th>Equity</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/images/launches/attentes.png" alt="Expectations quiz" style="width: 100%; max-width: 320px; height: auto;"></td>
+    <td align="center"><img src="docs/images/launches/autodetermination.png" alt="Autonomy quiz" style="width: 100%; max-width: 320px; height: auto;"></td>
+    <td align="center"><img src="docs/images/launches/besoins-acquis.png" alt="Acquired needs quiz" style="width: 100%; max-width: 320px; height: auto;"></td>
+    <td align="center"><img src="docs/images/launches/equite.png" alt="Equity quiz" style="width: 100%; max-width: 320px; height: auto;"></td>
+  </tr>
+  <tr>
+    <th>Professional Identity</th>
+    <th>Mimicry</th>
+    <th>Needs Pyramid</th>
+    <th>Theory X/Y</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/images/launches/identite-pro.png" alt="Professional identity quiz" style="width: 100%; max-width: 320px; height: auto;"></td>
+    <td align="center"><img src="docs/images/launches/mimetisme.png" alt="Mimicry quiz" style="width: 100%; max-width: 320px; height: auto;"></td>
+    <td align="center"><img src="docs/images/launches/pyramide-besoins.png" alt="Needs pyramid quiz" style="width: 100%; max-width: 320px; height: auto;"></td>
+    <td align="center"><img src="docs/images/launches/theorie-x-y.png" alt="Theory X/Y quiz" style="width: 100%; max-width: 320px; height: auto;"></td>
+  </tr>
+</table>
 
 ## Repository Structure
 
@@ -86,11 +141,18 @@ npm run start
 ## Available Scripts
 
 ```bash
-npm run start   # Start Angular dev server
-npm run build   # Build production assets
-npm run watch   # Build in watch mode for development
-npm run test    # Run unit tests
-npm run screenshots # Capture Angular pages into docs/images
+npm run ng            # Run the Angular CLI directly
+npm run start         # Start the Angular dev server
+npm run startdocs     # Start the docs site
+npm run images        # Optimize image assets
+npm run icons         # Generate app icons
+npm run favicon       # Generate the favicon
+npm run screenshots   # Capture Angular pages into docs/images
+npm run assets        # Build optimized images, favicon, and icons
+npm run imagesnbuild  # Optimize images and build the app
+npm run build         # Build production assets
+npm run watch         # Build in watch mode for development
+npm run test          # Run unit tests
 ```
 
 The screenshot script uses Playwright and expects login credentials when capturing protected
@@ -109,11 +171,14 @@ npx playwright install chromium
 
 ## Roadmap
 
-- `Motivation` (current): HR motivation and retention foundation
-- `Support Functions` (next): support-business alignment workflows
-- `Key Success Factors` (next): operationalization of strategic success criteria
-- `Marketing Mix` (next): structured market and offer alignment tools
-- `Finance` (next): financial perspective integration for strategic consistency
+The roadmap follows the MBA / RNCP curriculum and aims to build one data-driven tool for each major block of competencies.
+
+- `Strategic Orientation`: data tools for strategy definition, dashboards, and business alignment
+- `Financial Strategy`: data tools to track finance, governance, and performance indicators
+- `Marketing & Commercial Strategy`: data tools to support segmentation, offers, and commercial execution
+- `Team Management`: data tools to support leadership, HR management, and team performance
+  - `Motivation` (current): HR motivation and retention foundation
+- `Digital Project`: data tools to support digital transformation, innovation, and project delivery
 
 ## Security
 
