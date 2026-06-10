@@ -1,0 +1,48 @@
+---
+title: Architecture technique
+---
+
+# Architecture technique
+
+Batmobile s’appuie sur Angular standalone components, Ionic pour l’interface mobile, Firebase pour
+l’authentification et les données, et un service worker pour le mode applicatif installé.
+
+## Composition globale
+
+- `src/app/app.config.ts` initialise le router, Firebase, Ionic Angular et le service worker.
+- `src/app/app.routes.ts` définit l’authentification, les onglets et les routes métier.
+- `src/app/app.ts` protège le shell `tabs` en ramenant un utilisateur déconnecté vers `/login`.
+- `src/app/layout/tabs-shell/` héberge la navigation mobile à quatre onglets.
+
+## Flux de navigation
+
+| Route | Rôle |
+| --- | --- |
+| `/login` | Connexion utilisateur |
+| `/reset-password` | Réinitialisation de mot de passe |
+| `/tabs/quiz` | Liste et lancement des quiz |
+| `/tabs/quiz-session` | Chargement dynamique d’une session active |
+| `/tabs/history` | Historique des sessions |
+| `/tabs/quiz-stats/:quizId/:sessionId` | Statistiques d’une session terminée |
+| `/tabs/success` | Tableau de succès et de progression |
+| `/tabs/profile` | Profil utilisateur |
+
+## Services clés
+
+- `AuthService` gère la connexion, la déconnexion et la réinitialisation de mot de passe.
+- `QuizSessionContextService` conserve la session active et permet de la recharger proprement.
+- `QuizCatalogService` connaît les identifiants et les titres des quiz.
+- `UserQuizSessionsService` alimente l’historique et les sessions à afficher.
+- `SuccessProgressService` calcule les cartes et les jalons de progression.
+
+## Chargement dynamique
+
+Le routeur de session ne charge pas un composant générique. Il sélectionne le composant du quiz à partir
+de `QUIZ_SESSION_PAGE_LOADERS`, ce qui permet de conserver un shell léger tout en isolant chaque module.
+Le même principe existe côté statistiques avec `QUIZ_STATS_PAGE_LOADERS`.
+
+## Points d’attention
+
+- Les routes de quiz acceptent uniquement les identifiants connus.
+- Une session invalide ou absente est renvoyée vers l’historique.
+- L’application reste mobile-first, mais les pages de documentation peuvent être lues sur desktop.

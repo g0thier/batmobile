@@ -1,0 +1,28 @@
+---
+title: Contribution
+---
+
+# Contribution
+
+Cette page donne les repères minimums pour contribuer sans casser la cohérence du projet.
+
+## Avant de modifier
+
+- Lire la page [Architecture technique](./architecture-technique) pour comprendre les flux d’exécution.
+- Vérifier si la modification touche un quiz, l’historique, la page de succès ou l’authentification.
+- Préserver les conventions de nommage existantes et le style de code déjà présent.
+
+## Quand tu ajoutes un quiz
+
+1. Ajouter le quiz dans le catalogue.
+2. Brancher son chargement dans le routeur de session.
+3. Ajouter la vue de statistiques correspondante.
+4. Mettre à jour la documentation si le module change d’interface ou de comportement.
+
+## Vérifications recommandées
+
+- `npm run test`
+- `npm run build`
+- `cd docs && npm run build`
+
+Si la modification touche la documentation, vérifier aussi que la navigation Docusaurus reste cohérente.

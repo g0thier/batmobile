@@ -1,47 +1,33 @@
 ---
 sidebar_position: 1
+title: Introduction
 ---
 
-# Tutorial Intro
+# Batmobile
 
-Let's discover **Docusaurus in less than 5 minutes**.
+Batmobile est l’application compagnon mobile du projet Data-Driven. Cette documentation rassemble
+le contexte produit, les choix techniques et les repères utiles pour contribuer au projet sans
+avoir à relire tout le code à chaque fois.
 
-## Getting Started
+## Ce que couvre cette documentation
 
-Get started by **creating a new site**.
+- La vision produit et le périmètre actuel du projet.
+- Le démarrage local de l’application Angular et du site Docusaurus.
+- L’architecture technique côté routes, services et intégration Firebase.
+- Les modules métier visibles dans le code: quiz, historique, succès, profil et authentification.
+- Les repères de contribution pour garder l’ensemble cohérent.
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+## Parcours conseillé
 
-### What you'll need
+1. Lire la [vision produit](./vision-produit) pour comprendre le positionnement de Batmobile.
+2. Passer par le [démarrage local](./demarrage-local) pour lancer l’app et la doc.
+3. Consulter l’[architecture technique](./architecture-technique) pour comprendre le flux applicatif.
+4. Explorer les [modules métier](./modules-metier) pour relier la doc au code.
+5. Terminer avec la [contribution](./contribution) si tu prépares une modification.
 
-- [Node.js](https://nodejs.org/en/download/) version 20.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+## Résumé rapide
 
-## Generate a new site
-
-Generate a new Docusaurus site using the **classic template**.
-
-The classic template will automatically be added to your project after you run the command:
-
-```bash
-npm init docusaurus@latest my-website classic
-```
-
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
-
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
-
-```bash
-cd my-website
-npm run start
-```
-
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
-
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+- Frontend Angular 20 avec Ionic 8.
+- Authentification, données et fonctions basées sur Firebase.
+- Navigation mobile structurée autour d’un shell à onglets.
+- Quatre entrées métier principales: Quiz, Succès, Historique et Profil.

@@ -1,0 +1,53 @@
+---
+title: Démarrage local
+---
+
+# Démarrage local
+
+Cette page récapitule les commandes utiles pour travailler sur l’application Batmobile et sur le site
+de documentation Docusaurus.
+
+## Prérequis
+
+- Node.js 20 ou plus.
+- npm.
+- Les dépendances du dépôt installées une première fois avec `npm install` à la racine.
+
+## Lancer l’application Angular
+
+Depuis la racine du dépôt:
+
+```bash
+npm install
+npm run start
+```
+
+Les autres commandes utiles côté application sont:
+
+```bash
+npm run build
+npm run test
+```
+
+## Lancer le site Docusaurus
+
+Depuis le dossier `docs/`:
+
+```bash
+cd docs
+npm install
+npm run start
+```
+
+Pour produire le site statique:
+
+```bash
+cd docs
+npm run build
+```
+
+## Ce qu’il faut vérifier
+
+- L’application démarre bien sur la page de connexion.
+- Le site Docusaurus affiche l’accueil Batmobile et les pages de documentation.
+- Les liens de navigation et les routes de la doc fonctionnent sans erreur.

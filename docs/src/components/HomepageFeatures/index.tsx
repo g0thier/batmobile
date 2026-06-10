@@ -1,70 +1,93 @@
 import type {ReactNode} from 'react';
-import clsx from 'clsx';
+import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
+  href: string;
   description: ReactNode;
+  label: string;
 };
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    title: 'Vision produit',
+    label: 'Produit',
+    href: '/docs/vision-produit',
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Comprendre le rôle de Batmobile dans l’écosystème Data-Driven, les publics
+        visés et les objectifs métier couverts par la première version.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    title: 'Démarrage local',
+    label: 'Installation',
+    href: '/docs/demarrage-local',
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Installer les dépendances, lancer l’application Angular et démarrer le site
+        de documentation sans friction.
       </>
     ),
   },
   {
-    title: 'Powered by React',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    title: 'Architecture technique',
+    label: 'Technique',
+    href: '/docs/architecture-technique',
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Explorer les routes, les services de session, l’intégration Firebase et la
+        composition Angular/Ionic de l’application.
+      </>
+    ),
+  },
+  {
+    title: 'Modules métier',
+    label: 'Fonctionnel',
+    href: '/docs/modules-metier',
+    description: (
+      <>
+        Parcourir les quiz, l’historique, les statistiques, le système de succès et
+        le profil utilisateur à partir du code existant.
+      </>
+    ),
+  },
+  {
+    title: 'Contribution',
+    label: 'Process',
+    href: '/docs/contribution',
+    description: (
+      <>
+        Les repères utiles pour contribuer proprement: conventions, tests et points
+        d’attention quand la documentation évolue.
       </>
     ),
   },
 ];
 
-function Feature({title, Svg, description}: FeatureItem) {
+function Feature({title, href, label, description}: FeatureItem) {
   return (
-    <div className={clsx('col col--4')}>
-      <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
-      </div>
-      <div className="text--center padding-horiz--md">
-        <Heading as="h3">{title}</Heading>
-        <p>{description}</p>
-      </div>
-    </div>
+    <Link className={styles.card} to={href}>
+      <div className={styles.cardTag}>{label}</div>
+      <Heading as="h3" className={styles.cardTitle}>
+        {title}
+      </Heading>
+      <p className={styles.cardDescription}>{description}</p>
+      <span className={styles.cardLink}>Ouvrir la page</span>
+    </Link>
   );
 }
 
 export default function HomepageFeatures(): ReactNode {
   return (
     <section className={styles.features}>
-      <div className="container">
-        <div className="row">
-          {FeatureList.map((props, idx) => (
-            <Feature key={idx} {...props} />
-          ))}
-        </div>
+      <div className={styles.grid}>
+        {FeatureList.map((props) => (
+          <Feature key={props.title} {...props} />
+        ))}
       </div>
     </section>
   );
