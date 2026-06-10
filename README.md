@@ -90,6 +90,21 @@ npm run start   # Start Angular dev server
 npm run build   # Build production assets
 npm run watch   # Build in watch mode for development
 npm run test    # Run unit tests
+npm run screenshots # Capture Angular pages into docs/images
+```
+
+The screenshot script uses Playwright and expects login credentials when capturing protected
+pages. You can provide them through `.env.local` or shell variables such as:
+
+```bash
+SCREENSHOT_AUTH_EMAIL=you@example.com
+SCREENSHOT_AUTH_PASSWORD=your-password
+```
+
+Before the first run, install the Chromium browser used by Playwright:
+
+```bash
+npx playwright install chromium
 ```
 
 ## Roadmap

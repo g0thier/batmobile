@@ -8,6 +8,7 @@
     "images": "node scripts/optimize-images.mjs",
     "icons": "node scripts/generate-icons.mjs",
     "favicon": "node scripts/generate-favicon.mjs",
+    "screenshots": "node scripts/capture-pages.mjs",
     "assets": "npm run images && npm run favicon && npm run icons",
     "imagesnbuild": "npm run images && ng build",
     "build": "ng build",
@@ -55,6 +56,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "playwright": "^1.60.0",
     "png-to-ico": "^3.0.1",
     "sharp": "^0.34.5",
     "typescript": "~5.9.2"
