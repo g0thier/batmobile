@@ -7,6 +7,14 @@ import ts from 'typescript';
 
 const PROJECT_ROOT = process.cwd();
 const ROUTES_FILE = path.join(PROJECT_ROOT, 'src', 'app', 'app.routes.ts');
+const QUIZ_CATALOG_FILE = path.join(
+  PROJECT_ROOT,
+  'src',
+  'app',
+  'core',
+  'quiz',
+  'quiz-catalog.service.ts',
+);
 const OUTPUT_DIR = path.join(PROJECT_ROOT, 'docs', 'images');
 
 function parseEnvFile(content) {
@@ -162,6 +170,10 @@ function routeToOutputPath(route) {
   return path.join(OUTPUT_DIR, ...segments, fileName);
 }
 
+function quizLaunchToOutputPath(quizId) {
+  return path.join(OUTPUT_DIR, 'launches', `${sanitizeSegment(quizId)}.png`);
+}
+
 async function ensureDirForFile(filePath) {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
 }
@@ -196,6 +208,61 @@ function getObjectPropertyInitializer(objectLiteral, propertyName) {
   }
 
   return null;
+}
+
+async function discoverQuizCatalog() {
+  const source = await fs.readFile(QUIZ_CATALOG_FILE, 'utf8');
+  const sourceFile = ts.createSourceFile(QUIZ_CATALOG_FILE, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+
+  for (const statement of sourceFile.statements) {
+    if (!ts.isVariableStatement(statement)) {
+      continue;
+    }
+
+    for (const declaration of statement.declarationList.declarations) {
+      if (!ts.isIdentifier(declaration.name) || declaration.name.text !== 'QUIZ_CATALOG_BY_ID') {
+        continue;
+      }
+
+      if (!declaration.initializer) {
+        continue;
+      }
+
+      const initializer = unwrapExpression(declaration.initializer);
+      if (!ts.isObjectLiteralExpression(initializer)) {
+        continue;
+      }
+
+      const catalog = [];
+      for (const property of initializer.properties) {
+        if (!ts.isPropertyAssignment(property)) {
+          continue;
+        }
+
+        const quizId = getPropertyNameText(property.name);
+        if (!quizId) {
+          continue;
+        }
+
+        const quizDefinition = unwrapExpression(property.initializer);
+        if (!ts.isObjectLiteralExpression(quizDefinition)) {
+          continue;
+        }
+
+        const titleInitializer = getObjectPropertyInitializer(quizDefinition, 'title');
+        const title = titleInitializer ? unwrapExpression(titleInitializer) : null;
+        if (!title || !ts.isStringLiteralLike(title)) {
+          continue;
+        }
+
+        catalog.push({ id: quizId, title: title.text });
+      }
+
+      return catalog;
+    }
+  }
+
+  return [];
 }
 
 function getRoutePath(objectLiteral) {
@@ -315,6 +382,10 @@ async function performLogin(page, config) {
   await page.waitForTimeout(1200);
 
   await page.waitForSelector('input[name="email"]', { timeout: 15000 });
+  const loginCapturePath = path.join(OUTPUT_DIR, 'login.png');
+  await ensureDirForFile(loginCapturePath);
+  // Capture the login page before any credentials are entered.
+  await page.screenshot({ path: loginCapturePath, fullPage: false });
   await page.fill('input[name="email"]', config.authEmail);
   await page.locator('button[type="submit"]:visible').click();
 
@@ -347,6 +418,52 @@ async function performLogin(page, config) {
   }
 }
 
+async function captureSimulatedQuizLaunches(page, config, quizCatalog) {
+  const captured = [];
+  const skipped = [];
+  const historyUrl = new URL('/tabs/history', config.baseUrl).toString();
+
+  await page.goto(historyUrl, { waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(1200);
+
+  const upcomingSection = page.locator('section.history-section').first();
+
+  for (const quiz of quizCatalog) {
+    const launchCard = upcomingSection.locator('ion-card.quiz-card').filter({ hasText: quiz.title }).first();
+
+    if ((await launchCard.count()) === 0) {
+      skipped.push({ quizId: quiz.id, reason: 'Session non disponible dans l’historique' });
+      continue;
+    }
+
+    try {
+      await launchCard.scrollIntoViewIfNeeded();
+      await launchCard.click();
+      await page.waitForTimeout(1500);
+
+      if (!page.url().includes('/tabs/quiz-session')) {
+        skipped.push({ quizId: quiz.id, reason: 'La session ne s’est pas ouverte' });
+        await page.goto(historyUrl, { waitUntil: 'domcontentloaded' });
+        await page.waitForTimeout(1200);
+        continue;
+      }
+
+      const outputPath = quizLaunchToOutputPath(quiz.id);
+      await ensureDirForFile(outputPath);
+      // Capture the quiz just after the simulated launch.
+      await page.screenshot({ path: outputPath, fullPage: false });
+      captured.push({ quizId: quiz.id, title: quiz.title, outputPath });
+    } catch (error) {
+      skipped.push({ quizId: quiz.id, reason: error instanceof Error ? error.message : String(error) });
+    }
+
+    await page.goto(historyUrl, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(1200);
+  }
+
+  return { captured, skipped };
+}
+
 async function captureRoutes() {
   await loadDotEnvFile(path.join(PROJECT_ROOT, '.env.local'));
   const config = getRuntimeConfig();
@@ -358,6 +475,7 @@ async function captureRoutes() {
   }
 
   const routes = await discoverRoutes(config);
+  const quizCatalog = await discoverQuizCatalog();
   if (routes.length === 0) {
     throw new Error('Aucune route capturable trouvée dans src/app/app.routes.ts.');
   }
@@ -413,6 +531,8 @@ async function captureRoutes() {
     await performLogin(page, config);
     console.log('Connexion réussie.');
 
+    const launchResults = await captureSimulatedQuizLaunches(page, config, quizCatalog);
+
     const captured = [];
     const skipped = [];
 
@@ -448,6 +568,20 @@ async function captureRoutes() {
       console.log('\nRoutes ignorées/échouées :');
       for (const item of skipped) {
         console.log(`- ${item.route}: ${item.reason}`);
+      }
+    }
+
+    if (launchResults.captured.length > 0 || launchResults.skipped.length > 0) {
+      console.log('\nLancements simulés :');
+      for (const item of launchResults.captured) {
+        console.log(`- ${item.quizId} (${item.title}) -> ${path.relative(PROJECT_ROOT, item.outputPath)}`);
+      }
+
+      if (launchResults.skipped.length > 0) {
+        console.log('\nLancements ignorés/échoués :');
+        for (const item of launchResults.skipped) {
+          console.log(`- ${item.quizId}: ${item.reason}`);
+        }
       }
     }
   } finally {
