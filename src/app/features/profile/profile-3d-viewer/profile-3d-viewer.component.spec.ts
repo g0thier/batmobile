@@ -14,12 +14,13 @@ describe('Profile3dViewerComponent', () => {
       start: jasmine.createSpy('start'),
       dispose: jasmine.createSpy('dispose').and.resolveTo(undefined),
     };
+    const viewerConstructorSpy = jasmine.createSpy('Viewer').and.returnValue(viewerStub);
 
     const loadGaussianSplats3D = spyOn(
       fixture.componentInstance as unknown as { loadGaussianSplats3D: () => Promise<unknown> },
       'loadGaussianSplats3D',
     ).and.resolveTo({
-      Viewer: jasmine.createSpy('Viewer').and.returnValue(viewerStub),
+      Viewer: viewerConstructorSpy,
       SceneFormat: { Splat: 'splat-format' },
       RenderMode: { OnChange: 'on-change' },
       SceneRevealMode: { Instant: 'instant' },
@@ -30,12 +31,18 @@ describe('Profile3dViewerComponent', () => {
     await fixture.whenStable();
 
     expect(loadGaussianSplats3D).toHaveBeenCalled();
+    expect((fixture.componentInstance as unknown as { viewer?: unknown }).viewer).toBeTruthy();
     expect(viewerStub.addSplatScene).toHaveBeenCalledWith(
       '/profil/default.splat',
       jasmine.objectContaining({
         format: 'splat-format',
         rotation: [0.70710678, 0, 0.70710678, 0],
         showLoadingUI: false,
+      }),
+    );
+    expect(viewerConstructorSpy).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        initialCameraPosition: [0, 0, 2.2],
       }),
     );
     expect(viewerStub.start).toHaveBeenCalled();
@@ -53,12 +60,13 @@ describe('Profile3dViewerComponent', () => {
       start: jasmine.createSpy('start'),
       dispose: jasmine.createSpy('dispose').and.resolveTo(undefined),
     };
+    const viewerConstructorSpy = jasmine.createSpy('Viewer').and.returnValue(viewerStub);
 
     spyOn(
       fixture.componentInstance as unknown as { loadGaussianSplats3D: () => Promise<unknown> },
       'loadGaussianSplats3D',
     ).and.resolveTo({
-      Viewer: jasmine.createSpy('Viewer').and.returnValue(viewerStub),
+      Viewer: viewerConstructorSpy,
       SceneFormat: { Splat: 'splat-format' },
       RenderMode: { OnChange: 'on-change' },
       SceneRevealMode: { Instant: 'instant' },

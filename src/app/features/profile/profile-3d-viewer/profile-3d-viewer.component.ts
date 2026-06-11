@@ -68,7 +68,7 @@ export class Profile3dViewerComponent implements AfterViewInit, OnDestroy {
 
       this.viewer = new GaussianSplats3D.Viewer({
         rootElement: hostElement,
-        initialCameraPosition: [0, 0, 5],
+        initialCameraPosition: [0, 0, 2],
         initialCameraLookAt: [0, 0, 0],
         cameraUp: [0, 1, 0],
         selfDrivenMode: true,
