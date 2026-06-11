@@ -3,23 +3,31 @@ import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { AuthService } from '../../core/auth/auth';
 import { CurrentUserProfileService } from '../../core/profile/current-user-profile';
+import { SensorOrientationService } from '../../core/sensor-orientation/sensor-orientation.service';
 import { ProfileComponent } from './profile.component';
 
 describe('ProfileComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
+  let sensorOrientationServiceSpy: jasmine.SpyObj<SensorOrientationService>;
 
   beforeEach(async () => {
     routerSpy = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
     routerSpy.navigateByUrl.and.resolveTo(true);
     authServiceSpy = jasmine.createSpyObj<AuthService>('AuthService', ['signOut']);
     authServiceSpy.signOut.and.resolveTo();
+    sensorOrientationServiceSpy = jasmine.createSpyObj<SensorOrientationService>('SensorOrientationService', [
+      'startListening',
+      'stopListening',
+    ]);
+    sensorOrientationServiceSpy.startListening.and.resolveTo();
 
     await TestBed.configureTestingModule({
       imports: [ProfileComponent],
       providers: [
         { provide: Router, useValue: routerSpy },
         { provide: AuthService, useValue: authServiceSpy },
+        { provide: SensorOrientationService, useValue: sensorOrientationServiceSpy },
         {
           provide: CurrentUserProfileService,
           useValue: {
@@ -104,5 +112,13 @@ describe('ProfileComponent', () => {
     fixture.componentInstance.onProfilePhotoDeleted();
 
     expect(profilePhotoCacheSpy.clearProfilePictureCache).toHaveBeenCalled();
+  });
+
+  it('starts orientation listening when the 3d preview is requested', async () => {
+    const fixture = TestBed.createComponent(ProfileComponent);
+
+    await fixture.componentInstance.onProfile3DRequested();
+
+    expect(sensorOrientationServiceSpy.startListening).toHaveBeenCalled();
   });
 });

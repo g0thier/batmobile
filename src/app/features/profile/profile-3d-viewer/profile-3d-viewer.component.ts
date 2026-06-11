@@ -1,6 +1,12 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
 import { IonSpinner, IonText } from '@ionic/angular/standalone';
 import { Euler, MathUtils, Quaternion } from 'three';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
+import {
+  SensorOrientationService,
+  type SensorOrientationValue,
+} from '../../../core/sensor-orientation/sensor-orientation.service';
 
 type GaussianSplats3DModule = typeof import('@mkkellogg/gaussian-splats-3d');
 
@@ -18,6 +24,8 @@ type GaussianSplats3DViewer = {
   imports: [IonSpinner, IonText],
 })
 export class Profile3dViewerComponent implements AfterViewInit, OnDestroy {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly sensorOrientationService = inject(SensorOrientationService);
   private readonly splatScenePath = '/profil/default.splat';
   private readonly splatSceneRotationXDeg = 0;
   private readonly splatSceneRotationYDeg = 90;
@@ -36,6 +44,12 @@ export class Profile3dViewerComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     void this.ensureViewerLoaded();
+    this.sensorOrientationService.orientation$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(filter((orientation) => this.hasOrientationValue(orientation)))
+      .subscribe((orientation) => {
+        this.logOrientation(orientation);
+      });
   }
 
   ngOnDestroy(): void {
@@ -45,6 +59,19 @@ export class Profile3dViewerComponent implements AfterViewInit, OnDestroy {
 
   protected loadGaussianSplats3D(): Promise<GaussianSplats3DModule> {
     return import('@mkkellogg/gaussian-splats-3d');
+  }
+
+  private logOrientation(orientation: SensorOrientationValue): void {
+    console.log('[Profile3DViewer] orientation', orientation);
+  }
+
+  private hasOrientationValue(orientation: SensorOrientationValue): boolean {
+    return (
+      orientation.alpha !== null ||
+      orientation.beta !== null ||
+      orientation.gamma !== null ||
+      orientation.absolute
+    );
   }
 
   private getSplatSceneRotation(): [number, number, number, number] {

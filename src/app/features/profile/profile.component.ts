@@ -17,6 +17,7 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { AuthService } from '../../core/auth/auth';
+import { SensorOrientationService } from '../../core/sensor-orientation/sensor-orientation.service';
 import {
   CurrentUserProfileService,
   UserProfileViewModel,
@@ -50,6 +51,7 @@ import { ProfilePhotoPickerComponent } from './profile-photo-picker/profile-phot
 export class ProfileComponent {
   private readonly authService = inject(AuthService);
   private readonly currentUserProfileService = inject(CurrentUserProfileService);
+  private readonly sensorOrientationService = inject(SensorOrientationService);
   private readonly router = inject(Router);
 
   readonly profileState$ = this.currentUserProfileService.state$;
@@ -63,6 +65,14 @@ export class ProfileComponent {
 
   onProfilePhotoDeleted(): void {
     this.currentUserProfileService.clearProfilePictureCache();
+  }
+
+  async onProfile3DRequested(): Promise<void> {
+    try {
+      await this.sensorOrientationService.startListening();
+    } catch (error: unknown) {
+      console.error('Impossible d’activer l’orientation du profil :', error);
+    }
   }
 
   async onSignOut(): Promise<void> {

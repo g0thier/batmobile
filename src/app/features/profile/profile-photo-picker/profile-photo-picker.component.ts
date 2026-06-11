@@ -39,6 +39,7 @@ export class ProfilePhotoPickerComponent {
 
   @Output() photoCaptured = new EventEmitter<string>();
   @Output() photoDeleted = new EventEmitter<void>();
+  @Output() preview3DRequested = new EventEmitter<void>();
 
   isPickerOpen = false;
   isCapturingPhoto = false;
@@ -69,6 +70,10 @@ export class ProfilePhotoPickerComponent {
   togglePreviewMode(): void {
     if (this.isCapturingPhoto || this.profilePicture) {
       return;
+    }
+
+    if (!this.isPreview3D) {
+      this.preview3DRequested.emit();
     }
 
     this.isPreview3D = !this.isPreview3D;

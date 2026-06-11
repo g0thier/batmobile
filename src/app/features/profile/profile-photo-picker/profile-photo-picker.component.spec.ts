@@ -64,15 +64,19 @@ describe('ProfilePhotoPickerComponent', () => {
 
   it('toggles the 3d preview for the default photo', () => {
     const fixture = TestBed.createComponent(ProfilePhotoPickerComponent);
+    const requested: number[] = [];
+    fixture.componentInstance.preview3DRequested.subscribe(() => requested.push(1));
 
     fixture.detectChanges();
     fixture.componentInstance.togglePreviewMode();
 
     expect(fixture.componentInstance.isPreview3D).toBeTrue();
+    expect(requested).toEqual([1]);
 
     fixture.componentInstance.togglePreviewMode();
 
     expect(fixture.componentInstance.isPreview3D).toBeFalse();
+    expect(requested).toEqual([1]);
   });
 
   it('launches the camera and emits the captured photo', async () => {
