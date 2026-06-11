@@ -27,6 +27,8 @@ type GaussianSplats3DViewer = {
   dispose(): Promise<void> | void;
 };
 
+const PROFILE_3D_VIEWER_GAMMA_MULTIPLIER = 0.75;
+
 @Component({
   selector: 'app-profile-3d-viewer',
   standalone: true,
@@ -111,10 +113,12 @@ export class Profile3dViewerComponent implements AfterViewInit, OnDestroy {
   }
 
   private getSplatSceneQuaternion(gamma: number | null = null): Quaternion {
+    const gammaRotationDeg = (gamma ?? 0) * PROFILE_3D_VIEWER_GAMMA_MULTIPLIER;
+
     return new Quaternion().setFromEuler(
       new Euler(
         MathUtils.degToRad(this.splatSceneRotationXDeg),
-        MathUtils.degToRad(this.splatSceneRotationYDeg + (gamma ?? 0)),
+        MathUtils.degToRad(this.splatSceneRotationYDeg + gammaRotationDeg),
         MathUtils.degToRad(this.splatSceneRotationZDeg),
         this.splatSceneRotationOrder,
       ),
