@@ -1,6 +1,8 @@
 :host {
   display: block;
   height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
   width: 100%;
 }
 

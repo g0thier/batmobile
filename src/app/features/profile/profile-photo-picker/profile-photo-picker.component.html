@@ -8,10 +8,14 @@
     (click)="openPicker()"
     (keydown)="onTriggerKeydown($event)"
   >
-    <img
-      [src]="profilePicture || defaultProfilePicture"
-      [alt]="profilePicture ? 'Photo de profil' : 'Photo de profil par défaut'"
-    />
+    @if (isPreview3D && canShow3DPreview) {
+      <app-profile-3d-viewer class="profile-photo-picker__trigger-media"></app-profile-3d-viewer>
+    } @else {
+      <img
+        [src]="profilePicture || defaultProfilePicture"
+        [alt]="profilePicture ? 'Photo de profil' : 'Photo de profil par défaut'"
+      />
+    }
   </ion-avatar>
 
   <ion-modal

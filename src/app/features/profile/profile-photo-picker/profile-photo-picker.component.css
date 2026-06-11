@@ -9,9 +9,11 @@
 .profile-photo-picker__trigger {
   cursor: pointer;
   height: 56px;
+  overflow: hidden;
   min-width: 56px;
   outline: none;
   position: relative;
+  border-radius: 50%;
   width: 56px;
 }
 
@@ -22,6 +24,15 @@
 .profile-photo-picker__trigger img {
   height: 100%;
   object-fit: cover;
+  width: 100%;
+}
+
+.profile-photo-picker__trigger-media {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: 50%;
   width: 100%;
 }
 

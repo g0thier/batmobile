@@ -79,6 +79,19 @@ describe('ProfilePhotoPickerComponent', () => {
     expect(requested).toEqual([1]);
   });
 
+  it('switches the trigger avatar to 3d when the preview is enabled', () => {
+    const fixture = TestBed.createComponent(ProfilePhotoPickerComponent);
+    fixture.detectChanges();
+
+    fixture.componentInstance.togglePreviewMode();
+    fixture.detectChanges();
+
+    const trigger = fixture.nativeElement.querySelector('.profile-photo-picker__trigger');
+
+    expect(trigger?.querySelector('app-profile-3d-viewer')).not.toBeNull();
+    expect(trigger?.querySelector('img')).toBeNull();
+  });
+
   it('launches the camera and emits the captured photo', async () => {
     const fixture = TestBed.createComponent(ProfilePhotoPickerComponent);
     const emittedPhotos: string[] = [];
