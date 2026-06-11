@@ -40,6 +40,20 @@
             }
           </ion-button>
 
+          @if (canShow3DPreview) {
+            <ion-button
+              class="profile-photo-picker__action profile-photo-picker__action--toggle"
+              fill="clear"
+              size="small"
+              [disabled]="isCapturingPhoto"
+              [class.profile-photo-picker__action--active]="isPreview3D"
+              [attr.aria-label]="getPreviewToggleLabel()"
+              (click)="togglePreviewMode()"
+            >
+              <app-material-icon [name]="getPreviewToggleIcon()" [size]="20"></app-material-icon>
+            </ion-button>
+          }
+
           <ion-button
             class="profile-photo-picker__action"
             fill="clear"
@@ -65,10 +79,20 @@
         </div>
 
         <div class="profile-photo-picker__preview">
-          <img
-            [src]="profilePicture || defaultProfilePicture"
-            [alt]="profilePicture ? 'Aperçu de la photo de profil' : 'Aperçu de la photo de profil par défaut'"
-          />
+          <div class="profile-photo-picker__preview-frame">
+            @if (isPreview3D && canShow3DPreview) {
+              <app-profile-3d-viewer class="profile-photo-picker__preview-media"></app-profile-3d-viewer>
+            } @else {
+              <img
+                [src]="profilePicture || defaultProfilePicture"
+                [alt]="
+                  profilePicture
+                    ? 'Aperçu de la photo de profil'
+                    : 'Aperçu de la photo de profil par défaut'
+                "
+              />
+            }
+          </div>
         </div>
 
         @if (captureError) {

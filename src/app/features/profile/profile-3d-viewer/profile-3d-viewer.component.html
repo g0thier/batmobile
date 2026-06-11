@@ -1,0 +1,15 @@
+<div class="profile-3d-viewer">
+  <div #viewerHost class="profile-3d-viewer__surface">
+    @if (isLoading) {
+      <div class="profile-3d-viewer__state" aria-hidden="true">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+    }
+
+    @if (loadError) {
+      <div class="profile-3d-viewer__state profile-3d-viewer__state--error">
+        <ion-text color="danger">{{ loadError }}</ion-text>
+      </div>
+    }
+  </div>
+</div>

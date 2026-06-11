@@ -1,11 +1,18 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Profile3dViewerComponent } from '../profile-3d-viewer/profile-3d-viewer.component';
 import { ProfilePhotoPickerComponent } from './profile-photo-picker.component';
 
 describe('ProfilePhotoPickerComponent', () => {
   beforeEach(async () => {
+    TestBed.overrideComponent(ProfilePhotoPickerComponent, {
+      remove: { imports: [Profile3dViewerComponent] },
+    });
+
     await TestBed.configureTestingModule({
       imports: [ProfilePhotoPickerComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
   });
 
@@ -40,20 +47,39 @@ describe('ProfilePhotoPickerComponent', () => {
 
     expect(deleted).toEqual([1]);
     expect(fixture.componentInstance.isPickerOpen).toBeFalse();
+    expect(fixture.componentInstance.isPreview3D).toBeFalse();
   });
 
-  it('uses the green empty action to cancel when no photo exists', () => {
+  it('shows the 3d toggle only for the default photo', () => {
     const fixture = TestBed.createComponent(ProfilePhotoPickerComponent);
-    fixture.componentInstance.openPicker();
-    fixture.componentInstance.closePicker();
+    fixture.detectChanges();
 
-    expect(fixture.componentInstance.isPickerOpen).toBeFalse();
+    expect(fixture.nativeElement.querySelector('.profile-photo-picker__action--toggle')).not.toBeNull();
+
+    fixture.componentInstance.profilePicture = 'data:image/png;base64,current';
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.profile-photo-picker__action--toggle')).toBeNull();
+  });
+
+  it('toggles the 3d preview for the default photo', () => {
+    const fixture = TestBed.createComponent(ProfilePhotoPickerComponent);
+
+    fixture.detectChanges();
+    fixture.componentInstance.togglePreviewMode();
+
+    expect(fixture.componentInstance.isPreview3D).toBeTrue();
+
+    fixture.componentInstance.togglePreviewMode();
+
+    expect(fixture.componentInstance.isPreview3D).toBeFalse();
   });
 
   it('launches the camera and emits the captured photo', async () => {
     const fixture = TestBed.createComponent(ProfilePhotoPickerComponent);
     const emittedPhotos: string[] = [];
     fixture.componentInstance.photoCaptured.subscribe((photo) => emittedPhotos.push(photo));
+    fixture.componentInstance.isPreview3D = true;
 
     spyOn(Camera, 'getPhoto').and.resolveTo({
       dataUrl: 'data:image/png;base64,abc123',
@@ -68,11 +94,12 @@ describe('ProfilePhotoPickerComponent', () => {
         quality: 80,
         resultType: CameraResultType.DataUrl,
         source: CameraSource.Camera,
-        saveToGallery: false,
+      saveToGallery: false,
       }),
     );
     expect(emittedPhotos).toEqual(['data:image/png;base64,abc123']);
     expect(fixture.componentInstance.isPickerOpen).toBeFalse();
+    expect(fixture.componentInstance.isPreview3D).toBeFalse();
   });
 
   it('shows an error when the camera fails', async () => {
