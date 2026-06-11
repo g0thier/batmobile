@@ -27,7 +27,7 @@ type GaussianSplats3DViewer = {
   dispose(): Promise<void> | void;
 };
 
-const PROFILE_3D_VIEWER_GAMMA_MULTIPLIER = 0.75;
+const PROFILE_3D_VIEWER_GAMMA_MULTIPLIER = 0.5;
 
 @Component({
   selector: 'app-profile-3d-viewer',
