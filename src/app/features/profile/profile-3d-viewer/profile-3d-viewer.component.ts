@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { IonSpinner, IonText } from '@ionic/angular/standalone';
+import { Euler, MathUtils, Quaternion } from 'three';
 
 type GaussianSplats3DModule = typeof import('@mkkellogg/gaussian-splats-3d');
 
@@ -18,7 +19,10 @@ type GaussianSplats3DViewer = {
 })
 export class Profile3dViewerComponent implements AfterViewInit, OnDestroy {
   private readonly splatScenePath = '/profil/default.splat';
-  private readonly splatSceneRotation = [0.70710678, 0, 0.70710678, 0];
+  private readonly splatSceneRotationXDeg = 0;
+  private readonly splatSceneRotationYDeg = 90;
+  private readonly splatSceneRotationZDeg = 190;
+  private readonly splatSceneRotationOrder = 'XYZ' as const;
 
   @ViewChild('viewerHost', { static: true })
   private viewerHostRef!: ElementRef<HTMLDivElement>;
@@ -41,6 +45,21 @@ export class Profile3dViewerComponent implements AfterViewInit, OnDestroy {
 
   protected loadGaussianSplats3D(): Promise<GaussianSplats3DModule> {
     return import('@mkkellogg/gaussian-splats-3d');
+  }
+
+  private getSplatSceneRotation(): [number, number, number, number] {
+    const quaternion = new Quaternion().setFromEuler(
+      new Euler(
+        MathUtils.degToRad(this.splatSceneRotationXDeg),
+        MathUtils.degToRad(this.splatSceneRotationYDeg),
+        MathUtils.degToRad(this.splatSceneRotationZDeg),
+        this.splatSceneRotationOrder,
+      ),
+    );
+
+    return [quaternion.x, quaternion.y, quaternion.z, quaternion.w].map((value) =>
+      Math.abs(value) < 1e-10 ? 0 : Math.round(value * 1e8) / 1e8,
+    ) as [number, number, number, number];
   }
 
   private ensureViewerLoaded(): Promise<void> {
@@ -68,7 +87,7 @@ export class Profile3dViewerComponent implements AfterViewInit, OnDestroy {
 
       this.viewer = new GaussianSplats3D.Viewer({
         rootElement: hostElement,
-        initialCameraPosition: [0, 0, 2],
+        initialCameraPosition: [0, 0, 1.6],
         initialCameraLookAt: [0, 0, 0],
         cameraUp: [0, 1, 0],
         selfDrivenMode: true,
@@ -82,7 +101,7 @@ export class Profile3dViewerComponent implements AfterViewInit, OnDestroy {
 
       await this.viewer.addSplatScene(this.splatScenePath, {
         format: GaussianSplats3D.SceneFormat.Splat,
-        rotation: this.splatSceneRotation,
+        rotation: this.getSplatSceneRotation(),
         showLoadingUI: false,
       });
 
