@@ -10,8 +10,19 @@ import {
 
 type GaussianSplats3DModule = typeof import('@mkkellogg/gaussian-splats-3d');
 
+type GaussianSplats3DScene = {
+  quaternion: {
+    x: number;
+    y: number;
+    z: number;
+    w: number;
+  };
+};
+
 type GaussianSplats3DViewer = {
   addSplatScene(path: string, options?: Record<string, unknown>): Promise<unknown>;
+  getSplatScene(sceneIndex: number): GaussianSplats3DScene | null;
+  forceRenderNextFrame(): void;
   start(): void;
   dispose(): Promise<void> | void;
 };
@@ -38,6 +49,7 @@ export class Profile3dViewerComponent implements AfterViewInit, OnDestroy {
   private viewer: GaussianSplats3DViewer | null = null;
   private initializationPromise: Promise<void> | null = null;
   private isDestroyed = false;
+  private isSplatSceneReady = false;
 
   isLoading = true;
   loadError = '';
@@ -49,6 +61,7 @@ export class Profile3dViewerComponent implements AfterViewInit, OnDestroy {
       .pipe(filter((orientation) => this.hasOrientationValue(orientation)))
       .subscribe((orientation) => {
         this.logOrientation(orientation);
+        this.applyOrientationToViewer(orientation);
       });
   }
 
@@ -74,15 +87,42 @@ export class Profile3dViewerComponent implements AfterViewInit, OnDestroy {
     );
   }
 
-  private getSplatSceneRotation(): [number, number, number, number] {
-    const quaternion = new Quaternion().setFromEuler(
+  private applyCurrentOrientationToViewer(): void {
+    this.applyOrientationToViewer(this.sensorOrientationService.currentOrientation);
+  }
+
+  private applyOrientationToViewer(orientation: SensorOrientationValue): void {
+    const viewer = this.viewer;
+    if (!viewer || !this.isSplatSceneReady) {
+      return;
+    }
+
+    const scene = viewer.getSplatScene(0);
+    if (!scene) {
+      return;
+    }
+
+    const quaternion = this.getSplatSceneQuaternion(orientation.gamma);
+    scene.quaternion.x = quaternion.x;
+    scene.quaternion.y = quaternion.y;
+    scene.quaternion.z = quaternion.z;
+    scene.quaternion.w = quaternion.w;
+    viewer.forceRenderNextFrame();
+  }
+
+  private getSplatSceneQuaternion(gamma: number | null = null): Quaternion {
+    return new Quaternion().setFromEuler(
       new Euler(
         MathUtils.degToRad(this.splatSceneRotationXDeg),
-        MathUtils.degToRad(this.splatSceneRotationYDeg),
+        MathUtils.degToRad(this.splatSceneRotationYDeg + (gamma ?? 0)),
         MathUtils.degToRad(this.splatSceneRotationZDeg),
         this.splatSceneRotationOrder,
       ),
     );
+  }
+
+  private getSplatSceneRotation(): [number, number, number, number] {
+    const quaternion = this.getSplatSceneQuaternion(this.sensorOrientationService.currentOrientation.gamma);
 
     return [quaternion.x, quaternion.y, quaternion.z, quaternion.w].map((value) =>
       Math.abs(value) < 1e-10 ? 0 : Math.round(value * 1e8) / 1e8,
@@ -119,6 +159,7 @@ export class Profile3dViewerComponent implements AfterViewInit, OnDestroy {
         cameraUp: [0, 1, 0],
         selfDrivenMode: true,
         useBuiltInControls: true,
+        dynamicScene: true,
         sharedMemoryForWorkers: false,
         gpuAcceleratedSort: false,
         renderMode: GaussianSplats3D.RenderMode.OnChange,
@@ -131,6 +172,9 @@ export class Profile3dViewerComponent implements AfterViewInit, OnDestroy {
         rotation: this.getSplatSceneRotation(),
         showLoadingUI: false,
       });
+      this.isSplatSceneReady = true;
+
+      this.applyCurrentOrientationToViewer();
 
       if (this.isDestroyed) {
         await this.disposeViewer();
@@ -152,6 +196,7 @@ export class Profile3dViewerComponent implements AfterViewInit, OnDestroy {
   private async disposeViewer(): Promise<void> {
     const viewer = this.viewer;
     this.viewer = null;
+    this.isSplatSceneReady = false;
 
     if (!viewer) {
       return;
