@@ -38,6 +38,7 @@
     "@angular/router": "^20.3.0",
     "@angular/service-worker": "^20.3.0",
     "@capacitor/android": "^8.4.0",
+    "@capacitor/camera": "^8.2.0",
     "@capacitor/core": "^8.4.0",
     "@capacitor/ios": "^8.4.0",
     "@ionic/angular": "^8.8.7",

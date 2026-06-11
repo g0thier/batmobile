@@ -10,15 +10,11 @@
       <ion-card class="profile-card">
         <ion-card-content>
           <div class="identity-row">
-            <ion-avatar class="profile-avatar">
-              @if (state.profile.profilePicture) {
-                <img [src]="state.profile.profilePicture" alt="Photo de profil" />
-              } @else {
-                <div class="avatar-fallback">
-                  <app-material-icon name="account_circle" [size]="40"></app-material-icon>
-                </div>
-              }
-            </ion-avatar>
+            <app-profile-photo-picker
+              [profilePicture]="state.profile.profilePicture"
+              (photoCaptured)="onProfilePhotoCaptured($event)"
+              (photoDeleted)="onProfilePhotoDeleted()"
+            ></app-profile-photo-picker>
 
             <div class="identity-content">
               <div class="identity-name">{{ getFullName(state.profile) }}</div>

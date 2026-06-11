@@ -1,0 +1,86 @@
+<div class="profile-photo-picker">
+  <ion-avatar
+    class="profile-photo-picker__trigger"
+    [attr.aria-expanded]="isPickerOpen"
+    [attr.aria-label]="profilePicture ? 'Changer la photo de profil' : 'Ajouter une photo de profil'"
+    role="button"
+    tabindex="0"
+    (click)="openPicker()"
+    (keydown)="onTriggerKeydown($event)"
+  >
+    @if (profilePicture) {
+      <img [src]="profilePicture" alt="Photo de profil" />
+    } @else {
+      <div class="profile-photo-picker__fallback">
+        <app-material-icon name="account_circle" [size]="40"></app-material-icon>
+      </div>
+    }
+  </ion-avatar>
+
+  <ion-modal
+    class="profile-photo-picker__modal"
+    [isOpen]="isPickerOpen"
+    [backdropDismiss]="!isCapturingPhoto"
+    [showBackdrop]="true"
+    [handle]="false"
+    (didDismiss)="closePicker()"
+  >
+    <ng-template>
+      <section aria-label="Photo de profil" class="profile-photo-picker__panel" role="dialog" aria-modal="true">
+        <div class="profile-photo-picker__actions">
+          <ion-button
+            class="profile-photo-picker__action"
+            fill="clear"
+            size="small"
+            [disabled]="isCapturingPhoto"
+            aria-label="Prendre une photo"
+            (click)="onTakePhoto()"
+          >
+            @if (isCapturingPhoto) {
+              <ion-spinner name="crescent"></ion-spinner>
+            } @else {
+              <app-material-icon name="photo_camera" [size]="20"></app-material-icon>
+            }
+          </ion-button>
+
+          <ion-button
+            class="profile-photo-picker__action"
+            fill="clear"
+            size="small"
+            [class.profile-photo-picker__action--danger]="profilePicture"
+            [class.profile-photo-picker__action--empty]="!profilePicture"
+            [attr.aria-label]="profilePicture ? 'Supprimer la photo' : 'Annuler'"
+            (click)="profilePicture ? onDeletePhoto() : closePicker()"
+          >
+            <app-material-icon [name]="profilePicture ? 'delete' : 'select'" [size]="20"></app-material-icon>
+          </ion-button>
+
+          <ion-button
+            class="profile-photo-picker__action"
+            fill="clear"
+            size="small"
+            [disabled]="isCapturingPhoto"
+            aria-label="Annuler"
+            (click)="closePicker()"
+          >
+            <app-material-icon name="close" [size]="20"></app-material-icon>
+          </ion-button>
+        </div>
+
+        <div class="profile-photo-picker__preview">
+          @if (profilePicture) {
+            <img [src]="profilePicture" alt="Aperçu de la photo de profil" />
+          } @else {
+            <div class="profile-photo-picker__fallback profile-photo-picker__fallback--large">
+              <app-material-icon name="account_circle" [size]="96"></app-material-icon>
+            </div>
+          }
+        </div>
+
+        @if (captureError) {
+          <ion-text color="danger" class="profile-photo-picker__error">{{ captureError }}</ion-text>
+        }
+      </section>
+    </ng-template>
+  </ion-modal>
+</div>

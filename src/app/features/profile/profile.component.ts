@@ -2,7 +2,6 @@ import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  IonAvatar,
   IonButton,
   IonCard,
   IonCardContent,
@@ -23,7 +22,7 @@ import {
   UserProfileViewModel,
   UserSubscriptionViewModel,
 } from '../../core/profile/current-user-profile';
-import { MaterialIconComponent } from '../../shared/material-icon/material-icon.component';
+import { ProfilePhotoPickerComponent } from './profile-photo-picker/profile-photo-picker.component';
 
 @Component({
   selector: 'app-profile',
@@ -32,7 +31,6 @@ import { MaterialIconComponent } from '../../shared/material-icon/material-icon.
   standalone: true,
   imports: [
     AsyncPipe,
-    IonAvatar,
     IonButton,
     IonCard,
     IonCardContent,
@@ -46,7 +44,7 @@ import { MaterialIconComponent } from '../../shared/material-icon/material-icon.
     IonText,
     IonTitle,
     IonToolbar,
-    MaterialIconComponent,
+    ProfilePhotoPickerComponent,
   ],
 })
 export class ProfileComponent {
@@ -58,6 +56,14 @@ export class ProfileComponent {
 
   isSigningOut = false;
   logoutErrorMessage = '';
+
+  onProfilePhotoCaptured(profilePicture: string): void {
+    this.currentUserProfileService.setProfilePictureCache(profilePicture);
+  }
+
+  onProfilePhotoDeleted(): void {
+    this.currentUserProfileService.clearProfilePictureCache();
+  }
 
   async onSignOut(): Promise<void> {
     this.logoutErrorMessage = '';

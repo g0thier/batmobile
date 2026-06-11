@@ -130,4 +130,34 @@ describe('CurrentUserProfileService', () => {
       lastPaymentStatus: 'paid',
     });
   });
+
+  it('prefers the cached profile photo over the remote avatar', async () => {
+    authUser$.next(createTestUser());
+
+    const states: CurrentUserProfileState[] = [];
+    const subscription = service.state$.subscribe((state) => states.push(state));
+
+    await Promise.resolve();
+    service.setProfilePictureCache('data:image/png;base64,cached-photo');
+    await Promise.resolve();
+    subscription.unsubscribe();
+
+    expect(states.at(-1)?.profile.profilePicture).toBe('data:image/png;base64,cached-photo');
+  });
+
+  it('clears the cached profile photo', async () => {
+    authUser$.next(createTestUser());
+
+    const states: CurrentUserProfileState[] = [];
+    const subscription = service.state$.subscribe((state) => states.push(state));
+
+    await Promise.resolve();
+    service.setProfilePictureCache('data:image/png;base64,cached-photo');
+    await Promise.resolve();
+    service.clearProfilePictureCache();
+    await Promise.resolve();
+    subscription.unsubscribe();
+
+    expect(states.at(-1)?.profile.profilePicture).toBe('https://example.com/avatar.png');
+  });
 });

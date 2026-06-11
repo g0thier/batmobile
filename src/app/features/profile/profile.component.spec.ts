@@ -23,6 +23,8 @@ describe('ProfileComponent', () => {
         {
           provide: CurrentUserProfileService,
           useValue: {
+            setProfilePictureCache: jasmine.createSpy('setProfilePictureCache'),
+            clearProfilePictureCache: jasmine.createSpy('clearProfilePictureCache'),
             state$: of({
               profile: {
                 profilePicture: '',
@@ -81,5 +83,26 @@ describe('ProfileComponent', () => {
     expect(authServiceSpy.signOut).toHaveBeenCalled();
     expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('/login', { replaceUrl: true });
   });
-});
 
+  it('caches the captured profile photo', () => {
+    const fixture = TestBed.createComponent(ProfileComponent);
+    const profilePhotoCacheSpy = TestBed.inject(CurrentUserProfileService) as unknown as {
+      setProfilePictureCache: jasmine.Spy;
+    };
+
+    fixture.componentInstance.onProfilePhotoCaptured('data:image/png;base64,abc');
+
+    expect(profilePhotoCacheSpy.setProfilePictureCache).toHaveBeenCalledWith('data:image/png;base64,abc');
+  });
+
+  it('clears the cached profile photo', () => {
+    const fixture = TestBed.createComponent(ProfileComponent);
+    const profilePhotoCacheSpy = TestBed.inject(CurrentUserProfileService) as unknown as {
+      clearProfilePictureCache: jasmine.Spy;
+    };
+
+    fixture.componentInstance.onProfilePhotoDeleted();
+
+    expect(profilePhotoCacheSpy.clearProfilePictureCache).toHaveBeenCalled();
+  });
+});

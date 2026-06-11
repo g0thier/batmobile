@@ -8,3 +8,23 @@
 @import '@ionic/angular/css/text-alignment.css';
 @import '@ionic/angular/css/text-transformation.css';
 @import '@ionic/angular/css/flex-utils.css';
+
+ion-modal.profile-photo-picker__modal {
+  --backdrop-opacity: 0.72;
+  --height: auto;
+  --min-height: auto;
+  --max-height: calc(100dvh - 40px);
+  --width: min(92vw, 420px);
+  --min-width: auto;
+  --max-width: min(92vw, 420px);
+}
+
+ion-modal.profile-photo-picker__modal::part(backdrop) {
+  background: rgba(11, 16, 25, 0.72);
+}
+
+ion-modal.profile-photo-picker__modal::part(content) {
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}

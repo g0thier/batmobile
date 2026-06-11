@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Database } from '@angular/fire/database';
 import { User } from '@angular/fire/auth';
 import { onValue, ref, Unsubscribe } from 'firebase/database';
-import { Observable, of, shareReplay, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, of, shareReplay, Subscription, switchMap, tap } from 'rxjs';
 import { AuthService } from '../auth/auth';
 
 export interface UserProfileViewModel {
@@ -129,10 +129,14 @@ const resolveOfficeLocation = (officeData: Record<string, unknown>): string => {
 const toProfileViewModel = (
   userData: Record<string, unknown>,
   currentUser: User | null,
+  cachedProfilePicture: string,
 ): UserProfileViewModel => {
   const fallbackName = parseDisplayName(readString(currentUser?.displayName));
   return {
-    profilePicture: readString(userData['photoURL']) || readString(currentUser?.photoURL),
+    profilePicture:
+      readString(cachedProfilePicture) ||
+      readString(userData['photoURL']) ||
+      readString(currentUser?.photoURL),
     firstName: readString(userData['firstName']) || fallbackName.firstName,
     lastName: readString(userData['lastName']) || fallbackName.lastName,
     jobTitle: normalizeRoleLabel(readString(userData['role'])),
@@ -165,8 +169,14 @@ const toSubscriptionViewModel = (
 export class CurrentUserProfileService {
   private readonly authService = inject(AuthService);
   private readonly database = inject(Database);
+  private readonly profilePictureCache$ = new BehaviorSubject<string>('');
 
   readonly state$ = this.authService.authUser$.pipe(
+    tap((currentUser) => {
+      if (!currentUser) {
+        this.profilePictureCache$.next('');
+      }
+    }),
     switchMap((currentUser) => {
       if (!currentUser) {
         return of({
@@ -178,15 +188,18 @@ export class CurrentUserProfileService {
       }
 
       return new Observable<CurrentUserProfileState>((subscriber) => {
+        let cachedProfilePicture = this.profilePictureCache$.value;
+        let lastUserData: Record<string, unknown> = {};
         let currentState: CurrentUserProfileState = {
           ...INITIAL_STATE,
-          profile: toProfileViewModel({}, currentUser),
+          profile: toProfileViewModel({}, currentUser, cachedProfilePicture),
         };
         let officeSubscriptionKey = '';
         let companySubscriptionKey = '';
         let unsubscribeUser: Unsubscribe = () => {};
         let unsubscribeOffice: Unsubscribe = () => {};
         let unsubscribeCompany: Unsubscribe = () => {};
+        let unsubscribeCache = new Subscription();
 
         const emitState = () => {
           subscriber.next({
@@ -194,6 +207,12 @@ export class CurrentUserProfileService {
             profile: { ...currentState.profile },
             subscription: { ...currentState.subscription },
           });
+        };
+
+        const rebuildProfile = (userData: Record<string, unknown>): UserProfileViewModel => {
+          const profile = toProfileViewModel(userData, currentUser, cachedProfilePicture);
+          profile.officeLocation = currentState.profile.officeLocation;
+          return profile;
         };
 
         const patchState = (nextPatch: Partial<CurrentUserProfileState>) => {
@@ -206,12 +225,20 @@ export class CurrentUserProfileService {
 
         emitState();
 
+        unsubscribeCache = this.profilePictureCache$.subscribe((profilePicture) => {
+          cachedProfilePicture = profilePicture;
+          patchState({
+            profile: rebuildProfile(lastUserData),
+          });
+        });
+
         const userRef = ref(this.database, `users/${currentUser.uid}`);
 
         unsubscribeUser = onValue(
           userRef,
           (userSnapshot) => {
             const userData = userSnapshot.exists() ? asRecord(userSnapshot.val()) : {};
+            lastUserData = userData;
             const companyId = readString(userData['companyId']);
             const officeId = readString(userData['officeId']);
             const nextOfficeSubscriptionKey = companyId && officeId ? `${companyId}/${officeId}` : '';
@@ -220,13 +247,8 @@ export class CurrentUserProfileService {
             const hasSameCompanySubscription =
               companyId.length > 0 && companyId === companySubscriptionKey;
 
-            const profile = toProfileViewModel(userData, currentUser);
-            if (hasSameOfficeSubscription) {
-              profile.officeLocation = currentState.profile.officeLocation;
-            }
-
             patchState({
-              profile,
+              profile: rebuildProfile(userData),
               isLoading: false,
               loadError: '',
             });
@@ -295,6 +317,7 @@ export class CurrentUserProfileService {
         );
 
         return () => {
+          unsubscribeCache.unsubscribe();
           unsubscribeUser();
           unsubscribeOffice();
           unsubscribeCompany();
@@ -306,4 +329,12 @@ export class CurrentUserProfileService {
       refCount: true,
     }),
   );
+
+  setProfilePictureCache(profilePicture: string): void {
+    this.profilePictureCache$.next(readString(profilePicture));
+  }
+
+  clearProfilePictureCache(): void {
+    this.profilePictureCache$.next('');
+  }
 }
