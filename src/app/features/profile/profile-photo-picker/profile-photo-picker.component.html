@@ -8,13 +8,10 @@
     (click)="openPicker()"
     (keydown)="onTriggerKeydown($event)"
   >
-    @if (profilePicture) {
-      <img [src]="profilePicture" alt="Photo de profil" />
-    } @else {
-      <div class="profile-photo-picker__fallback">
-        <app-material-icon name="account_circle" [size]="40"></app-material-icon>
-      </div>
-    }
+    <img
+      [src]="profilePicture || defaultProfilePicture"
+      [alt]="profilePicture ? 'Photo de profil' : 'Photo de profil par défaut'"
+    />
   </ion-avatar>
 
   <ion-modal
@@ -68,13 +65,10 @@
         </div>
 
         <div class="profile-photo-picker__preview">
-          @if (profilePicture) {
-            <img [src]="profilePicture" alt="Aperçu de la photo de profil" />
-          } @else {
-            <div class="profile-photo-picker__fallback profile-photo-picker__fallback--large">
-              <app-material-icon name="account_circle" [size]="96"></app-material-icon>
-            </div>
-          }
+          <img
+            [src]="profilePicture || defaultProfilePicture"
+            [alt]="profilePicture ? 'Aperçu de la photo de profil' : 'Aperçu de la photo de profil par défaut'"
+          />
         </div>
 
         @if (captureError) {

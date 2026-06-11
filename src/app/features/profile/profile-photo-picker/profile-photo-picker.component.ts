@@ -11,6 +11,8 @@ import { MaterialIconComponent } from '../../../shared/material-icon/material-ic
   imports: [IonAvatar, IonButton, IonModal, IonSpinner, IonText, MaterialIconComponent],
 })
 export class ProfilePhotoPickerComponent {
+  readonly defaultProfilePicture = '/profil/default.webp';
+
   @Input() profilePicture = '';
   @Output() photoCaptured = new EventEmitter<string>();
   @Output() photoDeleted = new EventEmitter<void>();
@@ -49,6 +51,7 @@ export class ProfilePhotoPickerComponent {
     this.isCapturingPhoto = true;
 
     try {
+      // Keep the Capacitor Camera API here so the native/web bridge stays explicit.
       const photo = await Camera.getPhoto({
         quality: 80,
         resultType: CameraResultType.DataUrl,

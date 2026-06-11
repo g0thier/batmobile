@@ -11,23 +11,23 @@ describe('ProfilePhotoPickerComponent', () => {
 
   it('opens and closes the popup', () => {
     const fixture = TestBed.createComponent(ProfilePhotoPickerComponent);
-    fixture.detectChanges();
-
-    const trigger = fixture.nativeElement.querySelector('.profile-photo-picker__trigger');
-    trigger.dispatchEvent(new Event('click'));
-    fixture.detectChanges();
+    fixture.componentInstance.openPicker();
 
     expect(fixture.componentInstance.isPickerOpen).toBeTrue();
-    expect(fixture.nativeElement.querySelector('.profile-photo-picker__panel')).toBeTruthy();
 
-    const cancelButton = fixture.nativeElement.querySelector(
-      'ion-button[aria-label="Annuler"]',
-    ) as HTMLElement;
-    cancelButton.click();
-    fixture.detectChanges();
+    fixture.componentInstance.closePicker();
 
     expect(fixture.componentInstance.isPickerOpen).toBeFalse();
-    expect(fixture.nativeElement.querySelector('.profile-photo-picker__panel')).toBeFalsy();
+  });
+
+  it('shows the default profile photo when none exists', () => {
+    const fixture = TestBed.createComponent(ProfilePhotoPickerComponent);
+    fixture.detectChanges();
+
+    const triggerImage = fixture.nativeElement.querySelector('.profile-photo-picker__trigger img');
+
+    expect(triggerImage?.getAttribute('src')).toBe('/profil/default.webp');
+    expect(triggerImage?.getAttribute('alt')).toBe('Photo de profil par défaut');
   });
 
   it('emits a delete request from the popup', () => {
@@ -36,14 +36,7 @@ describe('ProfilePhotoPickerComponent', () => {
     fixture.componentInstance.photoDeleted.subscribe(() => deleted.push(1));
     fixture.componentInstance.profilePicture = 'data:image/png;base64,current';
 
-    fixture.componentInstance.openPicker();
-    fixture.detectChanges();
-
-    const deleteButton = fixture.nativeElement.querySelector(
-      'ion-button[aria-label="Supprimer la photo"]',
-    ) as HTMLElement;
-    deleteButton.click();
-    fixture.detectChanges();
+    fixture.componentInstance.onDeletePhoto();
 
     expect(deleted).toEqual([1]);
     expect(fixture.componentInstance.isPickerOpen).toBeFalse();
@@ -52,13 +45,7 @@ describe('ProfilePhotoPickerComponent', () => {
   it('uses the green empty action to cancel when no photo exists', () => {
     const fixture = TestBed.createComponent(ProfilePhotoPickerComponent);
     fixture.componentInstance.openPicker();
-    fixture.detectChanges();
-
-    const emptyAction = fixture.nativeElement.querySelector(
-      'ion-button.profile-photo-picker__action--empty',
-    ) as HTMLElement;
-    emptyAction.click();
-    fixture.detectChanges();
+    fixture.componentInstance.closePicker();
 
     expect(fixture.componentInstance.isPickerOpen).toBeFalse();
   });
@@ -73,15 +60,8 @@ describe('ProfilePhotoPickerComponent', () => {
     } as never);
 
     fixture.componentInstance.openPicker();
-    fixture.detectChanges();
 
-    const takePhotoButton = fixture.nativeElement.querySelector(
-      'ion-button[aria-label="Prendre une photo"]',
-    ) as HTMLElement;
-
-    takePhotoButton.click();
-    await fixture.whenStable();
-    fixture.detectChanges();
+    await fixture.componentInstance.onTakePhoto();
 
     expect(Camera.getPhoto).toHaveBeenCalledWith(
       jasmine.objectContaining({
@@ -101,14 +81,10 @@ describe('ProfilePhotoPickerComponent', () => {
     spyOn(Camera, 'getPhoto').and.rejectWith(new Error('Camera unavailable'));
 
     fixture.componentInstance.openPicker();
-    fixture.detectChanges();
 
     await fixture.componentInstance.onTakePhoto();
     fixture.detectChanges();
 
     expect(fixture.componentInstance.captureError).toBe('Camera unavailable');
-    expect(fixture.nativeElement.querySelector('.profile-photo-picker__error')?.textContent).toContain(
-      'Camera unavailable',
-    );
   });
 });

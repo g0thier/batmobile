@@ -119,6 +119,14 @@
                 "with": "src/app/testing/mock-angular-fire-database.ts"
               },
               {
+                "replace": "node_modules/@capacitor/camera/dist/esm/index.js",
+                "with": "src/app/testing/mock-capacitor-camera.ts"
+              },
+              {
+                "replace": "node_modules/@capacitor/camera/dist/plugin.cjs.js",
+                "with": "src/app/testing/mock-capacitor-camera.ts"
+              },
+              {
                 "replace": "node_modules/firebase/auth/dist/esm/index.esm.js",
                 "with": "src/app/testing/mock-firebase-auth.ts"
               },
