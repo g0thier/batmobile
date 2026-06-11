@@ -34,6 +34,7 @@ describe('Profile3dViewerComponent', () => {
       '/profil/default.splat',
       jasmine.objectContaining({
         format: 'splat-format',
+        rotation: [0.70710678, 0, 0.70710678, 0],
         showLoadingUI: false,
       }),
     );

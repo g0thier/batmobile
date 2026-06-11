@@ -18,6 +18,7 @@ type GaussianSplats3DViewer = {
 })
 export class Profile3dViewerComponent implements AfterViewInit, OnDestroy {
   private readonly splatScenePath = '/profil/default.splat';
+  private readonly splatSceneRotation = [0.70710678, 0, 0.70710678, 0];
 
   @ViewChild('viewerHost', { static: true })
   private viewerHostRef!: ElementRef<HTMLDivElement>;
@@ -81,6 +82,7 @@ export class Profile3dViewerComponent implements AfterViewInit, OnDestroy {
 
       await this.viewer.addSplatScene(this.splatScenePath, {
         format: GaussianSplats3D.SceneFormat.Splat,
+        rotation: this.splatSceneRotation,
         showLoadingUI: false,
       });
 
